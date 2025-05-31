@@ -286,6 +286,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Make immediate call with real email data
+  app.post("/api/calls/make", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { phoneNumber, callType } = req.body;
+      
+      console.log(`Making call for user ${userId} to ${phoneNumber} with real email data`);
+      
+      // Get real email data for the call
+      const messages = await gmailService.getMessages(userId, 50);
+      const categorizedEmails = await categorizationService.categorizeEmails(messages);
+      const userPreferences = await storage.getUserPreferences(userId);
+      
+      // Separate newsletters for summarization
+      const newsletters = messages.filter(msg => {
+        const category = categorizedEmails.get(msg.id);
+        return category?.category === 'newsletter';
+      });
+      
+      // Generate newsletter summary if any newsletters exist
+      let newsletterSummary = '';
+      if (newsletters.length > 0) {
+        newsletterSummary = await categorizationService.summarizeNewsletters(newsletters);
+      }
+      
+      // Prepare email data for voice call
+      const emailData = {
+        categorizedEmails,
+        userPreferences,
+        emailCount: messages.length,
+        newsletterSummary
+      };
+      
+      // Make the call using real email data
+      const callResult = await voiceService.makeOutboundCall(userId, phoneNumber, callType, emailData);
+      
+      res.json({
+        message: 'Call initiated successfully with real email data',
+        callSid: callResult.callSid,
+        status: callResult.status,
+        emailsProcessed: messages.length,
+        categoriesFound: categorizedEmails.size,
+        newslettersIncluded: newsletters.length
+      });
+    } catch (error) {
+      console.error('Error making call with real data:', error);
+      res.status(500).json({ 
+        message: 'Failed to make call',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Get newsletter summaries
+  app.get("/api/newsletters/summary", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get recent messages
+      const messages = await gmailService.getMessages(userId, 100);
+      const categorizedEmails = await categorizationService.categorizeEmails(messages);
+      
+      // Filter newsletters
+      const newsletters = messages.filter(msg => {
+        const category = categorizedEmails.get(msg.id);
+        return category?.category === 'newsletter';
+      });
+      
+      // Generate summary
+      const summary = await categorizationService.summarizeNewsletters(newsletters);
+      
+      res.json({
+        newsletterCount: newsletters.length,
+        summary,
+        newsletters: newsletters.map(n => ({
+          from: n.from,
+          subject: n.subject,
+          date: n.date,
+          snippet: n.snippet
+        }))
+      });
+    } catch (error) {
+      console.error('Error getting newsletter summary:', error);
+      res.status(500).json({ message: 'Failed to get newsletter summary' });
+    }
+  });
+
   app.post("/api/calls/daily-digest", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;

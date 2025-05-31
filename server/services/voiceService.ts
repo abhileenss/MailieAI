@@ -12,14 +12,21 @@ export class VoiceService {
     }
   }
 
-  async makeOutboundCall(userId: string, phoneNumber: string, callType: string, emailCount: number): Promise<any> {
+  async makeOutboundCall(userId: string, phoneNumber: string, callType: string, emailData: any): Promise<any> {
     if (!this.twilioClient) {
       throw new Error('Twilio API not configured. Please provide TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER.');
     }
 
     try {
-      // Generate voice script based on call type and email count
-      const script = this.generateVoiceScript(callType, emailCount);
+      // Generate voice script from real email data
+      let script: string;
+      if (emailData && emailData.categorizedEmails) {
+        const { EmailCategorizationService } = await import('./emailCategorizationService');
+        const categorizationService = new EmailCategorizationService();
+        script = await categorizationService.generateCallScript(emailData.categorizedEmails, emailData.userPreferences);
+      } else {
+        script = this.generateVoiceScript(callType, emailData?.emailCount || 0);
+      }
       
       // Create TwiML for the call
       const twiml = await this.generateTwiML(script);
@@ -32,6 +39,22 @@ export class VoiceService {
         timeout: 30,
         record: false,
       });
+
+      // Store call log in database
+      await storage.createCallLog({
+        id: `call_${call.sid}`,
+        userId,
+        phoneNumber,
+        callSid: call.sid,
+        callType,
+        status: call.status,
+        script,
+        emailCount: emailData?.emailCount || 0,
+        createdAt: new Date()
+      });
+
+      // Start monitoring this call
+      this.monitorCall(call.sid, userId);
 
       return {
         success: true,

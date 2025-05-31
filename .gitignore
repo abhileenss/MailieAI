@@ -4,3 +4,32 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+
+# Environment and secrets
+.env
+.env.local
+.env.production
+*.pem
+*.key
+*.cert
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs containing sensitive data
+logs/
+*.log
+npm-debug.log*
+
+# IDE settings that might contain sensitive paths
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Backup files that might contain sensitive data
+*.backup
+*.bak
+*~

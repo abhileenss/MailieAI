@@ -238,6 +238,53 @@ export class EmailCategorizationService {
     };
   }
 
+  // Summarize newsletters for voice calls
+  async summarizeNewsletters(newsletters: EmailMessage[]): Promise<string> {
+    try {
+      if (!this.hasApiKey || !this.openai) {
+        return this.fallbackNewsletterSummary(newsletters);
+      }
+
+      const newsletterContent = newsletters.slice(0, 5).map((email, i) => `
+        ${i + 1}. From: ${email.from}
+        Subject: ${email.subject}
+        Content: ${email.snippet}
+        Date: ${email.date.toISOString()}
+      `).join('\n');
+
+      const prompt = `
+        Summarize these newsletters for a busy founder's daily voice briefing:
+        
+        ${newsletterContent}
+        
+        Create a concise 30-second summary that highlights:
+        1. Key industry trends or insights
+        2. Important updates relevant to founders
+        3. Any actionable items or opportunities
+        
+        Keep it conversational for voice delivery.
+      `;
+
+      const response = await this.openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.7
+      });
+
+      return response.choices[0].message.content || this.fallbackNewsletterSummary(newsletters);
+    } catch (error) {
+      console.error('Error summarizing newsletters:', error);
+      return this.fallbackNewsletterSummary(newsletters);
+    }
+  }
+
+  private fallbackNewsletterSummary(newsletters: EmailMessage[]): string {
+    const count = newsletters.length;
+    const sourceSet = new Set(newsletters.map(n => n.from.split('@')[0]));
+    const sources = Array.from(sourceSet).slice(0, 3);
+    return `You have ${count} newsletter updates from ${sources.join(', ')}. Check them when convenient.`;
+  }
+
   // Generate voice call script from actual email data
   async generateCallScript(categorizedEmails: Map<string, CategoryResult>, userPreferences: any): Promise<string> {
     try {
