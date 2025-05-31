@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
-import { Mic, Menu, X, Home, Mail, Settings, Phone, CheckCircle } from "lucide-react";
+import { Mic, Menu, X, Home, Mail, Settings, Phone, CheckCircle, User, LogOut, ChevronDown } from "lucide-react";
 
 interface NavigationProps {
   currentPage?: string;
@@ -10,7 +10,24 @@ interface NavigationProps {
 export function Navigation({ currentPage }: NavigationProps) {
   const [, setLocation] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userInfo, setUserInfo] = useState<any>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  // Check authentication status
+  useEffect(() => {
+    fetch('/api/me')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data?.user) {
+          setIsAuthenticated(true);
+          setUserInfo(data.user);
+        }
+      })
+      .catch(() => setIsAuthenticated(false));
+  }, []);
 
   const navigationItems = [
     { label: "Home", path: "/", icon: Home },
