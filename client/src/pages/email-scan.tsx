@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
-import { CheckCircle, Star, ArrowRight, AlertCircle } from "lucide-react";
+import { CheckCircle, Star, ArrowRight, AlertCircle, Users, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SenderCard } from "@/components/sender-card";
 import { EmailPreview } from "@/components/email-preview";
@@ -10,7 +10,7 @@ import { Navigation } from "@/components/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { EmailSender } from "@/data/mock-data";
+import { EmailSender, categoryBuckets } from "@/data/mock-data";
 
 export default function EmailScan() {
   const [, setLocation] = useLocation();
@@ -97,56 +97,41 @@ export default function EmailScan() {
             </div>
           </div>
 
-          {/* Category Breakdown with User Controls - Real Data */}
+          {/* User-Controlled Category Buckets */}
           <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 mb-8">
-            <h3 className="font-semibold mb-4">Your Email Categories ({emailSenders.length} total senders)</h3>
-            <p className="text-sm text-gray-400 mb-4">AI categorized your emails. Click any category to review and adjust the logic.</p>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-semibold">Categorize Your Email Senders</h3>
+                <p className="text-sm text-gray-400">Drag senders into buckets based on what YOU want to be called about</p>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <Users className="w-4 h-4" />
+                <span>{emailSenders.length} senders</span>
+              </div>
+            </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-              {Object.entries(categoryStats).map(([category, count]) => {
-                const categoryColors = {
-                  'call-me': 'bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/30',
-                  'remind-me': 'bg-blue-500/20 text-blue-400 border-blue-500/30 hover:bg-blue-500/30', 
-                  'keep-quiet': 'bg-gray-500/20 text-gray-400 border-gray-500/30 hover:bg-gray-500/30',
-                  'newsletter': 'bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/30',
-                  'why-did-i-signup': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30 hover:bg-yellow-500/30',
-                  'dont-tell-anyone': 'bg-purple-500/20 text-purple-400 border-purple-500/30 hover:bg-purple-500/30',
-                  'unassigned': 'bg-orange-500/20 text-orange-400 border-orange-500/30 hover:bg-orange-500/30'
-                };
-                
-                const categoryLabels = {
-                  'call-me': 'Call Me',
-                  'remind-me': 'Remind Me',
-                  'keep-quiet': 'Keep Quiet',
-                  'newsletter': 'Newsletter',
-                  'why-did-i-signup': 'Why Subscribe?',
-                  'dont-tell-anyone': 'Personal',
-                  'unassigned': 'Needs Review'
-                };
-
-                const categoryDescriptions = {
-                  'call-me': 'Urgent items requiring immediate phone notification',
-                  'remind-me': 'Important but can wait - will be mentioned in calls',
-                  'keep-quiet': 'Keep receiving but don\'t notify in calls',
-                  'newsletter': 'Content emails - summarized in calls',
-                  'why-did-i-signup': 'Marketing emails to potentially unsubscribe',
-                  'dont-tell-anyone': 'Personal/sensitive - private handling',
-                  'unassigned': 'Emails needing manual categorization'
-                };
-
+            {/* Category Buckets - User Choice */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {categoryBuckets.map((bucket) => {
+                const sendersInBucket = emailSenders.filter(s => s.category === bucket.id);
                 return (
-                  <button
-                    key={category}
-                    onClick={() => {
-                      const senders = emailSenders.filter(s => s.category === category);
-                      const senderList = senders.slice(0, 5).map(s => `• ${s.name}`).join('\n');
-                      alert(`${categoryLabels[category as keyof typeof categoryLabels]} (${count} senders)\n\n${categoryDescriptions[category as keyof typeof categoryDescriptions]}\n\nSample senders:\n${senderList}${senders.length > 5 ? '\n...and more' : ''}`);
-                    }}
-                    className={`p-4 border neopop-button transition-all duration-200 cursor-pointer ${categoryColors[category as keyof typeof categoryColors]}`}
+                  <motion.div
+                    key={bucket.id}
+                    className={`p-4 border-2 border-dashed rounded-xl min-h-[120px] ${bucket.color} transition-all duration-200 hover:border-solid`}
+                    whileHover={{ scale: 1.02 }}
                   >
-                    <div className="text-2xl font-bold">{count}</div>
-                    <div className="text-xs font-medium">{categoryLabels[category as keyof typeof categoryLabels]}</div>
-                  </button>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-lg">{bucket.emoji}</span>
+                      <div>
+                        <h4 className="font-medium text-sm">{bucket.name}</h4>
+                        <p className="text-xs opacity-70">{bucket.description}</p>
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold">{sendersInBucket.length}</div>
+                      <div className="text-xs">senders</div>
+                    </div>
+                  </motion.div>
                 );
               })}
             </div>
@@ -256,24 +241,39 @@ export default function EmailScan() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.8 }}
         >
-          {/* Voice Summary Generation - Uses Real Data */}
+          {/* AI Voice Script for "Call Me" Items */}
           <Button
             onClick={async () => {
+              const callMeEmails = emailSenders.filter(s => s.category === 'call-me');
+              if (callMeEmails.length === 0) {
+                alert('No emails categorized as "Call Me" yet. Drag important senders into the "Call Me" bucket first.');
+                return;
+              }
+              
               try {
-                const response = await fetch('/api/newsletters/summary');
+                const response = await fetch('/api/calls/generate-script', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ 
+                    senderIds: callMeEmails.map(s => s.id),
+                    callType: 'user-priority'
+                  })
+                });
+                
                 if (response.ok) {
                   const data = await response.json();
-                  alert(`Voice Summary from Your Real Emails:\n\n${data.summary}\n\nProcessed ${data.newsletterCount} newsletters from your actual inbox.`);
+                  alert(`AI Voice Script Generated!\n\nFrom your ${callMeEmails.length} "Call Me" senders:\n\n${data.script}\n\nThis script uses your actual email content.`);
                 } else {
-                  alert('Authentication needed. Please re-authenticate with Gmail to access your real email data.');
+                  alert('Please re-authenticate with Gmail to generate voice scripts from your real email data.');
                 }
               } catch (error) {
-                alert('Error accessing your real email data for voice summary generation.');
+                alert('Error generating voice script from your categorized emails.');
               }
             }}
             className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 neopop-button font-medium transition-all duration-300"
+            disabled={emailSenders.filter(s => s.category === 'call-me').length === 0}
           >
-            Generate Voice Summary
+            Generate Voice Script for "Call Me" Items
             <Star className="ml-2 w-4 h-4" />
           </Button>
 

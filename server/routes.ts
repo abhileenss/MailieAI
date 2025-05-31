@@ -487,6 +487,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate voice script for user-categorized "call-me" emails
+  app.post("/api/calls/generate-script", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { senderIds, callType } = req.body;
+      
+      if (!senderIds || senderIds.length === 0) {
+        return res.status(400).json({ message: 'No senders specified for voice script generation' });
+      }
+      
+      console.log(`Generating voice script for ${senderIds.length} user-selected senders`);
+      
+      // Get real email data for these specific senders
+      const messages = await gmailService.getMessages(userId, 100);
+      const userSenders = await storage.getEmailSenders(userId);
+      
+      // Filter messages from user-selected "call-me" senders
+      const callMeSenders = userSenders.filter(s => senderIds.includes(s.id) && s.category === 'call-me');
+      const relevantMessages = messages.filter(msg => 
+        callMeSenders.some(sender => msg.from.includes(sender.email))
+      );
+      
+      if (relevantMessages.length === 0) {
+        return res.status(404).json({ message: 'No recent emails found from selected call-me senders' });
+      }
+      
+      // Generate AI voice script from user's prioritized emails
+      const categorizedEmails = await categorizationService.categorizeEmails(relevantMessages);
+      const userPreferences = await storage.getUserPreferences(userId);
+      
+      const script = await categorizationService.generateCallScript(categorizedEmails, {
+        ...userPreferences,
+        userPriority: true,
+        callType: 'user-selected-urgent'
+      });
+      
+      res.json({
+        script,
+        sendersProcessed: callMeSenders.length,
+        emailsAnalyzed: relevantMessages.length,
+        senderDetails: callMeSenders.map(s => ({
+          name: s.name,
+          email: s.email,
+          emailCount: s.emailCount
+        }))
+      });
+    } catch (error) {
+      console.error('Error generating voice script:', error);
+      res.status(500).json({ 
+        message: 'Failed to generate voice script',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // Get newsletter summaries
   app.get("/api/newsletters/summary", isAuthenticated, async (req: any, res) => {
     try {
