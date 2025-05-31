@@ -178,7 +178,7 @@ export default function EmailScan() {
         >
           <Button
             onClick={navigateToPersonalization}
-            className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-105"
+            className="bg-primary hover:bg-primary/90 text-background px-8 py-4 neopop-button font-medium transition-all duration-300 transform hover:scale-105"
             disabled={categorizedSenders.length === 0}
           >
             {categorizedSenders.length === 0 
