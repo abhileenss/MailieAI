@@ -25,10 +25,10 @@ export function VoiceSelector({ voices, selectedVoice, onSelect }: VoiceSelector
       {voices.map((voice) => (
         <motion.div
           key={voice.id}
-          className={`bg-gray-800 border-2 rounded-lg p-4 cursor-pointer transition-colors ${
+          className={`neopop-card p-4 cursor-pointer transition-colors font-primary ${
             selectedVoice === voice.id 
-              ? 'border-blue-500 bg-blue-500/10' 
-              : 'border-gray-600 hover:border-blue-500'
+              ? 'border-primary bg-primary/10' 
+              : 'hover:shadow-neopop-hover'
           }`}
           onClick={() => onSelect(voice.id)}
           whileHover={{ scale: 1.02 }}
@@ -36,15 +36,15 @@ export function VoiceSelector({ voices, selectedVoice, onSelect }: VoiceSelector
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className={`w-10 h-10 bg-gradient-to-r ${voice.color} rounded-full flex items-center justify-center`}>
-                <User className="text-white w-5 h-5" />
+              <div className="w-10 h-10 bg-primary text-background neopop-button flex items-center justify-center">
+                <User className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-medium">{voice.name}</h4>
-                <p className="text-sm text-gray-400">{voice.description}</p>
+                <h4 className="font-medium text-foreground">{voice.name}</h4>
+                <p className="text-sm text-muted-foreground">{voice.description}</p>
               </div>
             </div>
-            <button className="text-blue-500 hover:text-blue-400 transition-colors">
+            <button className="text-primary hover:text-primary/80 transition-colors">
               <Play className="w-5 h-5" />
             </button>
           </div>
