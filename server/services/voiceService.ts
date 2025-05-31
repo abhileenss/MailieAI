@@ -114,7 +114,7 @@ export class VoiceService {
         direction: call.direction
       };
     } catch (error) {
-      throw new Error(`Failed to fetch call status: ${error.message}`);
+      throw new Error(`Failed to fetch call status: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 }

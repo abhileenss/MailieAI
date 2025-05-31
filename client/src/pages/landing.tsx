@@ -8,8 +8,9 @@ import { Navigation } from "@/components/navigation";
 export default function Landing() {
   const [, setLocation] = useLocation();
 
-  const navigateToEmailScan = () => {
-    setLocation("/scanning");
+  const handleGetStarted = () => {
+    // Redirect to Replit authentication
+    window.location.href = "/api/login";
   };
 
   return (
@@ -53,7 +54,7 @@ export default function Landing() {
               transition={{ duration: 0.6, delay: 0.3 }}
             >
               <button 
-                onClick={navigateToEmailScan}
+                onClick={handleGetStarted}
                 className="neopop-button neopop-button-primary text-lg px-10 py-4 font-medium"
               >
                 Scan My Inbox Now
