@@ -5,6 +5,8 @@ import { CheckCircle, Star, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SenderCard } from "@/components/sender-card";
 import { EmailPreview } from "@/components/email-preview";
+import { SEOHead } from "@/components/seo-head";
+import { Navigation } from "@/components/navigation";
 import { mockEmailSenders, EmailSender } from "@/data/mock-data";
 
 export default function EmailScan() {
@@ -35,8 +37,18 @@ export default function EmailScan() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="max-w-7xl mx-auto p-6">
+    <>
+      <SEOHead 
+        title="Email Scan - Categorize Your Inbox | PookAi"
+        description="Scan and categorize your email senders with PookAi's smart AI. Sort emails into 'Call Me', 'Remind Me', and other founder-focused categories for better productivity."
+        canonical="https://pookai.com/email-scan"
+        keywords="email categorization, inbox management, email sorting, AI email assistant, email productivity, startup email tools"
+      />
+      
+      <div className="min-h-screen bg-black text-white">
+        <Navigation currentPage="/email-scan" />
+        
+        <div className="max-w-7xl mx-auto p-4 md:p-6">
         {/* Header */}
         <motion.div 
           className="mb-8"
@@ -162,7 +174,8 @@ export default function EmailScan() {
             <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
         </motion.div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
