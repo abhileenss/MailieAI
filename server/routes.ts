@@ -339,6 +339,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Comprehensive email processing with full OpenAI analysis
+  app.post("/api/emails/process-full", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      console.log(`Full email processing started for user: ${userId}`);
+      
+      // Get emails with full content
+      const messages = await gmailService.getMessages(userId, 100);
+      console.log(`Retrieved ${messages.length} emails with full body content`);
+      
+      // Process through OpenAI with full content analysis
+      const categorizedEmails = await categorizationService.categorizeEmails(messages);
+      console.log(`OpenAI processed ${categorizedEmails.size} emails with full content`);
+      
+      // Update database with AI categories
+      const senders = await gmailService.getEmailSendersByDomain(userId);
+      await gmailService.storeEmailSenders(userId, senders);
+      
+      // Update sender categories from AI analysis
+      let categoriesUpdated = 0;
+      for (const [messageId, categoryResult] of categorizedEmails) {
+        const message = messages.find(m => m.id === messageId);
+        if (message) {
+          const emailMatch = message.from.match(/<(.+)>/) || [null, message.from];
+          const senderEmail = emailMatch[1] || message.from;
+          const senderId = `${userId}_${senderEmail}`;
+          
+          try {
+            await storage.updateEmailSenderCategory(senderId, categoryResult.category);
+            categoriesUpdated++;
+          } catch (error) {
+            console.log(`Skipped category update for ${senderId}`);
+          }
+        }
+      }
+      
+      // Generate detailed statistics
+      const stats = {
+        'call-me': 0,
+        'remind-me': 0,
+        'keep-quiet': 0,
+        'newsletter': 0,
+        'why-did-i-signup': 0,
+        'dont-tell-anyone': 0
+      };
+      
+      for (const [, result] of categorizedEmails) {
+        if (stats.hasOwnProperty(result.category)) {
+          stats[result.category as keyof typeof stats]++;
+        }
+      }
+      
+      res.json({
+        success: true,
+        totalEmails: messages.length,
+        uniqueSenders: senders.length,
+        aiProcessed: categorizedEmails.size,
+        categoriesUpdated,
+        categoryBreakdown: stats,
+        processingDetails: {
+          fullEmailBodies: true,
+          openaiCategorization: true,
+          sentimentAnalysis: true,
+          priorityScoring: true
+        }
+      });
+    } catch (error) {
+      console.error('Full email processing error:', error);
+      res.status(500).json({ 
+        message: 'Failed to process emails with full content',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // Get newsletter summaries
   app.get("/api/newsletters/summary", isAuthenticated, async (req: any, res) => {
     try {
