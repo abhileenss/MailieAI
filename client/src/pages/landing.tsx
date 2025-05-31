@@ -21,49 +21,46 @@ export default function Landing() {
         keywords="AI voice assistant, email productivity, founder tools, voice AI, email management, startup productivity, AI concierge, email categorization, voice-first productivity"
       />
       
-      <div className="min-h-screen flex flex-col relative bg-black text-white">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-gray-900 opacity-80"></div>
-        
+      <div className="min-h-screen flex flex-col bg-background text-foreground font-primary">
         {/* Navigation */}
         <Navigation currentPage="/" />
 
         {/* Hero Section */}
-        <div className="relative z-10 flex-1 flex items-center justify-center px-4 md:px-6">
-          <div className="max-w-5xl mx-auto text-center">
+        <div className="flex-1 flex items-center justify-center px-6 md:px-8 py-20">
+          <div className="max-w-4xl mx-auto text-center">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.6 }}
             >
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-semibold mb-8 leading-tight tracking-tight">
                 Your Founder's
                 <br />
-                <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                  Concierge
+                <span className="text-primary">
+                  AI Concierge
                 </span>
               </h1>
-              <p className="text-lg md:text-xl lg:text-2xl text-gray-400 mb-8 max-w-4xl mx-auto leading-relaxed">
+              <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed font-light">
                 Stop drowning in email chaos. Your AI concierge calls you daily with what actually matters, 
                 filters the noise, and keeps you focused on building.
               </p>
             </motion.div>
 
             <motion.div 
-              className="mb-16"
+              className="mb-20"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
               <Button 
                 onClick={navigateToEmailScan}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-lg px-8 py-4 rounded-xl font-medium transition-all duration-300 transform hover:scale-105"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-10 py-4 rounded-xl font-medium transition-all duration-200 surface-elevated-hover"
               >
                 Scan My Inbox Now
                 <motion.span
                   className="ml-3"
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
+                  animate={{ x: [0, 3, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
                 >
                   →
                 </motion.span>

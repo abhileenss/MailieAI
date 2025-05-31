@@ -1,51 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: 210 11% 98%;
-  --foreground: 210 11% 15%;
-  --muted: 210 11% 91%;
-  --muted-foreground: 210 6% 46%;
-  --popover: 210 11% 98%;
-  --popover-foreground: 210 11% 15%;
-  --card: 210 11% 98%;
-  --card-foreground: 210 11% 15%;
-  --border: 210 11% 86%;
-  --input: 210 11% 86%;
-  --primary: 207 90% 54%;
-  --primary-foreground: 211 100% 99%;
-  --secondary: 210 11% 91%;
-  --secondary-foreground: 210 6% 21%;
-  --accent: 210 11% 91%;
-  --accent-foreground: 210 6% 21%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 210 11% 98%;
-  --ring: 210 11% 15%;
-  --radius: 0.5rem;
+  /* Web3 AI SaaS Color System */
+  --background: 0 0% 0%; /* Pure black */
+  --foreground: 0 0% 100%; /* Pure white */
+  --surface: 0 0% 7%; /* Dark grey surface */
+  --surface-elevated: 0 0% 10%; /* Elevated surface */
+  --muted: 0 0% 20%; /* Muted elements */
+  --muted-foreground: 0 0% 80%; /* Muted text */
+  --border: 0 0% 20%; /* Subtle borders */
+  --input: 0 0% 10%; /* Input backgrounds */
+  --primary: 18 100% 60%; /* Orange accent */
+  --primary-foreground: 0 0% 0%; /* Black text on orange */
+  --secondary: 0 0% 15%; /* Secondary elements */
+  --secondary-foreground: 0 0% 90%; /* Secondary text */
+  --accent: 18 100% 60%; /* Orange accent */
+  --accent-foreground: 0 0% 0%; /* Black text on orange */
+  --destructive: 0 84% 60%; /* Error red */
+  --destructive-foreground: 0 0% 100%; /* White on red */
+  --ring: 18 100% 60%; /* Orange focus ring */
+  --radius: 0.75rem; /* Slightly larger radius */
 }
 
+/* Maintain dark theme consistency */
 .dark {
-  --background: 222 84% 5%;
-  --foreground: 210 40% 98%;
-  --muted: 217 33% 17%;
-  --muted-foreground: 215 20% 65%;
-  --popover: 222 84% 5%;
-  --popover-foreground: 210 40% 98%;
-  --card: 222 84% 5%;
-  --card-foreground: 210 40% 98%;
-  --border: 217 33% 17%;
-  --input: 217 33% 17%;
-  --primary: 207 90% 54%;
-  --primary-foreground: 211 100% 99%;
-  --secondary: 217 33% 17%;
-  --secondary-foreground: 210 40% 98%;
-  --accent: 217 33% 17%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 63% 31%;
-  --destructive-foreground: 210 40% 98%;
-  --ring: 216 34% 17%;
-  --radius: 0.5rem;
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --surface: 0 0% 7%;
+  --surface-elevated: 0 0% 10%;
+  --muted: 0 0% 20%;
+  --muted-foreground: 0 0% 80%;
+  --border: 0 0% 20%;
+  --input: 0 0% 10%;
+  --primary: 18 100% 60%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 0 0% 90%;
+  --accent: 18 100% 60%;
+  --accent-foreground: 0 0% 0%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --ring: 18 100% 60%;
+  --radius: 0.75rem;
 }
 
 @layer base {
@@ -54,12 +53,41 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply antialiased bg-background text-foreground;
+    font-family: 'Jost', system-ui, -apple-system, sans-serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  /* Typography System */
+  .font-primary {
+    font-family: 'Jost', system-ui, -apple-system, sans-serif;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Custom CSS Variables for new design system */
+  .bg-surface {
+    background-color: hsl(var(--surface));
+  }
+
+  .bg-surface-elevated {
+    background-color: hsl(var(--surface-elevated));
+  }
+
+  .text-muted-foreground {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .border-border {
+    border-color: hsl(var(--border));
   }
 }
 
 @layer utilities {
+  /* Web3 AI SaaS Animations */
   .animate-fade-in {
     animation: fadeIn 0.6s ease-out;
   }
@@ -74,6 +102,39 @@
 
   .animate-float {
     animation: float 3s ease-in-out infinite;
+  }
+
+  /* Elevated Surface System */
+  .surface-elevated {
+    background: hsl(var(--surface-elevated));
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .surface-elevated-hover {
+    transition: all 0.2s ease;
+  }
+
+  .surface-elevated-hover:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Orange Accent Utilities */
+  .accent-orange {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  .accent-orange-hover:hover {
+    background: hsl(18 100% 65%);
+  }
+
+  /* Technical Data Display */
+  .data-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    letter-spacing: 0.02em;
   }
 }
 
