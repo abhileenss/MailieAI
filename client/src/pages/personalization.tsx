@@ -1,14 +1,20 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
-import { Brain, Clock, Zap, Shield, AlertTriangle, TrendingUp } from "lucide-react";
+import { Brain, Clock, Zap, Shield, AlertTriangle, TrendingUp, Calendar, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Personalization() {
   const [, setLocation] = useLocation();
   const [selectedPreferences, setSelectedPreferences] = useState<string[]>([
     "urgent-financial", "investor-updates", "customer-issues"
   ]);
+  const [meetingReminders, setMeetingReminders] = useState({
+    timing: "30-minutes",
+    frequency: "all-meetings",
+    method: "call-and-digest"
+  });
 
   // Smart defaults based on founder patterns from email categorization
   const founderPreferences = [
@@ -204,18 +210,91 @@ export default function Personalization() {
           </div>
         </motion.div>
 
+        {/* Meeting & Event Reminders */}
+        <motion.div 
+          className="bg-gray-900 border border-gray-700 rounded-xl p-6 mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+        >
+          <h3 className="font-semibold mb-4 text-purple-400 flex items-center">
+            <Calendar className="w-5 h-5 mr-2" />
+            Meeting & Event Reminders
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Reminder Timing */}
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-300">Remind me before:</label>
+              <Select value={meetingReminders.timing} onValueChange={(value) => setMeetingReminders(prev => ({...prev, timing: value}))}>
+                <SelectTrigger className="bg-gray-800 border-gray-600">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="15-minutes">15 minutes</SelectItem>
+                  <SelectItem value="30-minutes">30 minutes</SelectItem>
+                  <SelectItem value="1-hour">1 hour</SelectItem>
+                  <SelectItem value="2-hours">2 hours</SelectItem>
+                  <SelectItem value="1-day">1 day</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Frequency */}
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-300">Which meetings:</label>
+              <Select value={meetingReminders.frequency} onValueChange={(value) => setMeetingReminders(prev => ({...prev, frequency: value}))}>
+                <SelectTrigger className="bg-gray-800 border-gray-600">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all-meetings">All meetings</SelectItem>
+                  <SelectItem value="important-only">Important only</SelectItem>
+                  <SelectItem value="external-only">External only</SelectItem>
+                  <SelectItem value="investor-calls">Investor calls only</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Reminder Method */}
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-300">How to remind:</label>
+              <Select value={meetingReminders.method} onValueChange={(value) => setMeetingReminders(prev => ({...prev, method: value}))}>
+                <SelectTrigger className="bg-gray-800 border-gray-600">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="call-only">Call me</SelectItem>
+                  <SelectItem value="digest-only">Daily digest only</SelectItem>
+                  <SelectItem value="call-and-digest">Both call & digest</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="mt-4 p-4 bg-purple-500/10 border border-purple-500/20 rounded-lg">
+            <div className="flex items-center text-purple-300 text-sm">
+              <Bell className="w-4 h-4 mr-2" />
+              <span>
+                I'll {meetingReminders.method === 'call-only' ? 'call you' : meetingReminders.method === 'digest-only' ? 'include in digest' : 'call you and include in digest'} 
+                {' '}{meetingReminders.timing.replace('-', ' ')} before {meetingReminders.frequency.replace('-', ' ')}.
+              </span>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Smart Summary */}
         <motion.div 
           className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-500/30 rounded-xl p-6 mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
         >
           <h3 className="font-semibold mb-3 text-blue-300">Your Concierge Summary:</h3>
           <p className="text-gray-300 text-sm">
             We'll call you immediately for <span className="text-green-400 font-medium">{selectedPreferences.filter(id => immediatePreferences.find(p => p.id === id)).length} types</span> of urgent updates, 
-            and include <span className="text-blue-400 font-medium">{selectedPreferences.filter(id => digestPreferences.find(p => p.id === id)).length} categories</span> in your daily digest. 
-            Everything else gets sorted into "Keep Quiet" automatically.
+            include <span className="text-blue-400 font-medium">{selectedPreferences.filter(id => digestPreferences.find(p => p.id === id)).length} categories</span> in your daily digest,
+            and remind you about meetings <span className="text-purple-400 font-medium">{meetingReminders.timing.replace('-', ' ')}</span> in advance.
           </p>
         </motion.div>
 
