@@ -169,7 +169,7 @@ export default function Personalization() {
                             </div>
                           ) : (
                             <Select
-                              value={preferences[category.id]}
+                              value={preferences[category.id as keyof typeof preferences]}
                               onValueChange={(value) => handlePreferenceChange(category.id, value)}
                             >
                               <SelectTrigger className="w-32 bg-gray-700 border-gray-600">
@@ -207,26 +207,26 @@ export default function Personalization() {
               
               {/* Meeting Reminders */}
               <motion.div 
-                className="bg-gray-900 border border-amber-600/20 rounded-xl p-6"
+                className="bg-gray-900 border border-amber-600/20 rounded-xl p-4 md:p-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
-                <h3 className="text-lg font-semibold mb-4 text-amber-400 flex items-center">
+                <h3 className="text-lg font-semibold mb-3 text-amber-400 flex items-center">
                   <Calendar className="w-5 h-5 mr-2" />
                   Meeting Reminders
                 </h3>
                 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-300">Remind me:</label>
+                    <label className="block text-xs font-medium mb-1 text-gray-400">Remind me:</label>
                     <Select value={meetingReminders.timing} onValueChange={(value) => setMeetingReminders(prev => ({...prev, timing: value}))}>
-                      <SelectTrigger className="bg-gray-800 border-gray-600">
+                      <SelectTrigger className="bg-gray-800 border-gray-600 h-9 text-sm">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="15-minutes">15 minutes before</SelectItem>
-                        <SelectItem value="30-minutes">30 minutes before</SelectItem>
+                        <SelectItem value="15-minutes">15 min before</SelectItem>
+                        <SelectItem value="30-minutes">30 min before</SelectItem>
                         <SelectItem value="1-hour">1 hour before</SelectItem>
                         <SelectItem value="2-hours">2 hours before</SelectItem>
                         <SelectItem value="1-day">1 day before</SelectItem>
@@ -235,30 +235,30 @@ export default function Personalization() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-300">Which meetings:</label>
+                    <label className="block text-xs font-medium mb-1 text-gray-400">Which meetings:</label>
                     <Select value={meetingReminders.frequency} onValueChange={(value) => setMeetingReminders(prev => ({...prev, frequency: value}))}>
-                      <SelectTrigger className="bg-gray-800 border-gray-600">
+                      <SelectTrigger className="bg-gray-800 border-gray-600 h-9 text-sm">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all-meetings">All meetings</SelectItem>
                         <SelectItem value="important-only">Important only</SelectItem>
                         <SelectItem value="external-only">External only</SelectItem>
-                        <SelectItem value="investor-calls">Investor calls only</SelectItem>
+                        <SelectItem value="investor-calls">Investor calls</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-gray-300">How to remind:</label>
+                    <label className="block text-xs font-medium mb-1 text-gray-400">How to remind:</label>
                     <Select value={meetingReminders.method} onValueChange={(value) => setMeetingReminders(prev => ({...prev, method: value}))}>
-                      <SelectTrigger className="bg-gray-800 border-gray-600">
+                      <SelectTrigger className="bg-gray-800 border-gray-600 h-9 text-sm">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="call-only">Call me</SelectItem>
-                        <SelectItem value="digest-only">Daily digest only</SelectItem>
-                        <SelectItem value="call-and-digest">Both call & digest</SelectItem>
+                        <SelectItem value="digest-only">Daily digest</SelectItem>
+                        <SelectItem value="call-and-digest">Call & digest</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
