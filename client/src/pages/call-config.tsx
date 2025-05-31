@@ -104,15 +104,15 @@ export default function CallConfig() {
                 <Label className="text-sm font-medium mb-2">Call Frequency</Label>
                 <RadioGroup value={frequency} onValueChange={setFrequency} className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="daily" id="daily" className="border-blue-500 text-blue-500" />
+                    <RadioGroupItem value="daily" id="daily" className="border-primary text-primary" />
                     <Label htmlFor="daily">Daily</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="weekdays" id="weekdays" className="border-blue-500 text-blue-500" />
+                    <RadioGroupItem value="weekdays" id="weekdays" className="border-primary text-primary" />
                     <Label htmlFor="weekdays">Weekdays only</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="custom" id="custom" className="border-blue-500 text-blue-500" />
+                    <RadioGroupItem value="custom" id="custom" className="border-primary text-primary" />
                     <Label htmlFor="custom">Custom schedule</Label>
                   </div>
                 </RadioGroup>
@@ -123,13 +123,13 @@ export default function CallConfig() {
 
         {/* Phone Verification */}
         <motion.div 
-          className="bg-gray-900 border border-gray-700 rounded-xl p-6 mt-8"
+          className="neopop-card p-6 mt-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
           <h3 className="font-semibold mb-4 flex items-center">
-            <Shield className="text-green-400 mr-2 w-5 h-5" />
+            <Shield className="text-primary mr-2 w-5 h-5" />
             Phone Verification
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
