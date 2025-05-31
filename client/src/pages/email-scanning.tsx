@@ -76,13 +76,20 @@ export default function EmailScanning() {
       }, 100);
     };
 
-    // Check if we're coming from a Gmail OAuth callback
+    // Check URL parameters for Gmail connection status
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('code')) {
-      // We have a Gmail auth code, start scanning
+    const gmailConnected = urlParams.get('gmail') === 'connected';
+    const error = urlParams.get('error');
+    
+    if (error) {
+      console.error('Gmail auth error:', error);
+      // Continue with scanning animation on error
+      startScanningAnimation();
+    } else if (gmailConnected) {
+      // Gmail successfully connected, start scanning
       startScanningAnimation();
     } else {
-      // No Gmail auth yet, initiate it
+      // No Gmail connection yet, initiate it
       initiateGmailAuth();
     }
   }, [currentStep, setLocation]);

@@ -39,32 +39,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/auth/gmail/callback", async (req, res) => {
     try {
-      const { code, state } = req.query;
+      const { code, error: oauthError } = req.query;
+      
+      console.log('Gmail OAuth callback received:', { code: !!code, error: oauthError });
+      
+      if (oauthError) {
+        console.error('OAuth error:', oauthError);
+        return res.redirect('/scanning?error=oauth_denied');
+      }
       
       if (!code) {
-        return res.status(400).json({ message: 'Authorization code not provided' });
+        console.error('No authorization code provided');
+        return res.redirect('/scanning?error=no_code');
       }
 
       const tokens = await gmailService.getAccessToken(code as string);
+      console.log('Gmail tokens received:', { hasAccessToken: !!tokens.access_token });
       
-      // Store tokens in database (requires user to be authenticated)
-      if (req.user?.claims?.sub) {
+      // Store tokens in database with authenticated user
+      const user = req.user as any;
+      if (user?.claims?.sub) {
         await storage.upsertUserToken({
-          id: `gmail_${req.user.claims.sub}`,
-          userId: req.user.claims.sub,
+          id: `gmail_${user.claims.sub}`,
+          userId: user.claims.sub,
           provider: 'gmail',
           accessToken: tokens.access_token,
           refreshToken: tokens.refresh_token,
           expiresAt: tokens.expiry_date ? new Date(tokens.expiry_date) : null,
           scope: tokens.scope
         });
+        console.log('Gmail tokens stored for user:', user.claims.sub);
       }
 
-      // Redirect to email scanning page
-      res.redirect('/email-scan');
+      // Redirect to scanning page with success parameter
+      res.redirect('/scanning?gmail=connected');
     } catch (error) {
       console.error('Error handling Gmail callback:', error);
-      res.redirect('/error?message=Gmail authentication failed');
+      res.redirect('/scanning?error=auth_failed');
     }
   });
 
