@@ -11,7 +11,7 @@ export default function Personalization() {
   const [, setLocation] = useLocation();
   
   // Smart preferences with user choice between Call/Digest
-  const [preferences, setPreferences] = useState({
+  const [preferences, setPreferences] = useState<Record<string, string>>({
     "urgent-financial": "call-me",
     "investor-updates": "call-me", 
     "customer-issues": "call-me",
@@ -169,7 +169,7 @@ export default function Personalization() {
                             </div>
                           ) : (
                             <Select
-                              value={preferences[category.id as keyof typeof preferences]}
+                              value={preferences[category.id] || "off"}
                               onValueChange={(value) => handlePreferenceChange(category.id, value)}
                             >
                               <SelectTrigger className="w-32 bg-gray-700 border-gray-600">

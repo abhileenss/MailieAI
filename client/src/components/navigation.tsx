@@ -13,10 +13,10 @@ export function Navigation({ currentPage }: NavigationProps) {
 
   const navigationItems = [
     { label: "Home", path: "/", icon: Home },
-    { label: "Email Scan", path: "/email-scan", icon: Mail },
-    { label: "Personalization", path: "/personalization", icon: Settings },
-    { label: "Call Config", path: "/call-config", icon: Phone },
-    { label: "Setup Complete", path: "/final-setup", icon: CheckCircle }
+    { label: "Scan", path: "/scanning", icon: Mail },
+    { label: "Categorize", path: "/email-scan", icon: Settings },
+    { label: "Configure", path: "/personalization", icon: Phone },
+    { label: "Complete", path: "/final-setup", icon: CheckCircle }
   ];
 
   const footerLinks = [
@@ -34,7 +34,10 @@ export function Navigation({ currentPage }: NavigationProps) {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          onClick={() => setLocation("/")}
+          onClick={() => {
+            setLocation("/");
+            setMobileMenuOpen(false);
+          }}
         >
           <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
             <Mic className="text-white text-sm" />
@@ -53,7 +56,10 @@ export function Navigation({ currentPage }: NavigationProps) {
               return (
                 <button
                   key={item.path}
-                  onClick={() => setLocation(item.path)}
+                  onClick={() => {
+                    setLocation(item.path);
+                    setMobileMenuOpen(false);
+                  }}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
                     isActive 
                       ? 'bg-blue-600 text-white' 
@@ -72,7 +78,10 @@ export function Navigation({ currentPage }: NavigationProps) {
             {footerLinks.map((link) => (
               <button
                 key={link.path}
-                onClick={() => setLocation(link.path)}
+                onClick={() => {
+                  setLocation(link.path);
+                  setMobileMenuOpen(false);
+                }}
                 className="text-gray-400 hover:text-white transition-colors text-sm"
               >
                 {link.label}
