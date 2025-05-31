@@ -54,7 +54,7 @@ export default function Landing() {
             >
               <button 
                 onClick={navigateToEmailScan}
-                className="neopop-button neopop-button-primary text-lg px-10 py-4 rounded-xl font-medium"
+                className="neopop-button neopop-button-primary text-lg px-10 py-4 font-medium"
               >
                 Scan My Inbox Now
                 <motion.span

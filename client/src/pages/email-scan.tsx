@@ -48,10 +48,10 @@ export default function EmailScan() {
         keywords="email categorization, inbox management, email sorting, AI email assistant, email productivity, startup email tools"
       />
       
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-background text-foreground font-primary">
         <Navigation currentPage="/email-scan" />
         
-        <div className="max-w-7xl mx-auto p-4 md:p-6">
+        <div className="max-w-7xl mx-auto p-6 md:p-8">
         {/* Header */}
         <motion.div 
           className="mb-8"
@@ -61,11 +61,11 @@ export default function EmailScan() {
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold mb-2">Your Inbox, Decoded</h1>
-              <p className="text-gray-400">Found {emailSenders.length} email senders flooding your inbox. Time to take control.</p>
+              <h1 className="text-4xl font-semibold mb-3 tracking-tight">Your Inbox, Decoded</h1>
+              <p className="text-muted-foreground text-lg">Found {emailSenders.length} email senders flooding your inbox. Time to take control.</p>
             </div>
             <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-2 bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm">
+              <div className="flex items-center space-x-2 bg-primary/20 text-primary px-4 py-2 neopop-button text-sm font-medium">
                 <CheckCircle className="w-4 h-4" />
                 <span>Analysis Complete</span>
               </div>

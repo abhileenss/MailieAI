@@ -66,10 +66,10 @@ export default function EmailScanning() {
         canonical="https://pookai.com/scanning"
       />
       
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-background text-foreground font-primary">
         <Navigation currentPage="/scanning" />
         
-        <div className="flex items-center justify-center min-h-[80vh] px-4">
+        <div className="flex items-center justify-center min-h-[80vh] px-6">
           <div className="max-w-lg mx-auto text-center">
             
             {/* Main Animation */}

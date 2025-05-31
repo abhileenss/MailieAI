@@ -124,11 +124,12 @@
       0 12px 24px rgba(0, 0, 0, 0.5);
   }
 
-  /* NeoPOP Button System */
+  /* NeoPOP Button System - Square Design */
   .neopop-button {
     position: relative;
     transform: translateY(0);
     transition: all 0.15s ease;
+    border-radius: 8px; /* Square corners */
     box-shadow: 
       3px 3px 0 hsl(var(--border)),
       0 4px 12px rgba(0, 0, 0, 0.3);
@@ -152,18 +153,21 @@
     background: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
     border: 2px solid hsl(var(--primary));
+    border-radius: 8px; /* Square corners */
     box-shadow: 
       3px 3px 0 hsl(18 85% 45%),
       0 4px 12px rgba(0, 0, 0, 0.3);
   }
 
   .neopop-button-primary:hover {
+    transform: translateY(-1px);
     box-shadow: 
       4px 4px 0 hsl(18 85% 45%),
       0 6px 16px rgba(0, 0, 0, 0.4);
   }
 
   .neopop-button-primary:active {
+    transform: translateY(2px);
     box-shadow: 
       1px 1px 0 hsl(18 85% 45%),
       0 2px 8px rgba(0, 0, 0, 0.2);
@@ -173,6 +177,7 @@
     background: hsl(var(--secondary));
     color: hsl(var(--secondary-foreground));
     border: 2px solid hsl(var(--border));
+    border-radius: 8px; /* Square corners */
     box-shadow: 
       3px 3px 0 hsl(0 0% 10%),
       0 4px 12px rgba(0, 0, 0, 0.3);
@@ -180,9 +185,17 @@
 
   .neopop-button-secondary:hover {
     background: hsl(var(--surface-elevated));
+    transform: translateY(-1px);
     box-shadow: 
       4px 4px 0 hsl(0 0% 10%),
       0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .neopop-button-secondary:active {
+    transform: translateY(2px);
+    box-shadow: 
+      1px 1px 0 hsl(0 0% 10%),
+      0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
   /* NeoPOP Card System */
