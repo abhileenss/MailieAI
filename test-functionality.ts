@@ -84,6 +84,7 @@ async function runComprehensiveTests() {
 
     // Test email sender operations
     const testSender = {
+      id: `sender-${Date.now()}`,
       userId: createdUser.id,
       email: 'sender@example.com',
       name: 'Test Sender',
