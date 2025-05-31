@@ -52,9 +52,9 @@ export default function Landing() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <Button 
+              <button 
                 onClick={navigateToEmailScan}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-10 py-4 rounded-xl font-medium transition-all duration-200 surface-elevated-hover"
+                className="neopop-button neopop-button-primary text-lg px-10 py-4 rounded-xl font-medium"
               >
                 Scan My Inbox Now
                 <motion.span
@@ -64,7 +64,7 @@ export default function Landing() {
                 >
                   →
                 </motion.span>
-              </Button>
+              </button>
             </motion.div>
 
             {/* Feature Preview */}
@@ -75,41 +75,41 @@ export default function Landing() {
               transition={{ duration: 0.6, delay: 0.5 }}
             >
               <motion.div 
-                className="surface-elevated rounded-xl p-8 surface-elevated-hover"
+                className="neopop-card rounded-xl p-8"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
               >
-                <div className="w-14 h-14 bg-primary rounded-xl mx-auto mb-6 flex items-center justify-center">
-                  <Brain className="text-primary-foreground w-7 h-7" />
+                <div className="w-16 h-16 bg-primary rounded-xl mx-auto mb-6 flex items-center justify-center neopop-button">
+                  <Brain className="text-primary-foreground w-8 h-8" />
                 </div>
-                <h3 className="font-semibold text-lg mb-3 text-foreground">Smart Categorization</h3>
+                <h3 className="font-semibold text-xl mb-4 text-foreground">Smart Categorization</h3>
                 <p className="text-muted-foreground font-light leading-relaxed">AI sorts your emails: "Call me", "Remind me", "Keep quiet", "Why did I sign up for this?"</p>
               </motion.div>
               
               <motion.div 
-                className="surface-elevated rounded-xl p-8 surface-elevated-hover"
+                className="neopop-card rounded-xl p-8"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.7 }}
               >
-                <div className="w-14 h-14 bg-primary rounded-xl mx-auto mb-6 flex items-center justify-center">
-                  <Phone className="text-primary-foreground w-7 h-7" />
+                <div className="w-16 h-16 bg-primary rounded-xl mx-auto mb-6 flex items-center justify-center neopop-button">
+                  <Phone className="text-primary-foreground w-8 h-8" />
                 </div>
-                <h3 className="font-semibold text-lg mb-3 text-foreground">Daily Voice Calls</h3>
+                <h3 className="font-semibold text-xl mb-4 text-foreground">Daily Voice Calls</h3>
                 <p className="text-muted-foreground font-light leading-relaxed">Your AI calls you at 9am: "Hey, you've got 3 investor emails and your app is down"</p>
               </motion.div>
               
               <motion.div 
-                className="surface-elevated rounded-xl p-8 surface-elevated-hover"
+                className="neopop-card rounded-xl p-8"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.8 }}
               >
-                <div className="w-14 h-14 bg-primary rounded-xl mx-auto mb-6 flex items-center justify-center">
-                  <Lock className="text-primary-foreground w-7 h-7" />
+                <div className="w-16 h-16 bg-primary rounded-xl mx-auto mb-6 flex items-center justify-center neopop-button">
+                  <Lock className="text-primary-foreground w-8 h-8" />
                 </div>
-                <h3 className="font-semibold text-lg mb-3 text-foreground">Privacy First</h3>
+                <h3 className="font-semibold text-xl mb-4 text-foreground">Privacy First</h3>
                 <p className="text-muted-foreground font-light leading-relaxed">We don't sell your data like others. Your inbox secrets stay secret.</p>
               </motion.div>
             </motion.div>

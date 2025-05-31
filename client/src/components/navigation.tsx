@@ -52,7 +52,7 @@ export function Navigation({ currentPage }: NavigationProps) {
   }, [mobileMenuOpen]);
 
   return (
-    <nav className="relative z-10 p-4 md:p-6 bg-black/50 backdrop-blur-sm border-b border-gray-800">
+    <nav className="relative z-10 p-6 bg-background border-b border-border font-primary">
       <div className="max-w-6xl mx-auto flex justify-between items-center">
         {/* Logo */}
         <motion.div 
@@ -70,10 +70,10 @@ export function Navigation({ currentPage }: NavigationProps) {
             }
           }}
         >
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <Mic className="text-white text-sm" />
+          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center neopop-button">
+            <Mic className="text-primary-foreground text-lg" />
           </div>
-          <span className="text-xl font-semibold text-white">PookAi</span>
+          <span className="text-2xl font-semibold text-foreground tracking-tight">PookAi</span>
         </motion.div>
 
         {/* Desktop Navigation */}

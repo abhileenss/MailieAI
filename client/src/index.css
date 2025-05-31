@@ -13,7 +13,7 @@
   --muted-foreground: 0 0% 80%; /* Muted text */
   --border: 0 0% 20%; /* Subtle borders */
   --input: 0 0% 10%; /* Input backgrounds */
-  --primary: 18 100% 60%; /* Orange accent */
+  --primary: 18 85% 65%; /* Lighter orange accent */
   --primary-foreground: 0 0% 0%; /* Black text on orange */
   --secondary: 0 0% 15%; /* Secondary elements */
   --secondary-foreground: 0 0% 90%; /* Secondary text */
@@ -104,11 +104,13 @@
     animation: float 3s ease-in-out infinite;
   }
 
-  /* Elevated Surface System */
+  /* NeoPOP Elevated Surface System */
   .surface-elevated {
     background: hsl(var(--surface-elevated));
     border: 1px solid hsl(var(--border));
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    box-shadow: 
+      0 4px 0 hsl(var(--border)),
+      0 8px 16px rgba(0, 0, 0, 0.4);
   }
 
   .surface-elevated-hover {
@@ -116,18 +118,88 @@
   }
 
   .surface-elevated-hover:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 
+      0 6px 0 hsl(var(--border)),
+      0 12px 24px rgba(0, 0, 0, 0.5);
   }
 
-  /* Orange Accent Utilities */
-  .accent-orange {
+  /* NeoPOP Button System */
+  .neopop-button {
+    position: relative;
+    transform: translateY(0);
+    transition: all 0.15s ease;
+    box-shadow: 
+      3px 3px 0 hsl(var(--border)),
+      0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .neopop-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 
+      4px 4px 0 hsl(var(--border)),
+      0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .neopop-button:active {
+    transform: translateY(2px);
+    box-shadow: 
+      1px 1px 0 hsl(var(--border)),
+      0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .neopop-button-primary {
     background: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
+    border: 2px solid hsl(var(--primary));
+    box-shadow: 
+      3px 3px 0 hsl(18 85% 45%),
+      0 4px 12px rgba(0, 0, 0, 0.3);
   }
 
-  .accent-orange-hover:hover {
-    background: hsl(18 100% 65%);
+  .neopop-button-primary:hover {
+    box-shadow: 
+      4px 4px 0 hsl(18 85% 45%),
+      0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .neopop-button-primary:active {
+    box-shadow: 
+      1px 1px 0 hsl(18 85% 45%),
+      0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .neopop-button-secondary {
+    background: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    border: 2px solid hsl(var(--border));
+    box-shadow: 
+      3px 3px 0 hsl(0 0% 10%),
+      0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .neopop-button-secondary:hover {
+    background: hsl(var(--surface-elevated));
+    box-shadow: 
+      4px 4px 0 hsl(0 0% 10%),
+      0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  /* NeoPOP Card System */
+  .neopop-card {
+    background: hsl(var(--surface-elevated));
+    border: 2px solid hsl(var(--border));
+    box-shadow: 
+      4px 4px 0 hsl(var(--muted)),
+      0 8px 16px rgba(0, 0, 0, 0.4);
+    transition: all 0.2s ease;
+  }
+
+  .neopop-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      6px 6px 0 hsl(var(--muted)),
+      0 12px 24px rgba(0, 0, 0, 0.5);
   }
 
   /* Technical Data Display */
