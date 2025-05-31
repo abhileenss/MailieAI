@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Landing from "@/pages/landing";
 import EmailScanning from "@/pages/email-scanning";
 import EmailScan from "@/pages/email-scan";
+import EmailDashboard from "@/pages/email-dashboard";
 import Personalization from "@/pages/personalization";
 import CallConfig from "@/pages/call-config";
 import FinalSetup from "@/pages/final-setup";
@@ -20,6 +21,7 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/scanning" component={EmailScanning} />
       <Route path="/email-scan" component={EmailScan} />
+      <Route path="/dashboard" component={EmailDashboard} />
       <Route path="/personalization" component={Personalization} />
       <Route path="/call-config" component={CallConfig} />
       <Route path="/final-setup" component={FinalSetup} />
