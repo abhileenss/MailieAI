@@ -9,6 +9,7 @@ import {
   index,
   unique,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -37,7 +38,7 @@ export const users = pgTable("users", {
 
 // Email senders discovered from user's inbox
 export const emailSenders = pgTable("email_senders", {
-  id: varchar("id").primaryKey().notNull(),
+  id: varchar("id").primaryKey().notNull().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id),
   email: varchar("email").notNull(),
   domain: varchar("domain").notNull(),
