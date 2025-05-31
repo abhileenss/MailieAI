@@ -28,7 +28,7 @@ export default function EmailScan() {
   // Mutation for updating email categories
   const categorizeMutation = useMutation({
     mutationFn: async ({ senderId, category }: { senderId: string; category: string }) => {
-      return apiRequest('/api/emails/categorize', 'POST', { senderId, category });
+      return apiRequest(`/api/emails/senders/${senderId}/category`, 'PATCH', { category });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/emails/senders'] });
@@ -36,7 +36,6 @@ export default function EmailScan() {
   });
 
   const handleCategoryChange = (senderId: string, category: string) => {
-    // Use the API mutation to update category
     categorizeMutation.mutate({ senderId, category });
     
     // Update selected sender if it's the one being modified
@@ -47,6 +46,19 @@ export default function EmailScan() {
 
   const categorizedSenders = emailSenders.filter(sender => sender.category !== 'unassigned');
   const unassignedSenders = emailSenders.filter(sender => sender.category === 'unassigned');
+
+  // Calculate category statistics from real data
+  const categoryStats = {
+    'call-me': emailSenders.filter(s => s.category === 'call-me').length,
+    'remind-me': emailSenders.filter(s => s.category === 'remind-me').length,
+    'keep-quiet': emailSenders.filter(s => s.category === 'keep-quiet').length,
+    'newsletter': emailSenders.filter(s => s.category === 'newsletter').length,
+    'why-did-i-signup': emailSenders.filter(s => s.category === 'why-did-i-signup').length,
+    'dont-tell-anyone': emailSenders.filter(s => s.category === 'dont-tell-anyone').length,
+    'unassigned': unassignedSenders.length
+  };
+
+  const totalEmails = emailSenders.reduce((sum, sender) => sum + (sender.emailCount || sender.count || 0), 0);
 
   const navigateToPersonalization = () => {
     setLocation("/personalization");
@@ -75,7 +87,7 @@ export default function EmailScan() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-4xl font-semibold mb-3 tracking-tight">Your Inbox, Decoded</h1>
-              <p className="text-muted-foreground text-lg">Found {emailSenders.length} email senders flooding your inbox. Time to take control.</p>
+              <p className="text-muted-foreground text-lg">Found {emailSenders.length} email senders with {totalEmails} total emails. AI categorized {categorizedSenders.length} senders.</p>
             </div>
             <div className="flex items-center space-x-3">
               <div className="flex items-center space-x-2 bg-primary/20 text-primary px-4 py-2 neopop-button text-sm font-medium">
@@ -83,6 +95,38 @@ export default function EmailScan() {
                 <span>Analysis Complete</span>
               </div>
             </div>
+          </div>
+
+          {/* Category Breakdown - Real Data */}
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
+            {Object.entries(categoryStats).map(([category, count]) => {
+              const categoryColors = {
+                'call-me': 'bg-red-500/20 text-red-400 border-red-500/30',
+                'remind-me': 'bg-blue-500/20 text-blue-400 border-blue-500/30', 
+                'keep-quiet': 'bg-gray-500/20 text-gray-400 border-gray-500/30',
+                'newsletter': 'bg-green-500/20 text-green-400 border-green-500/30',
+                'why-did-i-signup': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+                'dont-tell-anyone': 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+                'unassigned': 'bg-orange-500/20 text-orange-400 border-orange-500/30'
+              };
+              
+              const categoryLabels = {
+                'call-me': 'Call Me',
+                'remind-me': 'Remind Me',
+                'keep-quiet': 'Keep Quiet',
+                'newsletter': 'Newsletter',
+                'why-did-i-signup': 'Why Subscribe?',
+                'dont-tell-anyone': 'Personal',
+                'unassigned': 'Unassigned'
+              };
+
+              return (
+                <div key={category} className={`p-4 border neopop-button ${categoryColors[category as keyof typeof categoryColors]}`}>
+                  <div className="text-2xl font-bold">{count}</div>
+                  <div className="text-xs font-medium">{categoryLabels[category as keyof typeof categoryLabels]}</div>
+                </div>
+              );
+            })}
           </div>
         </motion.div>
 
@@ -184,11 +228,32 @@ export default function EmailScan() {
 
         {/* Continue Button */}
         <motion.div 
-          className="text-center"
+          className="flex flex-col sm:flex-row gap-4 justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.8 }}
         >
+          {/* Voice Summary Generation - Uses Real Data */}
+          <Button
+            onClick={async () => {
+              try {
+                const response = await fetch('/api/newsletters/summary');
+                if (response.ok) {
+                  const data = await response.json();
+                  alert(`Voice Summary from Your Real Emails:\n\n${data.summary}\n\nProcessed ${data.newsletterCount} newsletters from your actual inbox.`);
+                } else {
+                  alert('Authentication needed. Please re-authenticate with Gmail to access your real email data.');
+                }
+              } catch (error) {
+                alert('Error accessing your real email data for voice summary generation.');
+              }
+            }}
+            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 neopop-button font-medium transition-all duration-300"
+          >
+            Generate Voice Summary
+            <Star className="ml-2 w-4 h-4" />
+          </Button>
+
           <Button
             onClick={navigateToPersonalization}
             className="bg-primary hover:bg-primary/90 text-background px-8 py-4 neopop-button font-medium transition-all duration-300 transform hover:scale-105"
