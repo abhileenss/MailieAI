@@ -9,7 +9,7 @@ export default function Landing() {
   const [, setLocation] = useLocation();
 
   const handleGetStarted = () => {
-    // Redirect to Replit authentication
+    // Redirect to Replit authentication first, then Gmail
     window.location.href = "/api/login";
   };
 
