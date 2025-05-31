@@ -98,8 +98,8 @@ export default function FinalSetup() {
             {mockAgentTasks.map((task, index) => (
               <motion.div
                 key={task.id}
-                className={`bg-gray-800 border-2 rounded-lg p-4 ${
-                  task.status === 'in-progress' ? 'border-blue-500' : 'border-gray-600'
+                className={`neopop-card p-4 ${
+                  task.status === 'in-progress' ? 'border-primary' : ''
                 } ${task.status === 'waiting' ? 'opacity-50' : ''}`}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -107,26 +107,26 @@ export default function FinalSetup() {
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-3">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                      task.status === 'completed' ? 'bg-green-400' :
-                      task.status === 'in-progress' ? 'bg-blue-500' :
-                      task.status === 'pending' ? 'bg-gray-600' : 'bg-gray-600'
+                    <div className={`w-6 h-6 neopop-button flex items-center justify-center ${
+                      task.status === 'completed' ? 'bg-primary' :
+                      task.status === 'in-progress' ? 'bg-primary' :
+                      task.status === 'pending' ? 'bg-border' : 'bg-border'
                     }`}>
-                      {task.status === 'completed' && <CheckCircle className="w-4 h-4 text-white" />}
+                      {task.status === 'completed' && <CheckCircle className="w-4 h-4 text-background" />}
                       {task.status === 'in-progress' && (
                         <motion.div
-                          className="w-2 h-2 bg-white rounded-full"
+                          className="w-2 h-2 bg-background rounded-full"
                           animate={{ scale: [1, 1.2, 1] }}
                           transition={{ duration: 1, repeat: Infinity }}
                         />
                       )}
                       {(task.status === 'pending' || task.status === 'waiting') && (
-                        <motion.div className="w-2 h-2 bg-white rounded-full" />
+                        <motion.div className="w-2 h-2 bg-background rounded-full" />
                       )}
                     </div>
                     <div>
                       <h3 className="font-medium">{task.title}</h3>
-                      <p className="text-sm text-gray-400">{task.description}</p>
+                      <p className="text-sm text-muted-foreground">{task.description}</p>
                     </div>
                   </div>
                   <span className={`text-xs px-2 py-1 rounded ${getStatusColor(task.status)}`}>
@@ -135,7 +135,7 @@ export default function FinalSetup() {
                 </div>
                 {task.details.length > 0 && (
                   <div className="ml-9">
-                    <div className="text-xs text-gray-500 space-y-1">
+                    <div className="text-xs text-muted-foreground space-y-1">
                       {task.details.map((detail, detailIndex) => (
                         <div key={detailIndex}>{detail}</div>
                       ))}
@@ -148,7 +148,7 @@ export default function FinalSetup() {
 
           {/* Dashboard Actions */}
           <motion.div 
-            className="pt-6 border-t border-gray-700"
+            className="pt-6 border-t border-border"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.8 }}
