@@ -97,36 +97,59 @@ export default function EmailScan() {
             </div>
           </div>
 
-          {/* Category Breakdown - Real Data */}
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
-            {Object.entries(categoryStats).map(([category, count]) => {
-              const categoryColors = {
-                'call-me': 'bg-red-500/20 text-red-400 border-red-500/30',
-                'remind-me': 'bg-blue-500/20 text-blue-400 border-blue-500/30', 
-                'keep-quiet': 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-                'newsletter': 'bg-green-500/20 text-green-400 border-green-500/30',
-                'why-did-i-signup': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-                'dont-tell-anyone': 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-                'unassigned': 'bg-orange-500/20 text-orange-400 border-orange-500/30'
-              };
-              
-              const categoryLabels = {
-                'call-me': 'Call Me',
-                'remind-me': 'Remind Me',
-                'keep-quiet': 'Keep Quiet',
-                'newsletter': 'Newsletter',
-                'why-did-i-signup': 'Why Subscribe?',
-                'dont-tell-anyone': 'Personal',
-                'unassigned': 'Unassigned'
-              };
+          {/* Category Breakdown with User Controls - Real Data */}
+          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 mb-8">
+            <h3 className="font-semibold mb-4">Your Email Categories ({emailSenders.length} total senders)</h3>
+            <p className="text-sm text-gray-400 mb-4">AI categorized your emails. Click any category to review and adjust the logic.</p>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+              {Object.entries(categoryStats).map(([category, count]) => {
+                const categoryColors = {
+                  'call-me': 'bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/30',
+                  'remind-me': 'bg-blue-500/20 text-blue-400 border-blue-500/30 hover:bg-blue-500/30', 
+                  'keep-quiet': 'bg-gray-500/20 text-gray-400 border-gray-500/30 hover:bg-gray-500/30',
+                  'newsletter': 'bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/30',
+                  'why-did-i-signup': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30 hover:bg-yellow-500/30',
+                  'dont-tell-anyone': 'bg-purple-500/20 text-purple-400 border-purple-500/30 hover:bg-purple-500/30',
+                  'unassigned': 'bg-orange-500/20 text-orange-400 border-orange-500/30 hover:bg-orange-500/30'
+                };
+                
+                const categoryLabels = {
+                  'call-me': 'Call Me',
+                  'remind-me': 'Remind Me',
+                  'keep-quiet': 'Keep Quiet',
+                  'newsletter': 'Newsletter',
+                  'why-did-i-signup': 'Why Subscribe?',
+                  'dont-tell-anyone': 'Personal',
+                  'unassigned': 'Needs Review'
+                };
 
-              return (
-                <div key={category} className={`p-4 border neopop-button ${categoryColors[category as keyof typeof categoryColors]}`}>
-                  <div className="text-2xl font-bold">{count}</div>
-                  <div className="text-xs font-medium">{categoryLabels[category as keyof typeof categoryLabels]}</div>
-                </div>
-              );
-            })}
+                const categoryDescriptions = {
+                  'call-me': 'Urgent items requiring immediate phone notification',
+                  'remind-me': 'Important but can wait - will be mentioned in calls',
+                  'keep-quiet': 'Keep receiving but don\'t notify in calls',
+                  'newsletter': 'Content emails - summarized in calls',
+                  'why-did-i-signup': 'Marketing emails to potentially unsubscribe',
+                  'dont-tell-anyone': 'Personal/sensitive - private handling',
+                  'unassigned': 'Emails needing manual categorization'
+                };
+
+                return (
+                  <button
+                    key={category}
+                    onClick={() => {
+                      const senders = emailSenders.filter(s => s.category === category);
+                      const senderList = senders.slice(0, 5).map(s => `• ${s.name}`).join('\n');
+                      alert(`${categoryLabels[category as keyof typeof categoryLabels]} (${count} senders)\n\n${categoryDescriptions[category as keyof typeof categoryDescriptions]}\n\nSample senders:\n${senderList}${senders.length > 5 ? '\n...and more' : ''}`);
+                    }}
+                    className={`p-4 border neopop-button transition-all duration-200 cursor-pointer ${categoryColors[category as keyof typeof categoryColors]}`}
+                  >
+                    <div className="text-2xl font-bold">{count}</div>
+                    <div className="text-xs font-medium">{categoryLabels[category as keyof typeof categoryLabels]}</div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </motion.div>
 
