@@ -158,18 +158,18 @@ export default function Personalization() {
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex items-start space-x-4 flex-1">
-                          <div className={`p-2 rounded-lg bg-gradient-to-r ${category.color} flex-shrink-0`}>
+                          <div className="p-2 bg-primary text-background neopop-button flex-shrink-0">
                             {category.icon}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-white mb-1">{category.label}</h3>
-                            <p className="text-sm text-gray-400">{category.description}</p>
+                            <h3 className="font-semibold text-foreground mb-1">{category.label}</h3>
+                            <p className="text-sm text-muted-foreground">{category.description}</p>
                           </div>
                         </div>
                         
                         <div className="ml-4 flex-shrink-0">
                           {category.defaultValue === "coming-soon" ? (
-                            <div className="px-3 py-2 bg-amber-500/10 text-amber-400 rounded-lg text-sm font-medium">
+                            <div className="px-3 py-2 bg-primary/10 text-primary neopop-button text-sm font-medium">
                               Coming Soon
                             </div>
                           ) : (
@@ -177,24 +177,24 @@ export default function Personalization() {
                               value={preferences[category.id] || "off"}
                               onValueChange={(value) => handlePreferenceChange(category.id, value)}
                             >
-                              <SelectTrigger className="w-32 bg-gray-700 border-gray-600">
+                              <SelectTrigger className="w-32 neopop-button">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="call-me">
                                   <div className="flex items-center space-x-2">
-                                    <Phone className="w-4 h-4 text-red-400" />
+                                    <Phone className="w-4 h-4 text-primary" />
                                     <span>Call Me</span>
                                   </div>
                                 </SelectItem>
                                 <SelectItem value="digest">
                                   <div className="flex items-center space-x-2">
-                                    <Mail className="w-4 h-4 text-blue-400" />
+                                    <Mail className="w-4 h-4 text-muted-foreground" />
                                     <span>Daily Digest</span>
                                   </div>
                                 </SelectItem>
                                 <SelectItem value="off">
-                                  <span className="text-gray-400">Off</span>
+                                  <span className="text-muted-foreground">Off</span>
                                 </SelectItem>
                               </SelectContent>
                             </Select>
@@ -212,12 +212,12 @@ export default function Personalization() {
               
               {/* Meeting Reminders */}
               <motion.div 
-                className="bg-gray-900 border border-amber-600/20 rounded-xl p-3 md:p-4"
+                className="neopop-card p-3 md:p-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
-                <h3 className="text-base font-semibold mb-2 text-amber-400 flex items-center">
+                <h3 className="text-base font-semibold mb-2 text-primary flex items-center">
                   <Calendar className="w-4 h-4 mr-2" />
                   Meeting Reminders
                 </h3>
@@ -225,9 +225,9 @@ export default function Personalization() {
                 <div className="grid grid-cols-1 gap-2">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block text-xs font-medium mb-1 text-gray-400">When:</label>
+                      <label className="block text-xs font-medium mb-1 text-muted-foreground">When:</label>
                       <Select value={meetingReminders.timing} onValueChange={(value) => setMeetingReminders(prev => ({...prev, timing: value}))}>
-                        <SelectTrigger className="bg-gray-800 border-gray-600 h-8 text-xs">
+                        <SelectTrigger className="neopop-button h-8 text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -241,9 +241,9 @@ export default function Personalization() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium mb-1 text-gray-400">How:</label>
+                      <label className="block text-xs font-medium mb-1 text-muted-foreground">How:</label>
                       <Select value={meetingReminders.method} onValueChange={(value) => setMeetingReminders(prev => ({...prev, method: value}))}>
-                        <SelectTrigger className="bg-gray-800 border-gray-600 h-8 text-xs">
+                        <SelectTrigger className="neopop-button h-8 text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -256,9 +256,9 @@ export default function Personalization() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium mb-1 text-gray-400">Which meetings:</label>
+                    <label className="block text-xs font-medium mb-1 text-muted-foreground">Which meetings:</label>
                     <Select value={meetingReminders.frequency} onValueChange={(value) => setMeetingReminders(prev => ({...prev, frequency: value}))}>
-                      <SelectTrigger className="bg-gray-800 border-gray-600 h-8 text-xs">
+                      <SelectTrigger className="neopop-button h-8 text-xs">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -274,37 +274,37 @@ export default function Personalization() {
 
               {/* Configuration Summary */}
               <motion.div 
-                className="bg-gradient-to-br from-amber-900/20 to-yellow-900/20 border border-amber-500/30 rounded-xl p-6"
+                className="neopop-card bg-primary/10 p-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
               >
-                <h3 className="font-semibold mb-4 text-amber-300 flex items-center">
+                <h3 className="font-semibold mb-4 text-primary flex items-center">
                   <Bell className="w-5 h-5 mr-2" />
                   Your Configuration
                 </h3>
                 
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-300">Immediate calls:</span>
-                    <span className="text-green-400 font-medium">
+                    <span className="text-foreground">Immediate calls:</span>
+                    <span className="text-primary font-medium">
                       {Object.values(preferences).filter(v => v === "call-me").length} categories
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-300">Daily digest:</span>
-                    <span className="text-blue-400 font-medium">
+                    <span className="text-foreground">Daily digest:</span>
+                    <span className="text-muted-foreground font-medium">
                       {Object.values(preferences).filter(v => v === "digest").length} categories
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-300">Meeting reminders:</span>
-                    <span className="text-amber-400 font-medium">
+                    <span className="text-foreground">Meeting reminders:</span>
+                    <span className="text-primary font-medium">
                       {meetingReminders.timing.replace('-', ' ')} before
                     </span>
                   </div>
-                  <div className="border-t border-amber-500/20 pt-3 mt-3">
-                    <p className="text-gray-400 text-xs">
+                  <div className="border-t border-primary/20 pt-3 mt-3">
+                    <p className="text-muted-foreground text-xs">
                       Everything else gets sorted into "Keep Quiet" automatically.
                     </p>
                   </div>
@@ -322,7 +322,7 @@ export default function Personalization() {
           >
             <Button
               onClick={navigateToCallConfig}
-              className="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-black px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 text-lg"
+              className="bg-primary hover:bg-primary/90 text-background px-8 py-4 neopop-button font-semibold transition-all duration-300 transform hover:scale-105 text-lg"
             >
               Configure Voice Settings
               <motion.span
