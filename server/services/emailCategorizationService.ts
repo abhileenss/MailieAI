@@ -33,6 +33,11 @@ export class EmailCategorizationService {
   // Categorize a single email using AI
   async categorizeEmail(message: EmailMessage): Promise<CategoryResult> {
     try {
+      // If no API key available, use fallback categorization
+      if (!this.hasApiKey || !this.openai) {
+        console.warn('OpenAI API key not configured, using fallback categorization');
+        return this.fallbackCategorization(message);
+      }
       const prompt = `
         You are an AI assistant helping a busy founder categorize emails. Analyze this email and categorize it into one of these buckets:
 
