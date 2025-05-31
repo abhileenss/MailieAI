@@ -20,26 +20,15 @@ export class VoiceService {
       const script = this.generateVoiceScript(callType, emailCount);
       
       // Create TwiML for the call
-      const twimlUrl = await this.generateTwiMLUrl(script);
+      const twiml = await this.generateTwiML(script);
       
-      // Make the actual Twilio call
+      // Make the actual Twilio call using TwiML directly
       const call = await this.twilioClient.calls.create({
-        url: twimlUrl,
+        twiml: twiml,
         to: phoneNumber,
         from: process.env.TWILIO_PHONE_NUMBER,
         timeout: 30,
         record: false,
-      });
-
-      // Log the call in database
-      const callLog = await storage.createCallLog({
-        id: crypto.randomUUID(),
-        userId,
-        phoneNumber,
-        callSid: call.sid,
-        status: call.status,
-        callType,
-        emailCount,
       });
 
       return {
@@ -47,22 +36,11 @@ export class VoiceService {
         callSid: call.sid,
         status: call.status,
         message: `Call initiated to ${phoneNumber}`,
-        callLog
+        phoneNumber: phoneNumber,
+        from: process.env.TWILIO_PHONE_NUMBER
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Voice call error:', error);
-      
-      // Log failed call attempt
-      await storage.createCallLog({
-        id: crypto.randomUUID(),
-        userId,
-        phoneNumber,
-        callSid: '',
-        status: 'failed',
-        callType,
-        emailCount,
-      });
-
       throw new Error(`Failed to make call: ${error.message}`);
     }
   }
@@ -90,20 +68,29 @@ export class VoiceService {
     }
   }
 
-  private async generateTwiMLUrl(script: string): Promise<string> {
-    // For simplicity, we'll use Twilio's built-in Say verb
-    // In production, you might want to host your own TwiML endpoint
-    const twiml = `<?xml version="1.0" encoding="UTF-8"?>
-    <Response>
-      <Say voice="Polly.Joanna" rate="medium">${script}</Say>
-      <Gather input="dtmf" timeout="10" numDigits="1">
-        <Say voice="Polly.Joanna">Press any key when you're ready to hang up.</Say>
-      </Gather>
-      <Say voice="Polly.Joanna">Thank you for using PookAi. Goodbye!</Say>
-    </Response>`;
+  private async generateTwiML(script: string): Promise<string> {
+    // Create TwiML using Twilio's TwiML object
+    const VoiceResponse = require('twilio').twiml.VoiceResponse;
+    const response = new VoiceResponse();
+    
+    response.say({
+      voice: 'Polly.Joanna',
+      rate: 'medium'
+    }, script);
+    
+    response.gather({
+      input: 'dtmf',
+      timeout: 10,
+      numDigits: 1
+    }).say({
+      voice: 'Polly.Joanna'
+    }, 'Press any key when you\'re ready to hang up.');
+    
+    response.say({
+      voice: 'Polly.Joanna'
+    }, 'Thank you for using PookAi. Goodbye!');
 
-    // Return a data URL with the TwiML content
-    return `data:application/xml;base64,${Buffer.from(twiml).toString('base64')}`;
+    return response.toString();
   }
 
   async getCallLogs(userId: string): Promise<any[]> {
