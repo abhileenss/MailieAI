@@ -32,8 +32,8 @@ export default function FinalSetup() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="max-w-6xl mx-auto p-6">
+    <div className="min-h-screen bg-background text-foreground font-primary">
+      <div className="max-w-6xl mx-auto p-6 md:p-8">
         {/* Setup Confirmation */}
         <motion.div 
           className="text-center mb-8"
@@ -42,19 +42,19 @@ export default function FinalSetup() {
           transition={{ duration: 0.6 }}
         >
           <motion.div
-            className="w-20 h-20 bg-gradient-to-r from-green-500 to-emerald-400 rounded-full mx-auto mb-6 flex items-center justify-center"
+            className="w-20 h-20 bg-primary text-background neopop-button mx-auto mb-6 flex items-center justify-center"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
           >
-            <CheckCircle className="text-white text-2xl w-8 h-8" />
+            <CheckCircle className="w-8 h-8" />
           </motion.div>
-          <h1 className="text-3xl font-bold mb-4">Your Concierge is Ready!</h1>
-          <p className="text-gray-400 mb-6">Your inbox rules are configured. Voice calls coming soon in Phase 2.</p>
+          <h1 className="text-3xl font-semibold mb-4 tracking-tight">Your Concierge is Ready!</h1>
+          <p className="text-muted-foreground mb-6">Your inbox rules are configured. Voice calls coming soon in Phase 2.</p>
           
           {/* Next Call Info */}
           <motion.div 
-            className="bg-gray-900 border border-gray-700 rounded-xl p-6 max-w-md mx-auto mb-8"
+            className="neopop-card p-6 max-w-md mx-auto mb-8"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}

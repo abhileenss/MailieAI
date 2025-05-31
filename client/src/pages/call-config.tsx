@@ -57,7 +57,7 @@ export default function CallConfig() {
 
           {/* Call Schedule */}
           <motion.div 
-            className="bg-gray-900 border border-gray-700 rounded-xl p-6"
+            className="neopop-card p-6"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
