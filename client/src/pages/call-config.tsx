@@ -157,7 +157,7 @@ export default function CallConfig() {
               </div>
             </div>
             <div className="flex items-end">
-              <Button className="w-full bg-green-500 hover:bg-green-600 text-white font-medium">
+              <Button className="w-full bg-primary hover:bg-primary/90 text-background neopop-button font-medium">
                 Send Verification Code
               </Button>
             </div>
