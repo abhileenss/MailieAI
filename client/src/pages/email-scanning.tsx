@@ -35,33 +35,14 @@ export default function EmailScanning() {
   ];
 
   useEffect(() => {
-    // Start by requesting Gmail authentication
-    const initiateGmailAuth = async () => {
-      try {
-        const response = await fetch('/api/gmail/auth');
-        if (response.ok) {
-          const { authUrl } = await response.json();
-          // Redirect to Gmail OAuth
-          window.location.href = authUrl;
-        } else {
-          // If auth fails, continue with scanning animation
-          startScanningAnimation();
-        }
-      } catch (error) {
-        console.error('Gmail auth error:', error);
-        // Continue with scanning animation on error
-        startScanningAnimation();
-      }
-    };
-
     const startScanningAnimation = () => {
       const timer = setInterval(() => {
         setScanProgress(prev => {
           if (prev >= 100) {
             setIsComplete(true);
             clearInterval(timer);
-            // Auto-navigate after animation completes
-            setTimeout(() => setLocation("/email-scan"), 2000);
+            // Auto-navigate to dashboard after animation completes
+            setTimeout(() => setLocation("/dashboard"), 2000);
             return 100;
           }
           
@@ -76,13 +57,35 @@ export default function EmailScanning() {
       }, 100);
     };
 
-    const performActualEmailScan = async () => {
+    const checkExistingData = async () => {
+      try {
+        // Check if we already have processed email data
+        const response = await fetch('/api/emails/processed');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.totalSenders > 0) {
+            // We have existing data, start animation and go to dashboard
+            startScanningAnimation();
+            return;
+          }
+        }
+        
+        // No existing data, need to process emails first
+        await processEmails();
+      } catch (error) {
+        console.error('Error checking existing data:', error);
+        // Start animation anyway
+        startScanningAnimation();
+      }
+    };
+
+    const processEmails = async () => {
       try {
         // Start the scanning animation
         startScanningAnimation();
         
-        // Trigger actual email scan on the backend
-        const response = await fetch('/api/emails/scan', {
+        // Try to process emails through AI categorization
+        const response = await fetch('/api/emails/process-full', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -91,12 +94,19 @@ export default function EmailScanning() {
         
         if (response.ok) {
           const result = await response.json();
-          console.log('Email scan completed:', result);
+          console.log('Email processing completed:', result);
+        } else if (response.status === 401) {
+          // User not authenticated, redirect to Gmail auth
+          const authResponse = await fetch('/api/gmail/auth');
+          if (authResponse.ok) {
+            const { authUrl } = await authResponse.json();
+            window.location.href = authUrl;
+          }
         } else {
-          console.error('Email scan failed:', await response.text());
+          console.error('Email processing failed:', await response.text());
         }
       } catch (error) {
-        console.error('Error during email scan:', error);
+        console.error('Error during email processing:', error);
       }
     };
 
@@ -110,11 +120,11 @@ export default function EmailScanning() {
       // Continue with scanning animation on error
       startScanningAnimation();
     } else if (gmailConnected) {
-      // Gmail successfully connected, start actual scanning
-      performActualEmailScan();
+      // Gmail successfully connected, process emails
+      processEmails();
     } else {
-      // No Gmail connection yet, initiate it
-      initiateGmailAuth();
+      // Check if we have existing data first
+      checkExistingData();
     }
   }, [currentStep, setLocation]);
 
@@ -211,7 +221,7 @@ export default function EmailScanning() {
               {isComplete ? (
                 <div>
                   <h2 className="text-2xl font-semibold mb-2 text-primary">Scan Complete!</h2>
-                  <p className="text-muted-foreground">Found 156 email senders. Ready to categorize.</p>
+                  <p className="text-muted-foreground">Found your email senders. Ready to categorize.</p>
                 </div>
               ) : (
                 <div>
