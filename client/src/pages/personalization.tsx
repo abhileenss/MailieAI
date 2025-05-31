@@ -38,8 +38,8 @@ export default function Personalization() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-3xl font-bold mb-4">Tell us about yourself</h1>
-          <p className="text-gray-400">Help us understand what matters most to you</p>
+          <h1 className="text-3xl font-bold mb-4">What's important to you?</h1>
+          <p className="text-gray-400">Every founder is different. Help your concierge understand your chaos.</p>
         </motion.div>
 
         {/* Voice Input Section */}
@@ -49,26 +49,31 @@ export default function Personalization() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <VoiceInput onTranscription={handleVoiceTranscription} />
+          <div className="text-center mb-6">
+            <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+              <span className="text-white text-xs">Voice Coming Soon</span>
+            </div>
+            <p className="text-gray-400">Click to speak or type below</p>
+          </div>
 
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-2">What's important to you?</label>
+              <label className="block text-sm font-medium mb-2">What's important to you today?</label>
               <Textarea
                 value={importanceText}
                 onChange={(e) => setImportanceText(e.target.value)}
                 className="w-full bg-gray-800 border border-gray-600 rounded-lg p-4 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px]"
-                placeholder="e.g., I'm a founder so I need to know about investor updates, customer feedback, and team communications. I don't care about newsletters or promotional emails."
+                placeholder="I'm a startup founder, so I need to prioritize investor communications, customer complaints, and urgent team updates. Please filter out promotional emails and most newsletters unless they're from Y Combinator or other accelerators."
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Describe your typical day</label>
+              <label className="block text-sm font-medium mb-2">Describe your typical founder chaos</label>
               <Textarea
                 value={scheduleText}
                 onChange={(e) => setScheduleText(e.target.value)}
                 className="w-full bg-gray-800 border border-gray-600 rounded-lg p-4 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[100px]"
-                placeholder="e.g., I start work at 9 AM, have most meetings in the afternoon, and prefer to handle emails in the morning and evening."
+                placeholder="I'm usually up by 6 AM checking emails, have back-to-back meetings from 10-4, and do my best work late at night. Investors expect immediate responses, but I forget to reply to newsletters for weeks."
               />
             </div>
           </div>

@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { CheckCircle, Settings, Phone, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { mockAgentTasks } from "@/data/mock-data";
-import Plan from "@/components/ui/agent-plan";
+// import Plan from "@/components/ui/agent-plan";
 
 export default function FinalSetup() {
   const getStatusColor = (status: string) => {
@@ -49,8 +49,8 @@ export default function FinalSetup() {
           >
             <CheckCircle className="text-white text-2xl w-8 h-8" />
           </motion.div>
-          <h1 className="text-3xl font-bold mb-4">Setup Complete!</h1>
-          <p className="text-gray-400 mb-6">Your AI voice agent is ready to start calling you daily</p>
+          <h1 className="text-3xl font-bold mb-4">Your Concierge is Ready!</h1>
+          <p className="text-gray-400 mb-6">Your inbox rules are configured. Voice calls coming soon in Phase 2.</p>
           
           {/* Next Call Info */}
           <motion.div 

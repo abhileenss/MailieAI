@@ -138,8 +138,8 @@ export default function Landing() {
               <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-400 rounded-lg mx-auto mb-4 flex items-center justify-center">
                 <Brain className="text-white w-6 h-6" />
               </div>
-              <h3 className="font-semibold mb-2">Smart Analysis</h3>
-              <p className="text-sm text-gray-400">AI scans your inbox and identifies what's actually important</p>
+              <h3 className="font-semibold mb-2">Inbox Detective</h3>
+              <p className="text-sm text-gray-400">Finds the newsletter subscriptions you forgot about and the meetings you're avoiding</p>
             </motion.div>
             
             <motion.div 
@@ -150,8 +150,8 @@ export default function Landing() {
               <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg mx-auto mb-4 flex items-center justify-center">
                 <Phone className="text-white w-6 h-6" />
               </div>
-              <h3 className="font-semibold mb-2">Daily Voice Calls</h3>
-              <p className="text-sm text-gray-400">Personalized daily briefings delivered by voice</p>
+              <h3 className="font-semibold mb-2">Daily Voice Calls <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-1 rounded ml-1">Coming Soon</span></h3>
+              <p className="text-sm text-gray-400">Your AI calls you at 9am: "Hey, you've got 3 investor emails and your app is down"</p>
             </motion.div>
             
             <motion.div 
@@ -162,8 +162,8 @@ export default function Landing() {
               <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-400 rounded-lg mx-auto mb-4 flex items-center justify-center">
                 <Lock className="text-white w-6 h-6" />
               </div>
-              <h3 className="font-semibold mb-2">Zero Storage</h3>
-              <p className="text-sm text-gray-400">Your data stays yours - we never store your emails</p>
+              <h3 className="font-semibold mb-2">Privacy First</h3>
+              <p className="text-sm text-gray-400">We don't sell your data like others. Your inbox secrets stay secret.</p>
             </motion.div>
           </motion.div>
         </div>

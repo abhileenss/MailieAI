@@ -31,8 +31,8 @@ export default function CallConfig() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-3xl font-bold mb-4">Configure Your Daily Calls</h1>
-          <p className="text-gray-400">Choose your AI voice and preferred call time</p>
+          <h1 className="text-3xl font-bold mb-4">Configure Your Daily Calls <span className="text-lg bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full">Coming Soon</span></h1>
+          <p className="text-gray-400">Preview how your AI concierge will call you daily with personalized updates</p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -177,7 +177,7 @@ export default function CallConfig() {
             Complete Setup
             <motion.span
               className="ml-2"
-              animate={{ rotation: [0, 360] }}
+              animate={{ rotate: [0, 360] }}
               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
             >
               ✓
