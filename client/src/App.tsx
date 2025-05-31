@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Landing from "@/pages/landing";
 import EmailScanning from "@/pages/email-scanning";
 import EmailScan from "@/pages/email-scan";
-import EmailDashboard from "@/pages/email-dashboard-fixed";
+import EmailDashboard from "@/pages/email-dashboard";
 import Personalization from "@/pages/personalization";
 import CallConfig from "@/pages/call-config";
 import FinalSetup from "@/pages/final-setup";
