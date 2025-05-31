@@ -1,8 +1,17 @@
 import { storage } from '../storage';
+import twilio from 'twilio';
 
 export class VoiceService {
+  private twilioClient: any;
+
+  constructor() {
+    if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+      this.twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+    }
+  }
+
   async makeOutboundCall(userId: string, phoneNumber: string, callType: string, emailCount: number): Promise<any> {
-    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) {
+    if (!this.twilioClient) {
       throw new Error('Twilio API not configured. Please provide TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER.');
     }
 
@@ -10,22 +19,51 @@ export class VoiceService {
       // Generate voice script based on call type and email count
       const script = this.generateVoiceScript(callType, emailCount);
       
-      // Log the call attempt
+      // Create TwiML for the call
+      const twimlUrl = await this.generateTwiMLUrl(script);
+      
+      // Make the actual Twilio call
+      const call = await this.twilioClient.calls.create({
+        url: twimlUrl,
+        to: phoneNumber,
+        from: process.env.TWILIO_PHONE_NUMBER,
+        timeout: 30,
+        record: false,
+      });
+
+      // Log the call in database
       const callLog = await storage.createCallLog({
         id: crypto.randomUUID(),
         userId,
         phoneNumber,
-        callSid: '', // Will be filled by Twilio
-        status: 'initiated',
+        callSid: call.sid,
+        status: call.status,
         callType,
         emailCount,
       });
 
-      // Twilio API call would be made here
-      throw new Error('Twilio API integration required for voice calls');
+      return {
+        success: true,
+        callSid: call.sid,
+        status: call.status,
+        message: `Call initiated to ${phoneNumber}`,
+        callLog
+      };
     } catch (error) {
       console.error('Voice call error:', error);
-      throw error;
+      
+      // Log failed call attempt
+      await storage.createCallLog({
+        id: crypto.randomUUID(),
+        userId,
+        phoneNumber,
+        callSid: '',
+        status: 'failed',
+        callType,
+        emailCount,
+      });
+
+      throw new Error(`Failed to make call: ${error.message}`);
     }
   }
 
@@ -40,17 +78,56 @@ export class VoiceService {
 
     switch (callType) {
       case 'urgent':
-        return `${greeting} You have ${emailCount} urgent emails that need your immediate attention. Would you like me to read the details?`;
+        return `${greeting} You have ${emailCount} urgent emails that need your immediate attention. Would you like me to read the details? Press 1 for yes, or 2 to hang up.`;
       case 'reminder':
-        return `${greeting} You have ${emailCount} important emails waiting for your review. Shall I summarize them for you?`;
+        return `${greeting} You have ${emailCount} important emails waiting for your review. Shall I summarize them for you? Press 1 for summary, or 2 to hang up.`;
       case 'digest':
-        return `${greeting} Here's your daily email digest. You received ${emailCount} emails today. The highlights include...`;
+        return `${greeting} Here's your daily email digest. You received ${emailCount} emails today. The highlights include investor updates and customer inquiries. Press 1 to hear more details.`;
+      case 'test':
+        return `${greeting} This is a test call to verify your PookAi voice service is working correctly. You have ${emailCount} emails in your queue. The system is functioning properly!`;
       default:
-        return `${greeting} You have ${emailCount} new emails to review.`;
+        return `${greeting} You have ${emailCount} new emails to review. Thank you for using PookAi!`;
     }
+  }
+
+  private async generateTwiMLUrl(script: string): Promise<string> {
+    // For simplicity, we'll use Twilio's built-in Say verb
+    // In production, you might want to host your own TwiML endpoint
+    const twiml = `<?xml version="1.0" encoding="UTF-8"?>
+    <Response>
+      <Say voice="Polly.Joanna" rate="medium">${script}</Say>
+      <Gather input="dtmf" timeout="10" numDigits="1">
+        <Say voice="Polly.Joanna">Press any key when you're ready to hang up.</Say>
+      </Gather>
+      <Say voice="Polly.Joanna">Thank you for using PookAi. Goodbye!</Say>
+    </Response>`;
+
+    // Return a data URL with the TwiML content
+    return `data:application/xml;base64,${Buffer.from(twiml).toString('base64')}`;
   }
 
   async getCallLogs(userId: string): Promise<any[]> {
     return await storage.getCallLogs(userId);
+  }
+
+  async getCallStatus(callSid: string): Promise<any> {
+    if (!this.twilioClient) {
+      throw new Error('Twilio client not initialized');
+    }
+
+    try {
+      const call = await this.twilioClient.calls(callSid).fetch();
+      return {
+        sid: call.sid,
+        status: call.status,
+        duration: call.duration,
+        startTime: call.startTime,
+        endTime: call.endTime,
+        price: call.price,
+        direction: call.direction
+      };
+    } catch (error) {
+      throw new Error(`Failed to fetch call status: ${error.message}`);
+    }
   }
 }

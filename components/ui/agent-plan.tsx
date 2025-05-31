@@ -84,7 +84,7 @@ const initialTasks: Task[] = [
       {
         id: "2.1",
         title: "Define component structure",
-        description: "Map out all required components and their interactions",
+        description  : "Map out all required components and their interactions",
         status: "pending",
         priority: "high",
         tools: ["architecture-planner", "diagramming-tool"],
