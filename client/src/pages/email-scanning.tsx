@@ -76,6 +76,30 @@ export default function EmailScanning() {
       }, 100);
     };
 
+    const performActualEmailScan = async () => {
+      try {
+        // Start the scanning animation
+        startScanningAnimation();
+        
+        // Trigger actual email scan on the backend
+        const response = await fetch('/api/emails/scan', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Email scan completed:', result);
+        } else {
+          console.error('Email scan failed:', await response.text());
+        }
+      } catch (error) {
+        console.error('Error during email scan:', error);
+      }
+    };
+
     // Check URL parameters for Gmail connection status
     const urlParams = new URLSearchParams(window.location.search);
     const gmailConnected = urlParams.get('gmail') === 'connected';
@@ -86,8 +110,8 @@ export default function EmailScanning() {
       // Continue with scanning animation on error
       startScanningAnimation();
     } else if (gmailConnected) {
-      // Gmail successfully connected, start scanning
-      startScanningAnimation();
+      // Gmail successfully connected, start actual scanning
+      performActualEmailScan();
     } else {
       // No Gmail connection yet, initiate it
       initiateGmailAuth();
