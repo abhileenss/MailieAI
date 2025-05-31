@@ -96,10 +96,10 @@ export default function Personalization() {
 
   const getPreferenceDisplay = (value: string) => {
     switch(value) {
-      case "call-me": return { label: "Call Me", color: "text-red-400", bg: "bg-red-500/10" };
-      case "digest": return { label: "Daily Digest", color: "text-blue-400", bg: "bg-blue-500/10" };
-      case "coming-soon": return { label: "Coming Soon", color: "text-amber-400", bg: "bg-amber-500/10" };
-      default: return { label: "Off", color: "text-gray-400", bg: "bg-gray-500/10" };
+      case "call-me": return { label: "Call Me", color: "text-primary", bg: "bg-primary/20" };
+      case "digest": return { label: "Daily Digest", color: "text-muted-foreground", bg: "bg-muted/40" };
+      case "coming-soon": return { label: "Coming Soon", color: "text-primary", bg: "bg-primary/10" };
+      default: return { label: "Off", color: "text-muted-foreground", bg: "bg-border/40" };
     }
   };
 
