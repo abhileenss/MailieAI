@@ -339,6 +339,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Process stored email senders through OpenAI categorization
+  app.post("/api/emails/categorize-stored", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      console.log(`Processing stored emails for user: ${userId}`);
+      
+      // Get stored email senders from database
+      const senders = await storage.getEmailSenders(userId);
+      console.log(`Found ${senders.length} stored email senders to categorize`);
+      
+      let categorizedCount = 0;
+      const categoryStats = {
+        'call-me': 0,
+        'remind-me': 0,
+        'keep-quiet': 0,
+        'newsletter': 0,
+        'why-did-i-signup': 0,
+        'dont-tell-anyone': 0
+      };
+      
+      // Process each sender through OpenAI
+      for (const sender of senders) {
+        try {
+          // Create email message structure from stored data
+          const emailForAnalysis = {
+            id: sender.id,
+            subject: sender.latestSubject,
+            from: `${sender.name} <${sender.email}>`,
+            snippet: `${sender.emailCount} emails from ${sender.domain}`,
+            body: `Email from ${sender.name} regarding: ${sender.latestSubject}. Domain: ${sender.domain}. Frequency: ${sender.emailCount} emails.`,
+            date: sender.lastEmailDate || new Date()
+          };
+          
+          // Categorize using OpenAI
+          const categoryResult = await categorizationService.categorizeEmail(emailForAnalysis);
+          
+          // Update database with AI category
+          await storage.updateEmailSenderCategory(sender.id, categoryResult.category);
+          categorizedCount++;
+          
+          // Update statistics
+          if (categoryStats.hasOwnProperty(categoryResult.category)) {
+            categoryStats[categoryResult.category as keyof typeof categoryStats]++;
+          }
+          
+          console.log(`Categorized ${sender.name}: ${categoryResult.category} (importance: ${categoryResult.importance})`);
+          
+        } catch (error) {
+          console.log(`Skipped categorizing ${sender.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+      }
+      
+      res.json({
+        success: true,
+        message: 'Stored emails processed through OpenAI categorization',
+        totalSenders: senders.length,
+        categorizedSenders: categorizedCount,
+        categoryBreakdown: categoryStats,
+        processingDetails: {
+          usingStoredData: true,
+          openaiCategorization: true,
+          databaseUpdated: true
+        }
+      });
+    } catch (error) {
+      console.error('Error processing stored emails:', error);
+      res.status(500).json({ 
+        message: 'Failed to process stored emails',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // Comprehensive email processing with full OpenAI analysis
   app.post("/api/emails/process-full", isAuthenticated, async (req: any, res) => {
     try {
