@@ -1,6 +1,7 @@
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 import { storage } from '../storage';
+import { randomBytes } from 'crypto';
 
 export interface EmailMessage {
   id: string;
@@ -59,7 +60,7 @@ export class GmailService {
     ];
     
     // Generate secure state parameter for CSRF protection
-    const state = require('crypto').randomBytes(32).toString('hex');
+    const state = randomBytes(32).toString('hex');
 
     return this.oauth2Client.generateAuthUrl({
       access_type: 'offline',
