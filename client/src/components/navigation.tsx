@@ -96,10 +96,10 @@ export function Navigation({ currentPage }: NavigationProps) {
                       setMobileMenuOpen(false);
                     }
                   }}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive 
-                      ? 'bg-blue-600 text-white' 
-                      : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                      ? 'neopop-button-primary' 
+                      : 'neopop-button-secondary text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -110,7 +110,7 @@ export function Navigation({ currentPage }: NavigationProps) {
           </div>
 
           {/* Footer Links */}
-          <div className="flex items-center space-x-4 border-l border-gray-700 pl-6">
+          <div className="flex items-center space-x-4 border-l border-border pl-6">
             {footerLinks.map((link) => (
               <button
                 key={link.path}
@@ -123,7 +123,7 @@ export function Navigation({ currentPage }: NavigationProps) {
                     setMobileMenuOpen(false);
                   }
                 }}
-                className="text-gray-400 hover:text-white transition-colors text-sm"
+                className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
               >
                 {link.label}
               </button>
