@@ -156,21 +156,21 @@ export default function FinalSetup() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Button
                 variant="outline"
-                className="bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 text-white transition-colors"
+                className="neopop-button bg-card hover:bg-muted text-foreground transition-colors"
               >
                 <Settings className="mr-2 w-4 h-4" />
                 Modify Settings
               </Button>
               <Button
                 variant="outline"
-                className="bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 text-white transition-colors"
+                className="neopop-button bg-card hover:bg-muted text-foreground transition-colors"
               >
                 <Phone className="mr-2 w-4 h-4" />
                 Test Call Now
               </Button>
               <Button
                 variant="outline"
-                className="bg-gray-800 hover:bg-gray-700 border border-gray-600 hover:border-gray-500 text-white transition-colors"
+                className="neopop-button bg-card hover:bg-muted text-foreground transition-colors"
               >
                 <History className="mr-2 w-4 h-4" />
                 Call History
