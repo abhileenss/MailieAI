@@ -133,7 +133,7 @@ export function Navigation({ currentPage }: NavigationProps) {
 
         {/* Mobile Menu Button */}
         <button 
-          className="lg:hidden text-gray-400 hover:text-white transition-colors"
+          className="lg:hidden text-muted-foreground hover:text-foreground transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -144,7 +144,7 @@ export function Navigation({ currentPage }: NavigationProps) {
       {mobileMenuOpen && (
         <motion.div 
           ref={mobileMenuRef}
-          className="lg:hidden bg-gray-900 border-t border-gray-700 mt-4 rounded-lg"
+          className="lg:hidden neopop-card mt-4 rounded-lg"
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
@@ -152,7 +152,7 @@ export function Navigation({ currentPage }: NavigationProps) {
           <div className="p-6 space-y-4">
             {/* Main Navigation */}
             <div className="space-y-3">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Navigation</h3>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Navigation</h3>
               {navigationItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = currentPage === item.path || (currentPage === "/" && item.path === "/");
@@ -169,10 +169,10 @@ export function Navigation({ currentPage }: NavigationProps) {
                         setMobileMenuOpen(false);
                       }
                     }}
-                    className={`flex items-center space-x-3 w-full p-3 rounded-lg text-left transition-all duration-200 ${
+                    className={`flex items-center space-x-3 w-full p-3 rounded-lg text-left transition-all duration-200 neopop-button ${
                       isActive 
-                        ? 'bg-blue-600 text-white' 
-                        : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                        ? 'neopop-button-primary' 
+                        : 'neopop-button-secondary text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -183,8 +183,8 @@ export function Navigation({ currentPage }: NavigationProps) {
             </div>
 
             {/* Footer Links */}
-            <div className="border-t border-gray-700 pt-4 space-y-3">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Info</h3>
+            <div className="border-t border-border pt-4 space-y-3">
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Info</h3>
               {footerLinks.map((link) => (
                 <button
                   key={link.path}
@@ -197,7 +197,7 @@ export function Navigation({ currentPage }: NavigationProps) {
                       setMobileMenuOpen(false);
                     }
                   }}
-                  className="block text-gray-400 hover:text-white transition-colors text-left"
+                  className="block text-muted-foreground hover:text-foreground transition-colors text-left"
                 >
                   {link.label}
                 </button>
