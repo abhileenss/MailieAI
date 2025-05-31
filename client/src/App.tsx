@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Landing from "@/pages/landing";
+import EmailScanning from "@/pages/email-scanning";
 import EmailScan from "@/pages/email-scan";
 import Personalization from "@/pages/personalization";
 import CallConfig from "@/pages/call-config";
@@ -17,6 +18,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Landing} />
+      <Route path="/scanning" component={EmailScanning} />
       <Route path="/email-scan" component={EmailScan} />
       <Route path="/personalization" component={Personalization} />
       <Route path="/call-config" component={CallConfig} />

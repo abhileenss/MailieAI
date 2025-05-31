@@ -9,7 +9,7 @@ export default function Landing() {
   const [, setLocation] = useLocation();
 
   const navigateToEmailScan = () => {
-    setLocation("/email-scan");
+    setLocation("/scanning");
   };
 
   return (
