@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
 import { Mic, Menu, X, Home, Mail, Settings, Phone, CheckCircle } from "lucide-react";
@@ -10,6 +10,7 @@ interface NavigationProps {
 export function Navigation({ currentPage }: NavigationProps) {
   const [, setLocation] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   const navigationItems = [
     { label: "Home", path: "/", icon: Home },
@@ -25,6 +26,31 @@ export function Navigation({ currentPage }: NavigationProps) {
     { label: "Support", path: "/support" }
   ];
 
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    if (mobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscapeKey);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <nav className="relative z-10 p-4 md:p-6 bg-black/50 backdrop-blur-sm border-b border-gray-800">
       <div className="max-w-6xl mx-auto flex justify-between items-center">
@@ -35,8 +61,13 @@ export function Navigation({ currentPage }: NavigationProps) {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
           onClick={() => {
-            setLocation("/");
-            setMobileMenuOpen(false);
+            try {
+              setLocation("/");
+              setMobileMenuOpen(false);
+            } catch (error) {
+              console.error('Navigation error:', error);
+              setMobileMenuOpen(false);
+            }
           }}
         >
           <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -57,8 +88,13 @@ export function Navigation({ currentPage }: NavigationProps) {
                 <button
                   key={item.path}
                   onClick={() => {
-                    setLocation(item.path);
-                    setMobileMenuOpen(false);
+                    try {
+                      setLocation(item.path);
+                      setMobileMenuOpen(false);
+                    } catch (error) {
+                      console.error('Navigation error:', error);
+                      setMobileMenuOpen(false);
+                    }
                   }}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
                     isActive 
@@ -102,6 +138,7 @@ export function Navigation({ currentPage }: NavigationProps) {
       {/* Mobile Navigation Menu */}
       {mobileMenuOpen && (
         <motion.div 
+          ref={mobileMenuRef}
           className="lg:hidden bg-gray-900 border-t border-gray-700 mt-4 rounded-lg"
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
