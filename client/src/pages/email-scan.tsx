@@ -11,17 +11,20 @@ import { mockEmailSenders, EmailSender } from "@/data/mock-data";
 
 export default function EmailScan() {
   const [, setLocation] = useLocation();
-  const [emailSenders, setEmailSenders] = useState<EmailSender[]>(mockEmailSenders);
+  const [emailSenders, setEmailSenders] = useState<EmailSender[]>(() => {
+    const saved = localStorage.getItem('pookai-email-senders');
+    return saved ? JSON.parse(saved) : mockEmailSenders;
+  });
   const [selectedSender, setSelectedSender] = useState<EmailSender | null>(null);
 
   const handleCategoryChange = (senderId: string, category: string) => {
-    setEmailSenders(prev => 
-      prev.map(sender => 
-        sender.id === senderId 
-          ? { ...sender, category: category as EmailSender['category'] }
-          : sender
-      )
+    const updatedSenders = emailSenders.map(sender => 
+      sender.id === senderId 
+        ? { ...sender, category: category as EmailSender['category'] }
+        : sender
     );
+    setEmailSenders(updatedSenders);
+    localStorage.setItem('pookai-email-senders', JSON.stringify(updatedSenders));
     
     // Update selected sender if it's the one being modified
     if (selectedSender?.id === senderId) {
@@ -87,20 +90,31 @@ export default function EmailScan() {
             </div>
             
             <div className="space-y-3 max-h-[600px] overflow-y-auto">
-              {unassignedSenders.map((sender, index) => (
-                <motion.div
-                  key={sender.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                >
-                  <SenderCard
-                    sender={sender}
-                    isSelected={selectedSender?.id === sender.id}
-                    onSelect={() => setSelectedSender(sender)}
-                  />
-                </motion.div>
-              ))}
+              {unassignedSenders.length > 0 ? (
+                unassignedSenders.map((sender, index) => (
+                  <motion.div
+                    key={sender.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.05 }}
+                  >
+                    <SenderCard
+                      sender={sender}
+                      isSelected={selectedSender?.id === sender.id}
+                      onSelect={() => setSelectedSender(sender)}
+                    />
+                  </motion.div>
+                ))
+              ) : (
+                <div className="text-center py-12 text-gray-400">
+                  <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="w-8 h-8 text-green-400" />
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2">All Done!</h3>
+                  <p className="text-sm">All senders have been categorized.</p>
+                  <p className="text-xs mt-1 text-gray-500">Ready to configure your preferences.</p>
+                </div>
+              )}
             </div>
           </motion.div>
 
