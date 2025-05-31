@@ -117,20 +117,33 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUserToken(token: InsertUserToken): Promise<UserToken> {
-    const [userToken] = await db
-      .insert(userTokens)
-      .values(token)
-      .onConflictDoUpdate({
-        target: [userTokens.userId, userTokens.provider],
-        set: {
+    // First try to find existing token
+    const existing = await this.getUserToken(token.userId, token.provider);
+    
+    if (existing) {
+      // Update existing token
+      const [userToken] = await db
+        .update(userTokens)
+        .set({
           accessToken: token.accessToken,
           refreshToken: token.refreshToken,
           expiresAt: token.expiresAt,
           scope: token.scope,
-        },
-      })
-      .returning();
-    return userToken;
+        })
+        .where(and(
+          eq(userTokens.userId, token.userId),
+          eq(userTokens.provider, token.provider)
+        ))
+        .returning();
+      return userToken;
+    } else {
+      // Insert new token
+      const [userToken] = await db
+        .insert(userTokens)
+        .values(token)
+        .returning();
+      return userToken;
+    }
   }
 }
 
