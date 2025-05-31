@@ -412,6 +412,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all processed emails from database with categorization
+  app.get("/api/emails/processed", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      console.log(`Fetching processed emails for user: ${userId}`);
+      
+      // Get stored email senders from database
+      const senders = await storage.getEmailSenders(userId);
+      console.log(`Found ${senders.length} processed email senders`);
+      
+      // Group by categories for frontend display
+      const categorizedSenders = {
+        'call-me': senders.filter(s => s.category === 'call-me'),
+        'remind-me': senders.filter(s => s.category === 'remind-me'), 
+        'keep-quiet': senders.filter(s => s.category === 'keep-quiet'),
+        'newsletter': senders.filter(s => s.category === 'newsletter'),
+        'why-did-i-signup': senders.filter(s => s.category === 'why-did-i-signup'),
+        'dont-tell-anyone': senders.filter(s => s.category === 'dont-tell-anyone'),
+        'unassigned': senders.filter(s => s.category === 'unassigned' || !s.category)
+      };
+      
+      res.json({
+        success: true,
+        totalSenders: senders.length,
+        categorizedSenders,
+        categoryStats: {
+          'call-me': categorizedSenders['call-me'].length,
+          'remind-me': categorizedSenders['remind-me'].length,
+          'keep-quiet': categorizedSenders['keep-quiet'].length,
+          'newsletter': categorizedSenders['newsletter'].length,
+          'why-did-i-signup': categorizedSenders['why-did-i-signup'].length,
+          'dont-tell-anyone': categorizedSenders['dont-tell-anyone'].length,
+          'unassigned': categorizedSenders['unassigned'].length
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching processed emails:', error);
+      res.status(500).json({ 
+        message: 'Failed to fetch processed emails',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // Comprehensive email processing with full OpenAI analysis
   app.post("/api/emails/process-full", isAuthenticated, async (req: any, res) => {
     try {
