@@ -25,7 +25,7 @@ export interface EmailSender {
 }
 
 export class GmailService {
-  private oauth2Client: OAuth2Client;
+  private oauth2Client?: OAuth2Client;
   private gmail: any;
 
   constructor() {
@@ -37,22 +37,36 @@ export class GmailService {
     this.oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET,
-      `${process.env.REPLIT_DOMAINS?.split(',')[0] || 'localhost'}/api/auth/gmail/callback`
+      `https://${process.env.REPLIT_DOMAINS?.split(',')[0]}/api/auth/gmail/callback`
     );
     
     this.gmail = google.gmail({ version: 'v1', auth: this.oauth2Client });
   }
 
+  // Generate secure state parameter for CSRF protection
+  private generateSecureState(): string {
+    return require('crypto').randomBytes(32).toString('hex');
+  }
+
   // Generate OAuth URL for Gmail authorization
   getAuthUrl(): string {
+    if (!this.oauth2Client) {
+      throw new Error('OAuth client not initialized');
+    }
+
     const scopes = [
       'https://www.googleapis.com/auth/gmail.readonly'
     ];
+    
+    // Generate secure state parameter for CSRF protection
+    const state = require('crypto').randomBytes(32).toString('hex');
 
     return this.oauth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: scopes,
-      prompt: 'consent'
+      state: state,
+      prompt: 'consent',
+      include_granted_scopes: true
     });
   }
 
