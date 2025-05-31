@@ -14,10 +14,10 @@ export function Navigation({ currentPage }: NavigationProps) {
 
   const navigationItems = [
     { label: "Home", path: "/", icon: Home },
-    { label: "Scan", path: "/scanning", icon: Mail },
-    { label: "Categorize", path: "/email-scan", icon: Settings },
-    { label: "Configure", path: "/personalization", icon: Phone },
-    { label: "Complete", path: "/final-setup", icon: CheckCircle }
+    { label: "Dashboard", path: "/dashboard", icon: Mail },
+    { label: "Scan", path: "/scanning", icon: Settings },
+    { label: "Configure", path: "/call-config", icon: Phone },
+    { label: "Setup", path: "/final-setup", icon: CheckCircle }
   ];
 
   const footerLinks = [

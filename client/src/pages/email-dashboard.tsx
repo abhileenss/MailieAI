@@ -189,7 +189,24 @@ export default function EmailDashboard() {
         title="Email Dashboard - PookAi | AI-Categorized Email Management"
         description="View your AI-categorized emails organized by priority. See urgent 'call me' emails, reminders, newsletters, and more in your personalized email dashboard."
         canonical="https://pookai.com/dashboard"
-        keywords="email dashboard, AI categorization, email management, email organization, startup productivity"
+        keywords="email dashboard, AI categorization, email management, email organization, startup productivity, Gmail dashboard, email sorting, AI email assistant, founder email tools"
+        ogType="webapp"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "PookAi Email Dashboard",
+          "description": "AI-powered email dashboard that categorizes and organizes emails for startup founders",
+          "url": "https://pookai.com/dashboard",
+          "applicationCategory": "ProductivityApplication",
+          "browserRequirements": "Requires JavaScript. Requires HTML5.",
+          "featureList": [
+            "Real-time email categorization",
+            "Priority-based email sorting",
+            "AI-powered email analysis",
+            "Custom email buckets",
+            "Gmail integration"
+          ]
+        }}
       />
       
       <div className="min-h-screen bg-background text-foreground">

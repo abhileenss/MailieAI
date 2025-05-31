@@ -2,13 +2,42 @@ import { motion } from "framer-motion";
 import { Shield, Lock, Eye, Database, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import { SEOHead } from "@/components/seo-head";
+import { Navigation } from "@/components/navigation";
 
 export default function Privacy() {
   const [, setLocation] = useLocation();
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="max-w-4xl mx-auto p-4 md:p-6 lg:p-8">
+    <>
+      <SEOHead 
+        title="Privacy Policy - PookAi | Data Protection & Privacy Rights"
+        description="Learn how PookAi protects your email data with end-to-end encryption, zero-knowledge architecture, and GDPR compliance. Your privacy is our priority."
+        canonical="https://pookai.com/privacy"
+        keywords="privacy policy, data protection, email privacy, GDPR compliance, data security, encryption, zero-knowledge, email safety, founder privacy"
+        ogType="article"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "PookAi Privacy Policy - Data Protection & Privacy Rights",
+          "description": "Comprehensive privacy policy explaining how PookAi protects email data with encryption and privacy-first design",
+          "author": {
+            "@type": "Organization",
+            "name": "PookAi Team"
+          },
+          "datePublished": "2025-05-31",
+          "dateModified": "2025-05-31",
+          "publisher": {
+            "@type": "Organization",
+            "name": "PookAi"
+          }
+        }}
+      />
+      
+      <div className="min-h-screen bg-background text-foreground">
+        <Navigation currentPage="/privacy" />
+        
+        <div className="max-w-4xl mx-auto p-4 md:p-6 lg:p-8">
         {/* Header */}
         <motion.div 
           className="text-center mb-8 md:mb-12"
@@ -178,7 +207,8 @@ export default function Privacy() {
             Back to Home
           </Button>
         </motion.div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

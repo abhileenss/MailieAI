@@ -19,7 +19,34 @@ export default function Landing() {
         title="PookAi - Your Founder's AI Concierge | Smart Email Voice Assistant"
         description="Transform your inbox chaos into daily voice calls. PookAi's AI concierge categorizes emails and calls founders with what matters most. Privacy-first, voice-powered productivity for startup leaders."
         canonical="https://pookai.com"
-        keywords="AI voice assistant, email productivity, founder tools, voice AI, email management, startup productivity, AI concierge, email categorization, voice-first productivity"
+        keywords="AI voice assistant, email productivity, founder tools, voice AI, email management, startup productivity, AI concierge, email categorization, voice-first productivity, startup founder tools, email automation, voice calls, Gmail integration"
+        ogType="website"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "PookAi",
+          "description": "AI-powered email concierge that transforms inbox chaos into organized voice summaries for startup founders",
+          "url": "https://pookai.com",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Web Browser",
+          "offers": {
+            "@type": "Offer",
+            "price": "49",
+            "priceCurrency": "USD",
+            "description": "Founder Tier - Monthly subscription"
+          },
+          "creator": {
+            "@type": "Organization",
+            "name": "PookAi Team"
+          },
+          "featureList": [
+            "AI email categorization",
+            "Daily voice call summaries",
+            "Gmail integration", 
+            "Privacy-first design",
+            "Startup-focused priorities"
+          ]
+        }}
       />
       
       <div className="min-h-screen flex flex-col bg-background text-foreground font-primary">
@@ -115,35 +142,67 @@ export default function Landing() {
               </motion.div>
             </motion.div>
 
-            {/* Internal Links Section */}
+            {/* Quick Access & Internal Links Section */}
             <motion.div 
               className="mt-16 text-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
             >
-              <p className="text-gray-400 mb-4">Learn more about our approach</p>
-              <div className="flex flex-wrap justify-center gap-4 text-sm">
-                <button 
-                  onClick={() => setLocation("/privacy")} 
-                  className="text-blue-400 hover:text-blue-300 underline underline-offset-2"
+              <p className="text-muted-foreground mb-6">Explore PookAi Features</p>
+              
+              {/* Primary Action Links */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 max-w-2xl mx-auto">
+                <button
+                  onClick={() => setLocation("/dashboard")}
+                  className="neopop-button neopop-button-secondary p-4 rounded-lg text-center hover:scale-105 transition-transform"
                 >
-                  Privacy Policy
+                  <h3 className="font-semibold text-foreground mb-1">Email Dashboard</h3>
+                  <p className="text-sm text-muted-foreground">View categorized emails</p>
                 </button>
-                <span className="text-gray-600">•</span>
-                <button 
-                  onClick={() => setLocation("/security")} 
-                  className="text-blue-400 hover:text-blue-300 underline underline-offset-2"
+                
+                <button
+                  onClick={() => setLocation("/scanning")}
+                  className="neopop-button neopop-button-secondary p-4 rounded-lg text-center hover:scale-105 transition-transform"
                 >
-                  Security Features
+                  <h3 className="font-semibold text-foreground mb-1">Scan Emails</h3>
+                  <p className="text-sm text-muted-foreground">AI email analysis</p>
                 </button>
-                <span className="text-gray-600">•</span>
-                <button 
-                  onClick={() => setLocation("/support")} 
-                  className="text-blue-400 hover:text-blue-300 underline underline-offset-2"
+                
+                <button
+                  onClick={() => setLocation("/call-config")}
+                  className="neopop-button neopop-button-secondary p-4 rounded-lg text-center hover:scale-105 transition-transform"
                 >
-                  Get Support
+                  <h3 className="font-semibold text-foreground mb-1">Voice Setup</h3>
+                  <p className="text-sm text-muted-foreground">Configure voice calls</p>
                 </button>
+              </div>
+
+              {/* Footer Links */}
+              <div className="text-sm text-muted-foreground">
+                <p className="mb-4">Learn more about our platform</p>
+                <div className="flex flex-wrap justify-center gap-4">
+                  <button 
+                    onClick={() => setLocation("/privacy")} 
+                    className="text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
+                  >
+                    Privacy Policy
+                  </button>
+                  <span className="text-border">•</span>
+                  <button 
+                    onClick={() => setLocation("/security")} 
+                    className="text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
+                  >
+                    Security Features
+                  </button>
+                  <span className="text-border">•</span>
+                  <button 
+                    onClick={() => setLocation("/support")} 
+                    className="text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
+                  >
+                    Get Support
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>
