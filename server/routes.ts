@@ -150,6 +150,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update email sender category (persist category assignments)
+  app.patch("/api/emails/senders/:senderId/category", isAuthenticated, async (req: any, res) => {
+    try {
+      const { senderId } = req.params;
+      const { category } = req.body;
+      const userId = req.user.claims.sub;
+      
+      console.log(`Updating sender ${senderId} category to ${category} for user ${userId}`);
+      
+      // Update the category in database
+      await storage.updateEmailSenderCategory(senderId, category);
+      
+      res.json({ 
+        message: 'Category updated successfully',
+        senderId,
+        category
+      });
+    } catch (error) {
+      console.error('Error updating sender category:', error);
+      res.status(500).json({ message: 'Failed to update category' });
+    }
+  });
+
   app.post("/api/emails/categorize", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
@@ -187,6 +210,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error with AI categorization:', error);
       res.status(500).json({ message: 'Failed to categorize emails with AI' });
+    }
+  });
+
+  // User Preferences Routes (for onboarding state persistence)
+  app.post("/api/user/preferences", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { category, preferences } = req.body;
+      
+      console.log(`Saving preferences for user ${userId}, category: ${category}`);
+      
+      // Save user preferences for onboarding steps
+      await storage.upsertUserPreference({
+        id: `${category}_${userId}`,
+        userId,
+        category,
+        action: JSON.stringify(preferences)
+      });
+      
+      res.json({ 
+        message: 'Preferences saved successfully',
+        category,
+        preferences
+      });
+    } catch (error) {
+      console.error('Error saving user preferences:', error);
+      res.status(500).json({ message: 'Failed to save preferences' });
+    }
+  });
+
+  app.get("/api/user/preferences/:category", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { category } = req.params;
+      
+      const preferences = await storage.getUserPreferences(userId);
+      const categoryPrefs = preferences.find(p => p.category === category);
+      
+      if (categoryPrefs) {
+        res.json({
+          category,
+          preferences: JSON.parse(categoryPrefs.action || '{}')
+        });
+      } else {
+        res.json({
+          category,
+          preferences: {}
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching user preferences:', error);
+      res.status(500).json({ message: 'Failed to fetch preferences' });
     }
   });
 
