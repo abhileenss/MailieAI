@@ -114,7 +114,7 @@ export async function setupAuth(app: Express) {
     // Use the configured domain instead of req.hostname for development
     const domain = process.env.REPLIT_DOMAINS!.split(",")[0];
     passport.authenticate(`replitauth:${domain}`, {
-      successReturnToOrRedirect: "/",
+      successRedirect: "/email-scanning",
       failureRedirect: "/api/login",
     })(req, res, next);
   });

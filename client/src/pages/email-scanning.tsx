@@ -35,27 +35,56 @@ export default function EmailScanning() {
   ];
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setScanProgress(prev => {
-        if (prev >= 100) {
-          setIsComplete(true);
-          clearInterval(timer);
-          // Auto-navigate after animation completes
-          setTimeout(() => setLocation("/email-scan"), 2000);
-          return 100;
+    // Start by requesting Gmail authentication
+    const initiateGmailAuth = async () => {
+      try {
+        const response = await fetch('/api/gmail/auth');
+        if (response.ok) {
+          const { authUrl } = await response.json();
+          // Redirect to Gmail OAuth
+          window.location.href = authUrl;
+        } else {
+          // If auth fails, continue with scanning animation
+          startScanningAnimation();
         }
-        
-        // Update current step based on progress
-        const newStep = Math.floor((prev / 100) * scanSteps.length);
-        if (newStep !== currentStep && newStep < scanSteps.length) {
-          setCurrentStep(newStep);
-        }
-        
-        return prev + 2;
-      });
-    }, 100);
+      } catch (error) {
+        console.error('Gmail auth error:', error);
+        // Continue with scanning animation on error
+        startScanningAnimation();
+      }
+    };
 
-    return () => clearInterval(timer);
+    const startScanningAnimation = () => {
+      const timer = setInterval(() => {
+        setScanProgress(prev => {
+          if (prev >= 100) {
+            setIsComplete(true);
+            clearInterval(timer);
+            // Auto-navigate after animation completes
+            setTimeout(() => setLocation("/email-scan"), 2000);
+            return 100;
+          }
+          
+          // Update current step based on progress
+          const newStep = Math.floor((prev / 100) * scanSteps.length);
+          if (newStep !== currentStep && newStep < scanSteps.length) {
+            setCurrentStep(newStep);
+          }
+          
+          return prev + 2;
+        });
+      }, 100);
+    };
+
+    // Check if we're coming from a Gmail OAuth callback
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('code')) {
+      // We have a Gmail auth code, start scanning
+      startScanningAnimation();
+    } else {
+      // No Gmail auth yet, initiate it
+      initiateGmailAuth();
+    }
   }, [currentStep, setLocation]);
 
   return (
