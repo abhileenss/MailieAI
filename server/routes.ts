@@ -83,24 +83,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/emails/scan", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      console.log('Starting email scan for user:', userId);
       
       // Get emails from Gmail
       const messages = await gmailService.getMessages(userId, 100);
+      console.log(`Retrieved ${messages.length} messages from Gmail`);
       
-      // Group by senders
+      // Categorize emails using AI
+      const categorizedEmails = await categorizationService.categorizeEmails(messages);
+      console.log(`Categorized ${categorizedEmails.size} emails`);
+      
+      // Group by senders and get sender statistics
       const senders = await gmailService.getEmailSendersByDomain(userId);
+      console.log(`Found ${senders.length} unique senders`);
       
-      // Store senders in database
-      await gmailService.storeEmailSenders(userId, senders);
+      // Apply AI categories to senders based on their latest email
+      const enhancedSenders = senders.map(sender => {
+        // Find the latest email from this sender
+        const senderEmails = messages.filter(msg => 
+          msg.from.toLowerCase().includes(sender.email.toLowerCase())
+        );
+        
+        if (senderEmails.length > 0) {
+          const latestEmail = senderEmails[0]; // Gmail returns newest first
+          const category = categorizedEmails.get(latestEmail.id);
+          
+          return {
+            ...sender,
+            category: category?.category || 'unassigned',
+            importance: category?.importance || 2,
+            sentiment: category?.sentiment,
+            priority: category?.priority
+          };
+        }
+        
+        return { ...sender, category: 'unassigned' };
+      });
+      
+      // Store enhanced senders in database
+      await gmailService.storeEmailSenders(userId, enhancedSenders);
       
       res.json({ 
-        message: 'Email scan completed',
+        message: 'Email scan completed with AI categorization',
         sendersFound: senders.length,
-        emailsProcessed: messages.length
+        emailsProcessed: messages.length,
+        categorizedEmails: categorizedEmails.size,
+        senders: enhancedSenders
       });
     } catch (error) {
       console.error('Error scanning emails:', error);
-      res.status(500).json({ message: 'Failed to scan emails' });
+      res.status(500).json({ 
+        message: 'Failed to scan emails',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 

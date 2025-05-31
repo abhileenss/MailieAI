@@ -32,10 +32,9 @@ export class EmailCategorizationService {
 
   constructor() {
     this.hasApiKey = !!process.env.OPENAI_API_KEY;
-    
     if (this.hasApiKey) {
       this.openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY
+        apiKey: process.env.OPENAI_API_KEY,
       });
     }
   }
@@ -48,6 +47,7 @@ export class EmailCategorizationService {
         console.warn('OpenAI API key not configured, using fallback categorization');
         return this.fallbackCategorization(message);
       }
+      
       const prompt = `
         You are an AI assistant helping a busy founder categorize emails. Analyze this email and categorize it into one of these buckets:
 
@@ -116,20 +116,20 @@ export class EmailCategorizationService {
     }
   }
 
-  // Batch categorize multiple emails
+  // Categorize multiple emails in batch
   async categorizeEmails(messages: EmailMessage[]): Promise<Map<string, CategoryResult>> {
-    const results = new Map<string, CategoryResult>();
+    const categorizedEmails = new Map<string, CategoryResult>();
     
-    // Process in batches to avoid rate limits
+    // Process emails in batches to avoid rate limits
     const batchSize = 5;
     for (let i = 0; i < messages.length; i += batchSize) {
       const batch = messages.slice(i, i + batchSize);
-      const batchPromises = batch.map(async (message) => {
+      const promises = batch.map(async (message) => {
         const result = await this.categorizeEmail(message);
-        results.set(message.id, result);
+        categorizedEmails.set(message.id, result);
       });
       
-      await Promise.all(batchPromises);
+      await Promise.all(promises);
       
       // Small delay between batches to respect rate limits
       if (i + batchSize < messages.length) {
@@ -137,16 +137,19 @@ export class EmailCategorizationService {
       }
     }
     
-    return results;
+    return categorizedEmails;
   }
 
-  // Analyze if sender is a newsletter
+  // Analyze newsletter patterns for a sender
   async analyzeNewsletter(sender: EmailSender, recentMessages: EmailMessage[]): Promise<NewsletterAnalysis> {
     try {
-      const sampleEmails = recentMessages.slice(0, 3); // Analyze last 3 emails
-      
+      if (!this.hasApiKey || !this.openai) {
+        return this.fallbackNewsletterAnalysis(sender, recentMessages);
+      }
+
+      const sampleEmails = recentMessages.slice(0, 5);
       const prompt = `
-        Analyze these emails from the same sender to determine if this is a newsletter/content subscription:
+        Analyze this email sender to determine if they send newsletters and their patterns.
 
         Sender: ${sender.email} (${sender.name})
         Recent emails (${sampleEmails.length}):
@@ -188,7 +191,6 @@ export class EmailCategorizationService {
       };
     } catch (error) {
       console.error('Error analyzing newsletter:', error);
-      // Fallback newsletter detection logic
       return this.fallbackNewsletterAnalysis(sender, recentMessages);
     }
   }
@@ -236,7 +238,7 @@ export class EmailCategorizationService {
     };
   }
 
-  // Generate voice call script for daily digest
+  // Generate voice call script from actual email data
   async generateCallScript(categorizedEmails: Map<string, CategoryResult>, userPreferences: any): Promise<string> {
     try {
       const emailsByCategory = new Map<string, number>();
@@ -252,26 +254,24 @@ export class EmailCategorizationService {
       });
 
       const prompt = `
-        Generate a natural, conversational voice script for a daily email digest call to a busy founder.
+        Generate a natural voice call script for a founder's daily email digest.
+        
+        Email breakdown:
+        - Call me: ${emailsByCategory.get('call-me') || 0} urgent emails
+        - Remind me: ${emailsByCategory.get('remind-me') || 0} important emails  
+        - Keep quiet: ${emailsByCategory.get('keep-quiet') || 0} low priority emails
+        - Why did I signup: ${emailsByCategory.get('why-did-i-signup') || 0} promotional emails
+        - Don't tell anyone: ${emailsByCategory.get('dont-tell-anyone') || 0} spam emails
+        - Newsletters: ${emailsByCategory.get('newsletter') || 0} newsletter emails
 
-        Email summary:
-        - Call me: ${emailsByCategory.get('call-me') || 0} emails
-        - Remind me: ${emailsByCategory.get('remind-me') || 0} emails
-        - Keep quiet: ${emailsByCategory.get('keep-quiet') || 0} emails
-        - Why did I signup: ${emailsByCategory.get('why-did-i-signup') || 0} emails
-        - Don't tell anyone: ${emailsByCategory.get('dont-tell-anyone') || 0} emails
-        - Newsletter: ${emailsByCategory.get('newsletter') || 0} emails
+        Important email summaries:
+        ${importantEmails.map((summary, i) => `${i + 1}. ${summary}`).join('\n')}
 
-        High importance items:
-        ${importantEmails.slice(0, 3).map((summary, i) => `${i + 1}. ${summary}`).join('\n')}
-
-        Create a brief, natural script (30-60 seconds) that:
-        1. Greets the user casually
-        2. Summarizes the important categories
-        3. Highlights urgent items if any
-        4. Ends with a helpful note
-
-        Make it sound conversational, not robotic.
+        Create a 30-60 second voice script that:
+        1. Greets the founder warmly
+        2. Highlights the most important items
+        3. Gives a quick overview of other categories
+        4. Ends with a professional sign-off
       `;
 
       const response = await this.openai.chat.completions.create({

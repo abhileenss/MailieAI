@@ -94,7 +94,38 @@ export class VoiceService {
   }
 
   async getCallLogs(userId: string): Promise<any[]> {
-    return await storage.getCallLogs(userId);
+    try {
+      const callLogs = await storage.getCallLogs(userId);
+      
+      // Enrich with Twilio status for recent calls
+      const enrichedLogs = await Promise.all(
+        callLogs.map(async (log) => {
+          try {
+            if (log.callSid && log.createdAt && 
+                (new Date().getTime() - log.createdAt.getTime()) < 24 * 60 * 60 * 1000) {
+              const twilioCall = await this.twilioClient.calls(log.callSid).fetch();
+              return {
+                ...log,
+                twilioStatus: twilioCall.status,
+                duration: twilioCall.duration,
+                direction: twilioCall.direction,
+                startTime: twilioCall.startTime,
+                endTime: twilioCall.endTime
+              };
+            }
+            return log;
+          } catch (error) {
+            console.warn(`Could not fetch Twilio data for call ${log.callSid}:`, error);
+            return log;
+          }
+        })
+      );
+      
+      return enrichedLogs;
+    } catch (error) {
+      console.error('Error fetching call logs:', error);
+      return [];
+    }
   }
 
   async getCallStatus(callSid: string): Promise<any> {
@@ -115,6 +146,28 @@ export class VoiceService {
       };
     } catch (error) {
       throw new Error(`Failed to fetch call status: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  // Monitor call progress and update database
+  async monitorCall(callSid: string, userId: string): Promise<void> {
+    try {
+      const checkStatus = async () => {
+        const status = await this.getCallStatus(callSid);
+        console.log(`Call ${callSid} status: ${status.status}, duration: ${status.duration || 'ongoing'}`);
+        
+        // Continue monitoring if call is still in progress
+        if (['queued', 'ringing', 'in-progress'].includes(status.status)) {
+          setTimeout(checkStatus, 10000); // Check every 10 seconds
+        } else {
+          console.log(`Call ${callSid} completed with status: ${status.status}`);
+        }
+      };
+      
+      // Start monitoring
+      setTimeout(checkStatus, 5000); // Initial check after 5 seconds
+    } catch (error) {
+      console.error('Error monitoring call:', error);
     }
   }
 }
