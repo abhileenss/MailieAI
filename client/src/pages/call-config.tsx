@@ -36,10 +36,14 @@ export default function CallConfig() {
   // Generate call script mutation
   const generateScriptMutation = useMutation({
     mutationFn: async (config: any) => {
-      const response = await fetch('/api/voice/generate-script', {
+      const response = await fetch('/api/calls/generate-script', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(config)
+        body: JSON.stringify({
+          senderIds: Object.values(config.emails).flat().map((sender: any) => sender.id),
+          callType: 'daily-digest',
+          preferences: config.preferences
+        })
       });
       
       if (!response.ok) {
