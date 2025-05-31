@@ -23,28 +23,28 @@ export default function CallConfig() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="max-w-4xl mx-auto p-6">
+    <div className="min-h-screen bg-background text-foreground font-primary">
+      <div className="max-w-4xl mx-auto p-6 md:p-8">
         <motion.div 
           className="text-center mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-3xl font-bold mb-4">Configure Your Daily Calls <span className="text-lg bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full">Coming Soon</span></h1>
-          <p className="text-gray-400">Preview how your AI concierge will call you daily with personalized updates</p>
+          <h1 className="text-3xl font-semibold mb-4 tracking-tight">Configure Your Daily Calls <span className="text-sm bg-primary/20 text-primary px-3 py-1 neopop-button font-medium">Coming Soon</span></h1>
+          <p className="text-muted-foreground">Preview how your AI concierge will call you daily with personalized updates</p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Voice Selection */}
           <motion.div 
-            className="bg-gray-900 border border-gray-700 rounded-xl p-6"
+            className="neopop-card p-6"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <h3 className="font-semibold mb-6 flex items-center">
-              <UserRoundCheck className="text-blue-500 mr-2 w-5 h-5" />
+              <UserRoundCheck className="text-primary mr-2 w-5 h-5" />
               Choose Your AI Voice
             </h3>
             

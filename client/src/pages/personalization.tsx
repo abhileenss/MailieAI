@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
-import { Brain, Clock, Zap, Shield, AlertTriangle, TrendingUp, Calendar, Bell, Phone, Mail } from "lucide-react";
+import { Brain, Clock, Zap, Shield, AlertTriangle, TrendingUp, Calendar, Bell, Phone, Mail, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SEOHead } from "@/components/seo-head";
@@ -112,10 +112,10 @@ export default function Personalization() {
         keywords="founder preferences, AI concierge settings, email priority configuration, startup productivity dashboard"
       />
       
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-background text-foreground font-primary">
         <Navigation currentPage="/personalization" />
         
-        <div className="max-w-6xl mx-auto p-4 md:p-6">
+        <div className="max-w-6xl mx-auto p-6 md:p-8">
           {/* Header */}
           <motion.div 
             className="text-center mb-12"
@@ -123,10 +123,10 @@ export default function Personalization() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl font-semibold mb-4 tracking-tight">
               Your Concierge Dashboard
             </h1>
-            <p className="text-gray-400 text-lg max-w-3xl mx-auto">
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
               Smart defaults optimized for founders. Choose how you want to be notified for each type of communication.
             </p>
           </motion.div>
@@ -137,7 +137,7 @@ export default function Personalization() {
             {/* Left Column - Email Preferences */}
             <div className="xl:col-span-2 space-y-6">
               <motion.div 
-                className="bg-gray-900 border border-amber-600/20 rounded-xl p-6"
+                className="neopop-card p-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
