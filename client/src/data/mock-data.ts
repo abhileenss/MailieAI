@@ -1,12 +1,15 @@
-export interface EmailSummary {
+export interface EmailSender {
   id: string;
-  type: 'newsletters' | 'meetings' | 'spam' | 'events';
-  title: string;
+  name: string;
+  email: string;
+  domain: string;
   count: number;
-  icon: string;
-  color: string;
-  description: string;
-  examples: string[];
+  latestSubject: string;
+  latestDate: string;
+  latestPreview: string;
+  category: 'call-me' | 'remind-me' | 'keep-quiet' | 'why-did-i-signup' | 'dont-tell-anyone' | 'unassigned';
+  avatar?: string;
+  type: 'newsletter' | 'tool' | 'meeting' | 'promotional' | 'personal';
 }
 
 export interface VoiceOption {
@@ -25,46 +28,126 @@ export interface AgentTask {
   details: string[];
 }
 
-export const mockEmailSummaries: EmailSummary[] = [
+export const mockEmailSenders: EmailSender[] = [
   {
-    id: 'newsletters',
-    type: 'newsletters',
-    title: 'Newsletter Subscriptions',
+    id: '1',
+    name: 'Morning Brew',
+    email: 'crew@morningbrew.com',
+    domain: 'morningbrew.com',
     count: 47,
-    icon: 'fas fa-newspaper',
-    color: 'blue',
-    description: 'Daily newsletters cluttering your inbox',
-    examples: ['Morning Brew', 'TechCrunch', '+45 more']
+    latestSubject: 'Meta\'s AI strategy is working, Tesla\'s isn\'t',
+    latestDate: '2 hours ago',
+    latestPreview: 'Meta reported strong Q4 earnings yesterday, driven largely by its Reality Labs division finally turning...',
+    category: 'unassigned',
+    type: 'newsletter'
   },
   {
-    id: 'meetings',
-    type: 'meetings',
-    title: 'Missed Meetings',
-    count: 12,
-    icon: 'fas fa-calendar-times',
-    color: 'red',
-    description: 'Meetings you may have overlooked',
-    examples: ['Team Standup', 'Client Call', '+10 more']
-  },
-  {
-    id: 'spam',
-    type: 'spam',
-    title: 'Spam Sources',
+    id: '2',
+    name: 'Calendly',
+    email: 'notifications@calendly.com',
+    domain: 'calendly.com',
     count: 23,
-    icon: 'fas fa-exclamation-triangle',
-    color: 'yellow',
-    description: 'Promotional emails and spam',
-    examples: ['promo@deals.com', 'offers@shop.com', '+21 more']
+    latestSubject: 'New meeting booked: Investor Pitch - Sarah Chen',
+    latestDate: '30 minutes ago',
+    latestPreview: 'Sarah Chen has booked a 30-minute meeting with you for tomorrow at 2:00 PM PST. Meeting details...',
+    category: 'unassigned',
+    type: 'meeting'
   },
   {
-    id: 'events',
-    type: 'events',
-    title: 'Upcoming Events',
+    id: '3',
+    name: 'Stripe',
+    email: 'receipts@stripe.com',
+    domain: 'stripe.com',
+    count: 15,
+    latestSubject: 'Payment received: $2,500.00 from Acme Corp',
+    latestDate: '1 hour ago',
+    latestPreview: 'You received a payment of $2,500.00 from Acme Corp for Invoice #INV-2025-001234...',
+    category: 'unassigned',
+    type: 'tool'
+  },
+  {
+    id: '4',
+    name: 'Notion',
+    email: 'team@makenotion.com',
+    domain: 'notion.so',
+    count: 31,
+    latestSubject: '3 updates in "Q1 2025 Product Roadmap"',
+    latestDate: '4 hours ago',
+    latestPreview: 'Alex updated the timeline, Sarah added 2 new feature requests, and Mike commented on the mobile app section...',
+    category: 'unassigned',
+    type: 'tool'
+  },
+  {
+    id: '5',
+    name: 'TechCrunch',
+    email: 'newsletter@techcrunch.com',
+    domain: 'techcrunch.com',
+    count: 19,
+    latestSubject: 'The Station: Autonomous vehicles hit another speed bump',
+    latestDate: '3 hours ago',
+    latestPreview: 'Welcome back to The Station, your central hub for all past, present and future means of moving people...',
+    category: 'unassigned',
+    type: 'newsletter'
+  },
+  {
+    id: '6',
+    name: 'GitHub',
+    email: 'noreply@github.com',
+    domain: 'github.com',
+    count: 42,
+    latestSubject: '[pookai/frontend] New issue opened: Voice input not working on Safari',
+    latestDate: '20 minutes ago',
+    latestPreview: 'user_dev_123 opened a new issue: The voice input component fails to initialize on Safari 17.2...',
+    category: 'unassigned',
+    type: 'tool'
+  },
+  {
+    id: '7',
+    name: 'ProductHunt Daily',
+    email: 'hello@producthunt.com',
+    domain: 'producthunt.com',
+    count: 28,
+    latestSubject: 'Today\'s top products: 5 AI tools that will change your workflow',
+    latestDate: '6 hours ago',
+    latestPreview: 'Discover the latest launches including VoiceFlow 2.0, DataLens AI, and 3 other products that caught our attention...',
+    category: 'unassigned',
+    type: 'newsletter'
+  },
+  {
+    id: '8',
+    name: 'Shopify Partners',
+    email: 'partners@shopify.com',
+    domain: 'shopify.com',
     count: 8,
-    icon: 'fas fa-calendar-plus',
-    color: 'green',
-    description: 'Conferences, workshops, and events',
-    examples: ['DevCon 2024', 'AI Summit', '+6 more']
+    latestSubject: 'Your November commission: $1,247.83 is ready',
+    latestDate: '1 day ago',
+    latestPreview: 'Great news! Your commission for November 2024 is ready for payout. You earned $1,247.83 from 3 client referrals...',
+    category: 'unassigned',
+    type: 'promotional'
+  },
+  {
+    id: '9',
+    name: 'Y Combinator',
+    email: 'blog@ycombinator.com',
+    domain: 'ycombinator.com',
+    count: 12,
+    latestSubject: 'Startup School: How to validate your idea in 30 days',
+    latestDate: '2 days ago',
+    latestPreview: 'This week in Startup School, we\'re covering the most crucial step in building a successful startup: validation...',
+    category: 'unassigned',
+    type: 'newsletter'
+  },
+  {
+    id: '10',
+    name: 'LinkedIn',
+    email: 'messages-noreply@linkedin.com',
+    domain: 'linkedin.com',
+    count: 156,
+    latestSubject: 'You have 3 new messages and 12 connection requests',
+    latestDate: '5 hours ago',
+    latestPreview: 'Sarah Johnson wants to connect, Mike Chen sent you a message about partnership opportunities...',
+    category: 'unassigned',
+    type: 'promotional'
   }
 ];
 
@@ -135,25 +218,58 @@ export const mockAgentTasks: AgentTask[] = [
   }
 ];
 
+export const categoryBuckets = [
+  {
+    id: 'call-me',
+    title: 'Call Me For This',
+    description: 'Wake me up at 3am if needed',
+    color: 'bg-red-500/20 text-red-400 border-red-500/50'
+  },
+  {
+    id: 'remind-me',
+    title: 'Remind Me For This',
+    description: 'Daily summary is fine',
+    color: 'bg-blue-500/20 text-blue-400 border-blue-500/50'
+  },
+  {
+    id: 'keep-quiet',
+    title: 'Keep But Don\'t Care',
+    description: 'Archive, I\'ll check when I need to',
+    color: 'bg-gray-500/20 text-gray-400 border-gray-500/50'
+  },
+  {
+    id: 'why-did-i-signup',
+    title: 'Why Did I Sign Up For This?',
+    description: 'Auto-unsubscribe please',
+    color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50'
+  },
+  {
+    id: 'dont-tell-anyone',
+    title: 'Don\'t Tell Anyone',
+    description: 'Hide these emails from my team',
+    color: 'bg-purple-500/20 text-purple-400 border-purple-500/50'
+  }
+];
+
 export const mockSuggestions = [
   {
     id: 'customer-support',
-    title: 'Customer Support Priority',
-    description: 'Alert me about customer complaints'
+    title: 'Customer Complaints & Support',
+    description: 'Call me immediately for unhappy customers'
   },
   {
-    id: 'meeting-reminders',
-    title: 'Meeting Reminders',
-    description: '15 minutes before important meetings'
+    id: 'investor-updates',
+    title: 'Investor Communications',
+    description: 'VCs, angels, and board members get priority'
   },
   {
-    id: 'newsletter-digest',
-    title: 'Newsletter Digest',
-    description: 'Weekly summary of subscriptions'
+    id: 'revenue-alerts',
+    title: 'Revenue & Payment Alerts',
+    description: 'Stripe, PayPal, and sales notifications'
   },
   {
-    id: 'vip-contacts',
-    title: 'VIP Contacts',
-    description: 'Immediate alerts from key people'
+    id: 'team-urgent',
+    title: 'Team Urgent Issues',
+    description: 'When the app breaks or servers are down'
   }
 ];

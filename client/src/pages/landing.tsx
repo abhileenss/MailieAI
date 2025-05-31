@@ -46,10 +46,10 @@ export default function Landing() {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-white to-gray-300 bg-clip-text text-transparent">
-              AI calls you daily
+              Your founder concierge
             </h1>
             <p className="text-xl md:text-2xl text-gray-400 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Your voice-first productivity assistant that scans your inbox and calls you every day with what actually matters.
+              Finally, an AI that gets it. Scans your inbox chaos, pokes you about what matters, and calls you like a real assistant would.
             </p>
             
             {/* Privacy Badge */}
