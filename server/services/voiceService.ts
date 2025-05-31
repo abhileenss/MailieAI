@@ -1,12 +1,14 @@
 import { storage } from '../storage';
-import twilio from 'twilio';
+import Twilio from 'twilio';
 
 export class VoiceService {
   private twilioClient: any;
+  private twilioLib: any;
 
   constructor() {
     if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-      this.twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+      this.twilioClient = Twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+      this.twilioLib = Twilio;
     }
   }
 
@@ -70,16 +72,14 @@ export class VoiceService {
 
   private async generateTwiML(script: string): Promise<string> {
     // Create TwiML using Twilio's TwiML object
-    const VoiceResponse = require('twilio').twiml.VoiceResponse;
-    const response = new VoiceResponse();
+    const response = new this.twilioLib.twiml.VoiceResponse();
     
     response.say({
-      voice: 'Polly.Joanna',
-      rate: 'medium'
+      voice: 'Polly.Joanna'
     }, script);
     
     response.gather({
-      input: 'dtmf',
+      input: ['dtmf'],
       timeout: 10,
       numDigits: 1
     }).say({

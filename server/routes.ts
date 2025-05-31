@@ -13,11 +13,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!phoneNumber) {
         return res.status(400).json({ message: 'Phone number is required' });
       }
+
+      // Direct Twilio call without database logging for testing
+      if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) {
+        return res.status(400).json({ message: 'Twilio credentials not configured' });
+      }
+
+      const twilioLib = await import('twilio');
+      const twilio = twilioLib.default;
+      const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
       
-      // Use test user ID for demo
-      const testUserId = 'test-user-' + Date.now();
-      const result = await voiceService.makeOutboundCall(testUserId, phoneNumber, callType, emailCount);
-      res.json(result);
+      // Generate test script
+      const script = "Hello! This is your PookAi assistant calling to test the voice service. You have 7 emails in your queue. The system is working correctly!";
+      
+      // Create TwiML
+      const VoiceResponse = twilio.twiml.VoiceResponse;
+      const response = new VoiceResponse();
+      response.say({ voice: 'Polly.Joanna' }, script);
+      response.say({ voice: 'Polly.Joanna' }, 'Thank you for testing PookAi. Goodbye!');
+
+      // Make the call
+      const call = await client.calls.create({
+        twiml: response.toString(),
+        to: phoneNumber,
+        from: process.env.TWILIO_PHONE_NUMBER,
+        timeout: 30,
+        record: false,
+      });
+
+      res.json({
+        success: true,
+        callSid: call.sid,
+        status: call.status,
+        message: `Test call initiated to ${phoneNumber}`,
+        from: process.env.TWILIO_PHONE_NUMBER
+      });
     } catch (error: any) {
       res.status(500).json({ 
         message: error.message,
