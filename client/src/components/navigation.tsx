@@ -115,8 +115,13 @@ export function Navigation({ currentPage }: NavigationProps) {
               <button
                 key={link.path}
                 onClick={() => {
-                  setLocation(link.path);
-                  setMobileMenuOpen(false);
+                  try {
+                    setLocation(link.path);
+                    setMobileMenuOpen(false);
+                  } catch (error) {
+                    console.error('Navigation error:', error);
+                    setMobileMenuOpen(false);
+                  }
                 }}
                 className="text-gray-400 hover:text-white transition-colors text-sm"
               >
@@ -156,8 +161,13 @@ export function Navigation({ currentPage }: NavigationProps) {
                   <button
                     key={item.path}
                     onClick={() => { 
-                      setLocation(item.path); 
-                      setMobileMenuOpen(false); 
+                      try {
+                        setLocation(item.path); 
+                        setMobileMenuOpen(false); 
+                      } catch (error) {
+                        console.error('Navigation error:', error);
+                        setMobileMenuOpen(false);
+                      }
                     }}
                     className={`flex items-center space-x-3 w-full p-3 rounded-lg text-left transition-all duration-200 ${
                       isActive 
@@ -179,8 +189,13 @@ export function Navigation({ currentPage }: NavigationProps) {
                 <button
                   key={link.path}
                   onClick={() => { 
-                    setLocation(link.path); 
-                    setMobileMenuOpen(false); 
+                    try {
+                      setLocation(link.path); 
+                      setMobileMenuOpen(false); 
+                    } catch (error) {
+                      console.error('Navigation error:', error);
+                      setMobileMenuOpen(false);
+                    }
                   }}
                   className="block text-gray-400 hover:text-white transition-colors text-left"
                 >
