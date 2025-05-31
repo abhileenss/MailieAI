@@ -1,0 +1,184 @@
+# PookAi - Your Founder's AI Concierge
+
+*Because your inbox shouldn't be scarier than your burn rate*
+
+## The Problem: Email is Eating Your Startup Alive
+
+Picture this disaster: You're building the next unicorn, but you're spending 3 hours a day playing "find the important email" in a haystack of newsletters you don't remember subscribing to.
+
+**Meanwhile, buried somewhere in your chaos:**
+- 💸 Stripe is screaming about a payment failure
+- 🦄 That investor finally replied about Series A
+- 😤 Your biggest customer is threatening to churn
+- 📅 You're about to miss a board meeting (again)
+
+**But drowning everything important:**
+- 47 newsletters about "growth hacking" 
+- LinkedIn spam from people who want to "revolutionize your outreach"
+- Every SaaS tool you've ever touched begging for attention
+- Automated notifications from services you forgot existed
+
+### The Painful Truth About Founder Email
+
+**You're not managing email. Email is managing you.**
+
+Most founders waste 2.5 hours daily on email triage instead of building their company. That's 12.5 hours weekly you could spend on product, team, or actually sleeping.
+
+**Even worse:** Critical communications get missed. Investor emails lost. Customer issues escalate. Revenue opportunities vanish into the void.
+
+## The PookAi Solution: Email Concierge Intelligence
+
+### What if your email actually worked FOR you?
+
+Imagine starting your day with a friendly 2-minute phone call:
+
+*"Hey! Quick founder update: Your Stripe payment failed overnight - details sent to your phone. Sarah from Sequoia wants to meet Friday about the Series A. Customer escalation from BigCorp - they're frustrated but not churning yet. Everything else is sorted and quiet. Now go build something awesome!"*
+
+**That's PookAi. Your personal email concierge who actually gets founder priorities.**
+
+## How the Magic Works
+
+### The Secret Sauce: Agent Technology + Founder Brain
+
+**Step 1: Smart Email Scanning**
+- Securely connects to Gmail or Outlook (we never see your actual emails)
+- Our agent framework analyzes sender patterns and communication urgency
+- Learns what "founder important" actually means (spoiler: it's not another growth hack newsletter)
+
+**Step 2: Quirky but Smart Categorization**
+- **"Call Me For This"** - Payment failures, investor replies, customer emergencies
+- **"Remind Me About This"** - Important but not burn-the-house-down urgent
+- **"Keep But Don't Care"** - Receipts, confirmations, legal stuff
+- **"Why Did I Sign Up For This?"** - Those newsletters you subscribed to at 2 AM
+- **"Don't Tell Anyone"** - Personal stuff that somehow ended up in work email
+
+**Step 3: Precise Prompting for Perfect Summaries**
+- Natural language processing tuned for startup chaos
+- Understands the difference between "urgent investor meeting" and "urgent LinkedIn opportunity"
+- Creates voice summaries that sound human, not robotic
+
+**Step 4: Voice-First Daily Updates**
+- Quick morning calls with what actually matters
+- Urgent alerts for can't-wait situations
+- Meeting reminders with context (because you have founder brain)
+
+## Getting Started (The Fun Part)
+
+### What You Need
+- Email account (Gmail or Outlook)
+- 10 minutes between meetings
+- A phone that can receive calls
+- Willingness to trust an AI with your inbox chaos
+
+### The Setup Journey
+1. **Inbox Scan**: Connect your email (don't worry, we're the good guys)
+2. **Sender Sorting**: Play email triage with our smart categories
+3. **Founder Preferences**: Tell us what makes you panic vs. what can wait
+4. **Voice Setup**: Pick your AI concierge's personality
+5. **Launch**: Start getting your sanity back
+
+### Your First Week
+- **Day 1**: "Holy shit, this actually works"
+- **Day 3**: "I haven't missed anything important!"
+- **Day 7**: "How did I live without this?"
+
+## What Makes PookAi Different
+
+### 🎯 Categories That Actually Make Sense
+Unlike generic email tools that give you "Primary/Social/Promotions" (thanks for nothing, Gmail), we use categories that match how founders actually think:
+
+- **"Call Me For This"** - Your startup is literally on fire situations
+- **"Remind Me About This"** - Important but won't kill the company today
+- **"Keep But Don't Care"** - Legal docs, receipts, boring but necessary stuff
+- **"Why Did I Sign Up For This?"** - That newsletter addiction you need to address
+- **"Don't Tell Anyone"** - Personal emails that somehow invaded work
+
+### 🗣️ Voice-First Because Screens Are Overrated
+- **Morning Briefings**: 2-minute calls that replace 30 minutes of email scanning
+- **Urgent Alerts**: Immediate calls for can't-wait situations
+- **Meeting Context**: Reminders with actual useful information
+- **Natural Conversation**: No robotic "You have fourteen messages" nonsense
+
+### 🔒 Privacy Like Your Paranoid CTO Designed It
+- **Zero Email Storage**: We process and forget, like a digital goldfish
+- **Military Encryption**: Because investor emails deserve better than plain text
+- **No Surveillance Business Model**: We're not Facebook, we actually charge money
+- **Full User Control**: Delete everything instantly, we're not clingy
+
+### 🧠 Built for Founder ADHD
+- **Context Switching Friendly**: Works with however chaotic your day gets
+- **Priority Learning**: Adapts to your specific brand of startup crazy
+- **Interruption Handling**: Because founders get interrupted every 3 minutes
+- **Meeting Memory**: Remembers stuff you definitely forgot
+
+## User Interface Guide
+
+### Main Dashboard
+The email categorization interface uses a two-panel design:
+- **Left Panel**: List of email senders
+- **Right Panel**: Preview of selected sender's emails
+- **Category Buttons**: Quick sorting options
+
+### Navigation
+- **Email Scan**: Categorize your email senders
+- **Personalization**: Set your preferences and meeting reminders
+- **Call Config**: Choose voice settings and call times
+- **Setup Complete**: Review your configuration
+
+## Privacy & Security
+
+### What We Access
+- Email sender information (names, addresses)
+- Email subject lines and timestamps
+- Your categorization preferences
+- Meeting calendar events (with permission)
+
+### What We DON'T Access
+- Email content or body text
+- Attachments or files
+- Personal conversations
+- Sensitive account information
+
+### How We Protect You
+- Military-grade encryption
+- Zero-knowledge architecture
+- Regular security audits
+- GDPR and CCPA compliant
+
+## Support & Help
+
+### Getting Help
+- **Email Support**: support@pookai.com
+- **Founder Feedback**: founders@pookai.com
+- **Security Issues**: security@pookai.com
+
+### Response Times
+- **Critical Issues**: < 2 hours
+- **General Support**: < 24 hours
+- **Feature Requests**: < 3 days
+
+### Common Questions
+**Q: Is my email data safe?**
+A: Yes, we use end-to-end encryption and never store email content.
+
+**Q: Which email providers work?**
+A: Currently Gmail and Outlook, with more coming soon.
+
+**Q: How much does it cost?**
+A: Currently in beta testing - free for early users.
+
+## For Developers
+
+If you're a developer interested in the technical details, see our [Technical Documentation](./TECHNICAL.md) and [API Documentation](./API.md).
+
+## Contributing
+
+We welcome contributions from the community. Please read our [Contributing Guide](./CONTRIBUTING.md) for details.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
+---
+
+*Made with ❤️ for founders who deserve better email management*
