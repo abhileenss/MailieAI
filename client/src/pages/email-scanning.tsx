@@ -111,7 +111,7 @@ export default function EmailScanning() {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ duration: 0.5 }}
-                      className="text-green-400"
+                      className="text-primary"
                     >
                       <CheckCircle className="w-12 h-12" />
                     </motion.div>
@@ -119,7 +119,7 @@ export default function EmailScanning() {
                     <motion.div
                       animate={{ scale: [1, 1.1, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
-                      className="text-blue-400"
+                      className="text-primary"
                     >
                       {scanSteps[currentStep]?.icon}
                     </motion.div>
@@ -134,7 +134,7 @@ export default function EmailScanning() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <div className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                <div className="text-4xl font-bold text-primary">
                   {Math.round(scanProgress)}%
                 </div>
               </motion.div>
@@ -150,13 +150,13 @@ export default function EmailScanning() {
             >
               {isComplete ? (
                 <div>
-                  <h2 className="text-2xl font-semibold mb-2 text-green-400">Scan Complete!</h2>
-                  <p className="text-gray-400">Found 156 email senders. Ready to categorize.</p>
+                  <h2 className="text-2xl font-semibold mb-2 text-primary">Scan Complete!</h2>
+                  <p className="text-muted-foreground">Found 156 email senders. Ready to categorize.</p>
                 </div>
               ) : (
                 <div>
                   <h2 className="text-2xl font-semibold mb-2">{scanSteps[currentStep]?.title}</h2>
-                  <p className="text-gray-400">{scanSteps[currentStep]?.description}</p>
+                  <p className="text-muted-foreground">{scanSteps[currentStep]?.description}</p>
                 </div>
               )}
             </motion.div>
@@ -167,7 +167,7 @@ export default function EmailScanning() {
                 <motion.div
                   key={index}
                   className={`w-3 h-3 rounded-full transition-all duration-500 ${
-                    index <= currentStep ? 'bg-blue-500' : 'bg-gray-700'
+                    index <= currentStep ? 'bg-primary' : 'bg-border'
                   }`}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -178,7 +178,7 @@ export default function EmailScanning() {
 
             {/* Privacy Note */}
             <motion.div
-              className="text-sm text-gray-500 max-w-md mx-auto"
+              className="text-sm text-muted-foreground max-w-md mx-auto"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}
@@ -190,7 +190,7 @@ export default function EmailScanning() {
             {!isComplete && (
               <motion.button
                 onClick={() => setLocation("/email-scan")}
-                className="mt-8 text-sm text-gray-400 hover:text-white transition-colors underline"
+                className="mt-8 text-sm text-muted-foreground hover:text-foreground transition-colors underline"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 2 }}
