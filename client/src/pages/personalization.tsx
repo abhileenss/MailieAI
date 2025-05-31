@@ -11,13 +11,16 @@ export default function Personalization() {
   const [, setLocation] = useLocation();
   
   // Smart preferences with user choice between Call/Digest
-  const [preferences, setPreferences] = useState<Record<string, string>>({
-    "urgent-financial": "call-me",
-    "investor-updates": "call-me", 
-    "customer-issues": "call-me",
-    "team-urgent": "digest",
-    "partnership-deals": "coming-soon",
-    "product-launches": "coming-soon"
+  const [preferences, setPreferences] = useState<Record<string, string>>(() => {
+    const saved = localStorage.getItem('pookai-preferences');
+    return saved ? JSON.parse(saved) : {
+      "urgent-financial": "call-me",
+      "investor-updates": "call-me", 
+      "customer-issues": "call-me",
+      "team-urgent": "digest",
+      "partnership-deals": "coming-soon",
+      "product-launches": "coming-soon"
+    };
   });
 
   const [meetingReminders, setMeetingReminders] = useState({
@@ -79,10 +82,12 @@ export default function Personalization() {
   ];
 
   const handlePreferenceChange = (categoryId: string, value: string) => {
-    setPreferences(prev => ({
-      ...prev,
+    const updatedPreferences = {
+      ...preferences,
       [categoryId]: value
-    }));
+    };
+    setPreferences(updatedPreferences);
+    localStorage.setItem('pookai-preferences', JSON.stringify(updatedPreferences));
   };
 
   const navigateToCallConfig = () => {
