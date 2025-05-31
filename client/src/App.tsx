@@ -8,6 +8,9 @@ import EmailScan from "@/pages/email-scan";
 import Personalization from "@/pages/personalization";
 import CallConfig from "@/pages/call-config";
 import FinalSetup from "@/pages/final-setup";
+import Privacy from "@/pages/privacy";
+import Security from "@/pages/security";
+import Support from "@/pages/support";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -18,6 +21,9 @@ function Router() {
       <Route path="/personalization" component={Personalization} />
       <Route path="/call-config" component={CallConfig} />
       <Route path="/final-setup" component={FinalSetup} />
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/security" component={Security} />
+      <Route path="/support" component={Support} />
       <Route component={NotFound} />
     </Switch>
   );

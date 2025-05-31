@@ -30,9 +30,9 @@ export default function Landing() {
             <span className="text-xl font-semibold">PookAi</span>
           </motion.div>
           <div className="hidden md:flex items-center space-x-6 text-sm text-gray-400">
-            <a href="#" className="hover:text-white transition-colors">Privacy</a>
-            <a href="#" className="hover:text-white transition-colors">Security</a>
-            <a href="#" className="hover:text-white transition-colors">Support</a>
+            <button onClick={() => setLocation("/privacy")} className="hover:text-white transition-colors">Privacy</button>
+            <button onClick={() => setLocation("/security")} className="hover:text-white transition-colors">Security</button>
+            <button onClick={() => setLocation("/support")} className="hover:text-white transition-colors">Support</button>
           </div>
         </div>
       </nav>
