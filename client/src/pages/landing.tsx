@@ -69,45 +69,48 @@ export default function Landing() {
 
             {/* Feature Preview */}
             <motion.div 
-              className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 text-center"
-              initial={{ opacity: 0, y: 40 }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center"
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
             >
               <motion.div 
-                className="bg-gray-900/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 text-center"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="surface-elevated rounded-xl p-8 surface-elevated-hover"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
               >
-                <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                  <Brain className="text-white w-6 h-6" />
+                <div className="w-14 h-14 bg-primary rounded-xl mx-auto mb-6 flex items-center justify-center">
+                  <Brain className="text-primary-foreground w-7 h-7" />
                 </div>
-                <h3 className="font-semibold mb-2">Smart Categorization</h3>
-                <p className="text-sm text-gray-400">AI sorts your emails: "Call me", "Remind me", "Keep quiet", "Why did I sign up for this?"</p>
+                <h3 className="font-semibold text-lg mb-3 text-foreground">Smart Categorization</h3>
+                <p className="text-muted-foreground font-light leading-relaxed">AI sorts your emails: "Call me", "Remind me", "Keep quiet", "Why did I sign up for this?"</p>
               </motion.div>
               
               <motion.div 
-                className="bg-gray-900/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 text-center"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
+                className="surface-elevated rounded-xl p-8 surface-elevated-hover"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.7 }}
               >
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                  <Phone className="text-white w-6 h-6" />
+                <div className="w-14 h-14 bg-primary rounded-xl mx-auto mb-6 flex items-center justify-center">
+                  <Phone className="text-primary-foreground w-7 h-7" />
                 </div>
-                <h3 className="font-semibold mb-2">Daily Voice Calls <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-1 rounded ml-1">Coming Soon</span></h3>
-                <p className="text-sm text-gray-400">Your AI calls you at 9am: "Hey, you've got 3 investor emails and your app is down"</p>
+                <h3 className="font-semibold text-lg mb-3 text-foreground">Daily Voice Calls</h3>
+                <p className="text-muted-foreground font-light leading-relaxed">Your AI calls you at 9am: "Hey, you've got 3 investor emails and your app is down"</p>
               </motion.div>
               
               <motion.div 
-                className="bg-gray-900/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 text-center"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
+                className="surface-elevated rounded-xl p-8 surface-elevated-hover"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
               >
-                <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-400 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                  <Lock className="text-white w-6 h-6" />
+                <div className="w-14 h-14 bg-primary rounded-xl mx-auto mb-6 flex items-center justify-center">
+                  <Lock className="text-primary-foreground w-7 h-7" />
                 </div>
-                <h3 className="font-semibold mb-2">Privacy First</h3>
-                <p className="text-sm text-gray-400">We don't sell your data like others. Your inbox secrets stay secret.</p>
+                <h3 className="font-semibold text-lg mb-3 text-foreground">Privacy First</h3>
+                <p className="text-muted-foreground font-light leading-relaxed">We don't sell your data like others. Your inbox secrets stay secret.</p>
               </motion.div>
             </motion.div>
 
