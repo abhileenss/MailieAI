@@ -17,16 +17,17 @@ export interface NewsletterAnalysis {
 }
 
 export class EmailCategorizationService {
-  private openai: OpenAI;
+  private openai?: OpenAI;
+  private hasApiKey: boolean;
 
   constructor() {
-    if (!process.env.OPENAI_API_KEY) {
-      throw new Error("OPENAI_API_KEY environment variable is required");
-    }
+    this.hasApiKey = !!process.env.OPENAI_API_KEY;
     
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
-    });
+    if (this.hasApiKey) {
+      this.openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY
+      });
+    }
   }
 
   // Categorize a single email using AI

@@ -1,30 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
-import { CheckCircle, Star, ArrowRight } from "lucide-react";
+import { CheckCircle, Star, ArrowRight, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SenderCard } from "@/components/sender-card";
 import { EmailPreview } from "@/components/email-preview";
 import { SEOHead } from "@/components/seo-head";
 import { Navigation } from "@/components/navigation";
-import { mockEmailSenders, EmailSender } from "@/data/mock-data";
+import { useAuth } from "@/hooks/useAuth";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { EmailSender } from "@/data/mock-data";
 
 export default function EmailScan() {
   const [, setLocation] = useLocation();
-  const [emailSenders, setEmailSenders] = useState<EmailSender[]>(() => {
-    const saved = localStorage.getItem('pookai-email-senders');
-    return saved ? JSON.parse(saved) : mockEmailSenders;
-  });
+  const { user, isAuthenticated } = useAuth();
   const [selectedSender, setSelectedSender] = useState<EmailSender | null>(null);
+  const queryClient = useQueryClient();
+
+  // Fetch email senders from the database
+  const { data: emailSenders = [], isLoading, error } = useQuery({
+    queryKey: ['/api/emails/senders'],
+    enabled: isAuthenticated,
+    retry: 1
+  });
+
+  // Mutation for updating email categories
+  const categorizeMutation = useMutation({
+    mutationFn: async ({ senderId, category }: { senderId: string; category: string }) => {
+      return apiRequest('/api/emails/categorize', 'POST', { senderId, category });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/emails/senders'] });
+    }
+  });
 
   const handleCategoryChange = (senderId: string, category: string) => {
-    const updatedSenders = emailSenders.map(sender => 
-      sender.id === senderId 
-        ? { ...sender, category: category as EmailSender['category'] }
-        : sender
-    );
-    setEmailSenders(updatedSenders);
-    localStorage.setItem('pookai-email-senders', JSON.stringify(updatedSenders));
+    // Use the API mutation to update category
+    categorizeMutation.mutate({ senderId, category });
     
     // Update selected sender if it's the one being modified
     if (selectedSender?.id === senderId) {
