@@ -1,0 +1,29 @@
+So I'm currently scanner. We have a screen calendar. We have our logo menu, hamburger by a profile button. Hamburger menu will be replaced by a profile button. Profile button will have just a drop down which only says dashboard and logout only those things. Once the person is logged in then it will be profile.
+
+Otherwise it will be just the M Hamburger um, Menu that's ah. Or not even a hamburger menu. Just a CT icon on top of that, nothing else. Okay, skip. Then it will be a hero section. Hero section will have the same CTA that we are having currently. That's not an issue.
+
+And basically the basic landing page, a very basic landing page that we have currently which we can change later. Now once the user logs in or once the user clicks on connect my uh, whatever account is there then we would need to go to the auth screen. We'll authorize it and stuff.
+
+Uh, that's not a problem. Then we would need to process the email so that we have a loading screen that is also done. Uh, that's not showing. That's not showing. Uh, that's not, that's not a real problem. That's showing. Currently what we can do is we can probably like have a delay of some amount of time.
+
+We can see how we can actually measure the promises. We can measure it by the way, that's, that's not an issue. So basically what we can do is we can have a callback mechanism wherein we can call the particular API until it sends the um, say for example intel sends back the output.
+
+We won't be showing the user 100% but instead what we can do is how progress bars works. Also uh, that you usually send the data in chunks. So if one process is complete then you send the data as 25% and stuff like that. Or we can just have it very arbitrary so it doesn't show anything.
+
+Once it's done 100% we'll just have it 100%. Or matter of fact we even don't need to do that. What we can do is how credit does it. It doesn't show any progress. What it shows is prompts that your data is getting processed. This is happening, this is happening.
+
+So say for example you have eight of them and those cycle out in like three or four seconds. So user think that something is happening. Even if the data is returned in say about 10 seconds. Two prompts only run if the data is returned 40 seconds. Eight prompts run if the data is returned in 50 seconds you cycle the prompts again.
+
+Eight to 10 prompts are enough. 50 seconds, more than 50 seconds the data would be there. Right? That's the one thing. Then what it will do is uh, after uh that we have the dashboard screen. Dashboard screen will be replaced by our current screen of that we have already passed your emails and these are the senders and what do you want to do with those senders?
+
+And we will try to have those labeled in some buckets that we have already created. Those buckets will be creating by ourselves which are currently in the configure. Not even in the configure one. I'm not really sure these are. The buckets are basically the ones that we want the one way.
+
+So basically what he's trying to say is key. There are uh. Basically we have done categorization then we have put in bucket. So what we'll do is we'll give user some already created buckets where user can click key. Okay, this I want, this I don't want. But AI will personalize whatever chat GPT is thinking and giving that that it will personalize.
+
+Right. So the buckets that we're creating are based on essentially what users would want. What, what kind of emails are user getting? If those are payments, emails for a founder, payments then customer complaints. These are very important. We can categorize for a founder. We can have those buckets as yc, uh, as some newsletters for a very layman personal newsletters and any updates that he, that they are getting.
+
+We can also categorize them based on OTPs, any OTPs, any payment transactions.
+
+OTPs we cannot take but OTPs we.
+
+Should, we don't need to. We. So essentially we would be taking OTPs because they are authorizing us and we are parsing all the emails. But uh, on the same part we would be using encrypted data at some point. These are some privacy concerns that we would need to address later on if there is any OTP we.
