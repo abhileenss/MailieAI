@@ -218,6 +218,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // WhatsApp integration for remind-me and newsletter categories
+  app.post("/api/whatsapp/send-reminder", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { phoneNumber, emailData } = req.body;
+      
+      const { WhatsAppService } = require("./services/whatsappService");
+      const whatsappService = new WhatsAppService();
+      
+      const result = await whatsappService.sendWhatsAppReminder(userId, phoneNumber, emailData);
+      
+      res.json({
+        success: true,
+        message: "WhatsApp reminder sent successfully",
+        messageSid: result.sid
+      });
+    } catch (error) {
+      console.error("WhatsApp reminder error:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to send WhatsApp reminder", 
+        error: error.message 
+      });
+    }
+  });
+
+  app.post("/api/whatsapp/send-newsletter-summary", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { phoneNumber, newsletters } = req.body;
+      
+      const { WhatsAppService } = require("./services/whatsappService");
+      const whatsappService = new WhatsAppService();
+      
+      const result = await whatsappService.sendNewsletterSummary(userId, phoneNumber, newsletters);
+      
+      res.json({
+        success: true,
+        message: "Newsletter summary sent via WhatsApp",
+        messageSid: result.sid
+      });
+    } catch (error) {
+      console.error("WhatsApp newsletter error:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to send newsletter summary", 
+        error: error.message 
+      });
+    }
+  });
+
   // Trigger call for specific email categories
   app.post("/api/voice/trigger-call", isAuthenticated, async (req: any, res) => {
     try {
@@ -263,19 +314,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { category } = req.body;
       const userId = req.user.claims.sub;
       
+      if (!category || !senderId) {
+        return res.status(400).json({ message: 'Missing required fields: senderId or category' });
+      }
+      
       console.log(`Updating sender ${senderId} category to ${category} for user ${userId}`);
       
       // Update the category in database
       await storage.updateEmailSenderCategory(senderId, category);
       
       res.json({ 
+        success: true,
         message: 'Category updated successfully',
         senderId,
         category
       });
     } catch (error) {
       console.error('Error updating sender category:', error);
-      res.status(500).json({ message: 'Failed to update category' });
+      res.status(500).json({ 
+        success: false,
+        message: 'Failed to update category',
+        error: error.message 
+      });
     }
   });
 
