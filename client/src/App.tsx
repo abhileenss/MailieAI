@@ -5,10 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
-import MainDashboard from "@/pages/main-dashboard";
+import GuidedApp from "@/pages/guided-app";
 import EmailScanning from "@/pages/email-scanning";
-import CallConfig from "@/pages/call-config";
-import Personalization from "@/pages/personalization";
 import Privacy from "@/pages/privacy";
 import Security from "@/pages/security";
 import Support from "@/pages/support";
@@ -34,11 +32,9 @@ function Router() {
         <Route path="/" component={Landing} />
       ) : (
         <>
-          <Route path="/" component={MainDashboard} />
-          <Route path="/dashboard" component={MainDashboard} />
+          <Route path="/" component={GuidedApp} />
+          <Route path="/dashboard" component={GuidedApp} />
           <Route path="/scanning" component={EmailScanning} />
-          <Route path="/personalization" component={Personalization} />
-          <Route path="/call-config" component={CallConfig} />
         </>
       )}
       <Route path="/privacy" component={Privacy} />
