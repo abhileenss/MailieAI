@@ -5,7 +5,7 @@ import { Mail, Users, BarChart3, Filter, ArrowRight, Edit3 } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Navigation } from "@/components/navigation";
+import { CleanNavigation } from "@/components/clean-navigation";
 import { SEOHead } from "@/components/seo-head";
 import { useLocation } from "wouter";
 
@@ -51,7 +51,7 @@ export default function EmailDiscovery() {
   if (!emailData?.success || emailData.totalSenders === 0) {
     return (
       <div className="min-h-screen bg-background text-foreground">
-        <Navigation currentPage="/discovery" />
+        <CleanNavigation currentPage="/discovery" />
         <div className="container mx-auto px-6 py-8 text-center">
           <h1 className="text-3xl font-bold mb-4">No Email Data Found</h1>
           <p className="text-muted-foreground mb-6">
@@ -110,7 +110,7 @@ export default function EmailDiscovery() {
       />
       
       <div className="min-h-screen bg-background text-foreground">
-        <Navigation currentPage="/discovery" />
+        <CleanNavigation currentPage="/discovery" />
         
         <div className="container mx-auto px-6 py-8">
           {/* Header */}
@@ -241,9 +241,9 @@ export default function EmailDiscovery() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-3 max-h-96 overflow-y-auto">
-                  {filteredSenders.map((sender) => (
+                  {filteredSenders.map((sender, index) => (
                     <div
-                      key={sender.id}
+                      key={`${sender.id}-${index}`}
                       className={`p-3 border rounded-lg cursor-pointer transition-all ${
                         selectedSenders.includes(sender.id) 
                           ? 'border-primary bg-primary/5' 
