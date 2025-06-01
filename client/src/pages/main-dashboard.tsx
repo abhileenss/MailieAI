@@ -4,7 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { apiRequest } from "@/lib/queryClient";
+import { Link } from "wouter";
 import { 
   Search, 
   Mail, 
@@ -16,7 +21,10 @@ import {
   Settings,
   Bell,
   MessageSquare,
-  Filter
+  Filter,
+  ChevronDown,
+  LayoutDashboard,
+  LogOut
 } from "lucide-react";
 
 interface EmailSender {
@@ -140,6 +148,7 @@ export default function MainDashboard() {
   const [booleanSearch, setBooleanSearch] = useState('');
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   // Fetch processed emails
   const { data: processedEmails, isLoading } = useQuery<ProcessedEmailsResponse>({
@@ -315,13 +324,38 @@ export default function MainDashboard() {
           </div>
           <div className="flex items-center space-x-4">
             <Button variant="outline" size="sm">
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </Button>
-            <Button variant="outline" size="sm">
               <Bell className="w-4 h-4 mr-2" />
               Notifications
             </Button>
+            
+            {/* Profile Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center space-x-2 h-9">
+                  <Avatar className="w-6 h-6">
+                    <AvatarFallback className="text-xs">
+                      {user?.firstName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="hidden sm:inline-block text-sm font-medium">
+                    {user?.firstName || user?.email?.split('@')[0] || 'User'}
+                  </span>
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard" className="flex items-center w-full cursor-pointer">
+                    <LayoutDashboard className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => window.location.href = '/api/logout'} className="cursor-pointer">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
