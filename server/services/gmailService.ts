@@ -30,14 +30,14 @@ export class GmailService {
   private gmail: any;
 
   constructor() {
-    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    if (!process.env.GMAIL_CLIENT_ID || !process.env.GMAIL_CLIENT_SECRET) {
       console.warn('Gmail API credentials not configured. Email features will be unavailable.');
       return;
     }
 
     this.oauth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
+      process.env.GMAIL_CLIENT_ID,
+      process.env.GMAIL_CLIENT_SECRET,
       `https://${process.env.REPLIT_DOMAINS?.split(',')[0]}/api/auth/gmail/callback`
     );
     
@@ -218,8 +218,8 @@ export class GmailService {
     }
   }
 
-  // Extract email address from "Name <email@domain.com>" format
-  private extractEmail(fromString: string): string {
+  // Extract email address from "Name <email@domain.com>" format (public method)
+  extractEmail(fromString: string): string {
     const emailMatch = fromString.match(/<([^>]+)>/);
     return emailMatch ? emailMatch[1] : fromString.trim();
   }

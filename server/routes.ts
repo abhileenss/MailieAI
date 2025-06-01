@@ -71,6 +71,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log('Gmail tokens stored for user:', user.claims.sub);
       }
 
+      // After storing tokens, automatically scan and process emails
+      if (user?.claims?.sub) {
+        try {
+          console.log('Starting automatic email scan for newly authenticated user...');
+          
+          // Get fresh emails from Gmail
+          const messages = await gmailService.getMessages(user.claims.sub, 200);
+          console.log(`Retrieved ${messages.length} emails for processing`);
+          
+          // Get sender analytics
+          const senders = await gmailService.getEmailSendersByDomain(user.claims.sub);
+          console.log(`Found ${senders.length} unique email senders`);
+          
+          // Store senders in database
+          await gmailService.storeEmailSenders(user.claims.sub, senders);
+          
+          // AI categorize emails if OpenAI is available
+          if (messages.length > 0) {
+            const categorizations = await categorizationService.categorizeEmails(messages);
+            console.log(`AI categorized ${categorizations.size} emails`);
+            
+            // Update sender categories based on AI analysis
+            for (const [messageId, categoryResult] of categorizations) {
+              const message = messages.find(m => m.id === messageId);
+              if (message) {
+                const senderEmail = gmailService.extractEmail(message.from);
+                const senderId = `${user.claims.sub}_${senderEmail}`;
+                
+                try {
+                  await storage.updateEmailSenderCategory(senderId, categoryResult.suggestedCategory);
+                } catch (error) {
+                  // Sender might not exist, continue processing
+                  console.log(`Could not update category for ${senderEmail}, continuing...`);
+                }
+              }
+            }
+          }
+          
+          console.log('Email scanning and categorization completed successfully');
+        } catch (scanError) {
+          console.error('Error during automatic email scan:', scanError);
+          // Don't fail the auth flow, just log the error
+        }
+      }
+
       // Redirect to scanning page with success parameter
       res.redirect('/scanning?gmail=connected');
     } catch (error) {
@@ -818,6 +863,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error with daily digest call:', error);
       res.status(500).json({ message: 'Failed to initiate daily digest call' });
+    }
+  });
+
+  // Manual email scanning endpoint for real-time processing
+  app.post("/api/emails/scan-now", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      console.log(`Manual email scan triggered for user: ${userId}`);
+      
+      // Check if user has Gmail credentials
+      const hasCredentials = await gmailService.setUserCredentials(userId);
+      if (!hasCredentials) {
+        return res.status(400).json({ 
+          message: 'Gmail not connected. Please connect your Gmail account first.',
+          needsAuth: true 
+        });
+      }
+      
+      // Get fresh emails from Gmail (increased limit for comprehensive scan)
+      const messages = await gmailService.getMessages(userId, 500);
+      console.log(`Retrieved ${messages.length} emails for processing`);
+      
+      // Get sender analytics by domain
+      const senders = await gmailService.getEmailSendersByDomain(userId);
+      console.log(`Found ${senders.length} unique email senders`);
+      
+      // Store/update senders in database
+      await gmailService.storeEmailSenders(userId, senders);
+      
+      // AI categorize emails using OpenAI
+      let categorizedCount = 0;
+      if (messages.length > 0) {
+        const categorizations = await categorizationService.categorizeEmails(messages);
+        console.log(`AI categorized ${categorizations.size} emails`);
+        
+        // Update sender categories based on AI analysis
+        for (const [messageId, categoryResult] of Array.from(categorizations.entries())) {
+          const message = messages.find(m => m.id === messageId);
+          if (message && categoryResult.suggestedCategory) {
+            const senderEmail = gmailService.extractEmail(message.from);
+            const senderId = `${userId}_${senderEmail}`;
+            
+            try {
+              await storage.updateEmailSenderCategory(senderId, categoryResult.suggestedCategory);
+              categorizedCount++;
+            } catch (error) {
+              console.log(`Could not update category for ${senderEmail}, continuing...`);
+            }
+          }
+        }
+      }
+      
+      res.json({ 
+        success: true,
+        message: 'Email scan completed successfully',
+        totalEmails: messages.length,
+        uniqueSenders: senders.length,
+        categorizedSenders: categorizedCount,
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error: any) {
+      console.error('Error during manual email scan:', error);
+      res.status(500).json({ 
+        message: 'Failed to scan emails',
+        error: error.message
+      });
     }
   });
 
