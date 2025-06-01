@@ -8,9 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { SEOHead } from "@/components/seo-head";
-import { NavigationFooter } from "@/components/navigation-footer";
 import { CleanNavigation } from "@/components/clean-navigation";
-import { ProgressStepper } from "@/components/progress-stepper";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -144,14 +142,6 @@ export default function EmailCategorization() {
   }, [processedEmails]);
 
   const handleCategoryChange = (senderId: string, category: string) => {
-    // Prevent multiple clicks while request is pending
-    if (updateCategoryMutation.isPending) {
-      return;
-    }
-
-    // Store original state for rollback on error
-    const originalSender = processedSenders.find(s => s.id === senderId);
-    
     // Optimistically update the UI
     setProcessedSenders(prev => 
       prev.map(sender => 
@@ -159,19 +149,8 @@ export default function EmailCategorization() {
       )
     );
 
-    // Update on server with error recovery
-    updateCategoryMutation.mutate({ senderId, category }, {
-      onError: () => {
-        // Rollback on error
-        if (originalSender) {
-          setProcessedSenders(prev => 
-            prev.map(sender => 
-              sender.id === senderId ? originalSender : sender
-            )
-          );
-        }
-      }
-    });
+    // Update on server
+    updateCategoryMutation.mutate({ senderId, category });
   };
 
   const handleContinue = () => {
@@ -260,12 +239,6 @@ export default function EmailCategorization() {
         <CleanNavigation currentPage="/categorize" />
         
         <div className="container mx-auto px-6 py-8">
-          {/* Progress Indicator */}
-          <ProgressStepper 
-            steps={["Connect", "Discover", "Preview", "Categorize", "Preferences", "Call Setup", "Dashboard"]}
-            currentStep={3}
-          />
-          
           {/* Header */}
           <div className="text-center mb-8">
             <motion.div
@@ -608,7 +581,6 @@ export default function EmailCategorization() {
 
         </div>
       </div>
-      <NavigationFooter />
     </>
   );
 }

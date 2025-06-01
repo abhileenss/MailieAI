@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
-import { Phone, Mic, Settings, Clock, Download, Play, Pause, Volume2, MessageSquare } from "lucide-react";
+import { Phone, Mic, Settings, Clock, Download, Play, Pause, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

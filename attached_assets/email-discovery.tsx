@@ -6,9 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CleanNavigation } from "@/components/clean-navigation";
-import { NavigationFooter } from "@/components/navigation-footer";
 import { SEOHead } from "@/components/seo-head";
-import { ProgressStepper } from "@/components/progress-stepper";
 import { useLocation } from "wouter";
 
 interface EmailSender {
@@ -115,12 +113,6 @@ export default function EmailDiscovery() {
         <CleanNavigation currentPage="/discovery" />
         
         <div className="container mx-auto px-6 py-8">
-          {/* Progress Indicator */}
-          <ProgressStepper 
-            steps={["Connect", "Discover", "Preview", "Categorize", "Preferences", "Call Setup", "Dashboard"]}
-            currentStep={1}
-          />
-          
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -311,7 +303,6 @@ export default function EmailDiscovery() {
           </motion.div>
         </div>
       </div>
-      <NavigationFooter />
     </>
   );
 }
