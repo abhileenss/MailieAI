@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { SEOHead } from "@/components/seo-head";
+import { NavigationFooter } from "@/components/navigation-footer";
 import { CleanNavigation } from "@/components/clean-navigation";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -600,6 +601,7 @@ export default function EmailCategorization() {
 
         </div>
       </div>
+      <NavigationFooter />
     </>
   );
 }

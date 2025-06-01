@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SEOHead } from "@/components/seo-head";
 import { CleanNavigation } from "@/components/clean-navigation";
+import { NavigationFooter } from "@/components/navigation-footer";
 import { apiRequest } from "@/lib/queryClient";
 
 interface EmailSender {
@@ -339,6 +340,7 @@ export default function EmailDashboard() {
           )}
         </div>
       </div>
+      <NavigationFooter />
     </>
   );
 }

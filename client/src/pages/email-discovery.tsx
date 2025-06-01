@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CleanNavigation } from "@/components/clean-navigation";
+import { NavigationFooter } from "@/components/navigation-footer";
 import { SEOHead } from "@/components/seo-head";
 import { useLocation } from "wouter";
 
@@ -303,6 +304,7 @@ export default function EmailDiscovery() {
           </motion.div>
         </div>
       </div>
+      <NavigationFooter />
     </>
   );
 }
