@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Brain, Phone, Lock, ArrowRight, Mail, Users, Building, Clock, Target, Zap, CheckCircle, User } from "lucide-react";
+import { Brain, Phone, Lock, ArrowRight, Mail, Users, Building, Clock, Target, Zap, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -11,6 +11,20 @@ interface UserProfile {
   communicationStyle: string;
   voicePreference: string;
   referralSource: string;
+}
+
+interface OnboardingOption {
+  value: string;
+  label: string;
+  icon: any;
+  description?: string;
+}
+
+interface OnboardingStep {
+  title: string;
+  subtitle: string;
+  multiSelect?: boolean;
+  options: OnboardingOption[];
 }
 
 export default function PublicLanding() {
@@ -25,7 +39,7 @@ export default function PublicLanding() {
     referralSource: ''
   });
 
-  const onboardingSteps = [
+  const onboardingSteps: OnboardingStep[] = [
     {
       title: "What's your role?",
       subtitle: "Help us understand your work",
@@ -105,7 +119,7 @@ export default function PublicLanding() {
     if (currentStepData.multiSelect) {
       const currentValues = userProfile.priorityTypes || [];
       const updatedValues = currentValues.includes(value)
-        ? currentValues.filter(v => v !== value)
+        ? currentValues.filter((v: string) => v !== value)
         : [...currentValues, value];
       
       setUserProfile(prev => ({
@@ -254,10 +268,25 @@ export default function PublicLanding() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
+      {/* Navigation Header */}
+      <nav className="flex justify-between items-center p-6 max-w-7xl mx-auto w-full">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+            <Brain className="w-5 h-5 text-white" />
+          </div>
+          <span className="text-xl font-bold">PookAi</span>
+        </div>
+        <div className="hidden md:flex items-center space-x-8">
+          <a href="/privacy" className="text-gray-300 hover:text-white transition-colors">Privacy</a>
+          <a href="/security" className="text-gray-300 hover:text-white transition-colors">Security</a>
+          <a href="/support" className="text-gray-300 hover:text-white transition-colors">Support</a>
+        </div>
+      </nav>
+
       {/* Hero Section */}
-      <div className="flex-1 flex items-center justify-center px-6 py-20">
-        <div className="max-w-6xl mx-auto">
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="max-w-7xl mx-auto">
           
           {/* Main Hero */}
           <motion.div
@@ -266,29 +295,53 @@ export default function PublicLanding() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h1 className="text-6xl md:text-7xl font-bold mb-8 leading-tight">
-              Your Personal
+            <div className="inline-flex items-center px-4 py-2 bg-purple-500/20 rounded-full border border-purple-500/30 mb-8">
+              <span className="text-sm font-medium text-purple-200">New: Voice-first email intelligence</span>
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
+              Stop Missing What
               <br />
-              <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
-                AI Assistant
+              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+                Actually Matters
               </span>
             </h1>
-            <p className="text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed">
-              Stop drowning in email chaos. Your AI assistant calls you with what actually matters, 
-              filters the noise, and keeps you focused on what's important.
+            <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed">
+              Your AI concierge calls you daily with what's urgent, filters the noise, 
+              and gives you back hours of focused time every day.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-              <button 
+            {/* Enhanced CTA Section */}
+            <div className="flex flex-col items-center space-y-6 mb-12">
+              <motion.button 
                 onClick={handleGetStarted}
-                className="neopop-button neopop-button-primary text-xl px-12 py-6 font-semibold"
+                className="group relative inline-flex items-center justify-center px-12 py-6 text-xl font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Start My Setup
-                <ArrowRight className="ml-3 w-6 h-6" />
-              </button>
-              <p className="text-lg text-muted-foreground">
-                2-minute setup • No credit card needed
-              </p>
+                <span className="relative z-10 flex items-center">
+                  Scan My Inbox Now
+                  <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+              </motion.button>
+              
+              <div className="flex items-center space-x-4 text-gray-400">
+                <div className="flex items-center space-x-1">
+                  <CheckCircle className="w-4 h-4 text-green-400" />
+                  <span>2-minute setup</span>
+                </div>
+                <span>•</span>
+                <div className="flex items-center space-x-1">
+                  <CheckCircle className="w-4 h-4 text-green-400" />
+                  <span>No credit card</span>
+                </div>
+                <span>•</span>
+                <div className="flex items-center space-x-1">
+                  <CheckCircle className="w-4 h-4 text-green-400" />
+                  <span>Privacy first</span>
+                </div>
+              </div>
             </div>
           </motion.div>
 
@@ -299,46 +352,73 @@ export default function PublicLanding() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <Card className="neopop-card p-8 text-center">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 text-center hover:bg-white/10 transition-all duration-300">
               <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl mx-auto mb-6 flex items-center justify-center">
                 <Brain className="text-white w-8 h-8" />
               </div>
-              <h3 className="text-2xl font-bold mb-4">Smart Categories</h3>
-              <p className="text-lg text-muted-foreground leading-relaxed">
+              <h3 className="text-2xl font-bold mb-4 text-white">Smart Categories</h3>
+              <p className="text-lg text-gray-300 leading-relaxed">
                 "Call Me For This", "Why Did I Sign Up?", "Don't Tell Anyone" - categories that make sense for busy professionals
               </p>
-            </Card>
+            </div>
             
-            <Card className="neopop-card p-8 text-center">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 text-center hover:bg-white/10 transition-all duration-300">
               <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-600 rounded-xl mx-auto mb-6 flex items-center justify-center">
                 <Phone className="text-white w-8 h-8" />
               </div>
-              <h3 className="text-2xl font-bold mb-4">Daily Voice Calls</h3>
-              <p className="text-lg text-muted-foreground leading-relaxed">
+              <h3 className="text-2xl font-bold mb-4 text-white">Daily Voice Calls</h3>
+              <p className="text-lg text-gray-300 leading-relaxed">
                 "Hey, 3 investor emails need responses and your payment processor is down" - delivered by voice
               </p>
-            </Card>
+            </div>
             
-            <Card className="neopop-card p-8 text-center">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 text-center hover:bg-white/10 transition-all duration-300">
               <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl mx-auto mb-6 flex items-center justify-center">
                 <Lock className="text-white w-8 h-8" />
               </div>
-              <h3 className="text-2xl font-bold mb-4">Privacy First</h3>
-              <p className="text-lg text-muted-foreground leading-relaxed">
+              <h3 className="text-2xl font-bold mb-4 text-white">Privacy First</h3>
+              <p className="text-lg text-gray-300 leading-relaxed">
                 No data selling, no surveillance. Your inbox secrets stay between you and your AI concierge
               </p>
-            </Card>
+            </div>
+          </motion.div>
+
+          {/* How It Works */}
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <h2 className="text-4xl font-bold mb-12 text-white">How It Works</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4">1</div>
+                <h3 className="text-xl font-semibold mb-2 text-white">Connect Gmail</h3>
+                <p className="text-gray-300">Secure OAuth connection to your email</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4">2</div>
+                <h3 className="text-xl font-semibold mb-2 text-white">AI Categorizes</h3>
+                <p className="text-gray-300">Smart categorization of all your emails</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4">3</div>
+                <h3 className="text-xl font-semibold mb-2 text-white">Daily Voice Summary</h3>
+                <p className="text-gray-300">Get called with what actually matters</p>
+              </div>
+            </div>
           </motion.div>
 
           {/* Social Proof */}
           <motion.div 
-            className="text-center"
+            className="text-center mb-16"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
           >
-            <p className="text-muted-foreground mb-6">Trusted by founders at</p>
-            <div className="flex justify-center items-center space-x-8 text-muted-foreground text-lg">
+            <p className="text-gray-400 mb-6">Trusted by founders at</p>
+            <div className="flex justify-center items-center space-x-8 text-gray-300 text-lg">
               <span>YC Companies</span>
               <span>•</span>
               <span>500 Startups</span>
@@ -350,6 +430,58 @@ export default function PublicLanding() {
           </motion.div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="border-t border-white/10 bg-black/20 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                  <Brain className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xl font-bold text-white">PookAi</span>
+              </div>
+              <p className="text-gray-400">
+                Your AI email concierge for busy professionals
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="text-white font-semibold mb-4">Product</h4>
+              <div className="space-y-2">
+                <a href="#features" className="block text-gray-400 hover:text-white transition-colors">Features</a>
+                <a href="#pricing" className="block text-gray-400 hover:text-white transition-colors">Pricing</a>
+                <a href="#demo" className="block text-gray-400 hover:text-white transition-colors">Demo</a>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-white font-semibold mb-4">Company</h4>
+              <div className="space-y-2">
+                <a href="/privacy" className="block text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+                <a href="/security" className="block text-gray-400 hover:text-white transition-colors">Security</a>
+                <a href="/support" className="block text-gray-400 hover:text-white transition-colors">Support</a>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-white font-semibold mb-4">Connect</h4>
+              <div className="space-y-2">
+                <a href="mailto:hello@pookai.com" className="block text-gray-400 hover:text-white transition-colors">Contact</a>
+                <a href="#" className="block text-gray-400 hover:text-white transition-colors">Twitter</a>
+                <a href="#" className="block text-gray-400 hover:text-white transition-colors">LinkedIn</a>
+              </div>
+            </div>
+          </div>
+          
+          <div className="border-t border-white/10 mt-8 pt-8 text-center">
+            <p className="text-gray-400">
+              © 2025 PookAi. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

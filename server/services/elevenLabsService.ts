@@ -45,43 +45,9 @@ export class ElevenLabsService {
     }
   }
 
-  async generateVoiceAudio(script: string, voiceId: string = 'rachel'): Promise<Buffer> {
-    if (!this.apiKey) {
-      throw new Error('ElevenLabs API key not configured');
-    }
-
-    try {
-      const response = await fetch(`${this.baseUrl}/text-to-speech/${voiceId}`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': this.apiKey
-        },
-        body: JSON.stringify({
-          text: script,
-          model_id: 'eleven_monolingual_v1',
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.75
-          }
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`ElevenLabs API error: ${response.statusText}`);
-      }
-
-      return Buffer.from(await response.arrayBuffer());
-    } catch (error) {
-      console.error('Error generating voice audio:', error);
-      throw error;
-    }
-  }
-
   async makeVoiceCall(userId: string, phoneNumber: string, callType: string, emailData: any): Promise<any> {
     if (!this.apiKey) {
-      throw new Error('ElevenLabs API key not configured');
+      throw new Error('11 Labs API key not configured. Please provide ELEVENLABS_API_KEY');
     }
 
     // Create conversational agent first
