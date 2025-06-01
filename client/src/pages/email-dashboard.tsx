@@ -182,8 +182,8 @@ export default function EmailDashboard() {
           </Card>
         ) : (
           <div className="grid gap-4">
-            {senders.map((sender) => (
-              <SenderCard key={sender.id} sender={sender} />
+            {senders.map((sender, index) => (
+              <SenderCard key={`${sender.id}-${sender.email}-${index}`} sender={sender} />
             ))}
           </div>
         )}
