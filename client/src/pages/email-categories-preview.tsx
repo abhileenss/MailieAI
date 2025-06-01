@@ -95,7 +95,7 @@ export default function EmailCategoriesPreview() {
   });
 
   const handleContinue = () => {
-    setLocation('/preferences');
+    setLocation('/categorize');
   };
 
   const totalSenders = processedEmails?.totalSenders || 0;
@@ -297,7 +297,7 @@ export default function EmailCategoriesPreview() {
                   onClick={handleContinue}
                   className="neopop-button neopop-button-primary text-lg px-8 py-4"
                 >
-                  Customize My Preferences
+                  Customize Categories
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
                 

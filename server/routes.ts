@@ -120,6 +120,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update individual sender category
+  app.patch("/api/emails/sender/:senderId/category", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { senderId } = req.params;
+      const { category } = req.body;
+
+      // Validate category
+      const validCategories = ['call-me', 'remind-me', 'keep-quiet', 'newsletter', 'why-did-i-signup', 'dont-tell-anyone'];
+      if (!validCategories.includes(category)) {
+        return res.status(400).json({ error: "Invalid category" });
+      }
+
+      // Verify sender belongs to user
+      if (!senderId.startsWith(userId + '_')) {
+        return res.status(403).json({ error: "Unauthorized access to sender" });
+      }
+
+      await storage.updateEmailSenderCategory(senderId, category);
+      
+      res.json({ success: true, message: "Category updated successfully" });
+    } catch (error) {
+      console.error("Error updating sender category:", error);
+      res.status(500).json({ error: "Failed to update category" });
+    }
+  });
+
   // Email Management Routes
   app.post("/api/emails/scan", isAuthenticated, async (req: any, res) => {
     try {
