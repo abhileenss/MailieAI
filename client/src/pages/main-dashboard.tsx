@@ -514,7 +514,7 @@ export default function MainDashboard() {
                       <Button
                         key={key}
                         variant={isSelected ? "default" : "outline"}
-                        className={`justify-start h-auto p-4 ${category.buttonColor}`}
+                        className={`justify-start h-auto p-4 neo-pop-button ${category.buttonColor}`}
                         onClick={() => handleCategoryUpdate(selectedSender, key)}
                         disabled={updateCategoryMutation.isPending}
                       >

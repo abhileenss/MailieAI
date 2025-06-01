@@ -3,6 +3,37 @@
 @tailwind components;
 @tailwind utilities;
 
+/* NeoPOP Design System */
+.neo-pop-shadow {
+  box-shadow: 8px 8px 0px #000, 12px 12px 0px rgba(0,0,0,0.2);
+}
+
+.neo-pop-card {
+  box-shadow: 4px 4px 0px #000, 6px 6px 0px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.neo-pop-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #000, 8px 8px 0px rgba(0,0,0,0.1);
+}
+
+.neo-pop-button {
+  box-shadow: 3px 3px 0px #000;
+  transition: all 0.2s ease;
+  border: 2px solid #000;
+}
+
+.neo-pop-button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px #000;
+}
+
+.neo-pop-button:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px #000;
+}
+
 :root {
   /* Web3 AI SaaS Color System */
   --background: 0 0% 0%; /* Pure black */
