@@ -5,16 +5,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
+import MainDashboard from "@/pages/main-dashboard";
 import EmailScanning from "@/pages/email-scanning";
-import EmailScan from "@/pages/email-scan";
-import EmailDashboard from "@/pages/email-dashboard";
-import EmailDiscovery from "@/pages/email-discovery";
-import EmailPreferences from "@/pages/email-preferences";
-import EmailCategoriesPreview from "@/pages/email-categories-preview";
-import EmailCategorization from "@/pages/email-categorization";
-import Personalization from "@/pages/personalization";
 import CallConfig from "@/pages/call-config";
-import FinalSetup from "@/pages/final-setup";
+import Personalization from "@/pages/personalization";
 import Privacy from "@/pages/privacy";
 import Security from "@/pages/security";
 import Support from "@/pages/support";
@@ -40,17 +34,11 @@ function Router() {
         <Route path="/" component={Landing} />
       ) : (
         <>
-          <Route path="/" component={EmailDiscovery} />
+          <Route path="/" component={MainDashboard} />
+          <Route path="/dashboard" component={MainDashboard} />
           <Route path="/scanning" component={EmailScanning} />
-          <Route path="/email-scan" component={EmailScan} />
-          <Route path="/discovery" component={EmailDiscovery} />
-          <Route path="/preview" component={EmailCategoriesPreview} />
-          <Route path="/categorize" component={EmailCategorization} />
-          <Route path="/preferences" component={EmailPreferences} />
-          <Route path="/dashboard" component={EmailDashboard} />
           <Route path="/personalization" component={Personalization} />
           <Route path="/call-config" component={CallConfig} />
-          <Route path="/final-setup" component={FinalSetup} />
         </>
       )}
       <Route path="/privacy" component={Privacy} />
