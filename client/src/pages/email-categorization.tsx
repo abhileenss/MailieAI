@@ -142,6 +142,14 @@ export default function EmailCategorization() {
   }, [processedEmails]);
 
   const handleCategoryChange = (senderId: string, category: string) => {
+    // Prevent multiple clicks while request is pending
+    if (updateCategoryMutation.isPending) {
+      return;
+    }
+
+    // Store original state for rollback on error
+    const originalSender = processedSenders.find(s => s.id === senderId);
+    
     // Optimistically update the UI
     setProcessedSenders(prev => 
       prev.map(sender => 
@@ -149,8 +157,19 @@ export default function EmailCategorization() {
       )
     );
 
-    // Update on server
-    updateCategoryMutation.mutate({ senderId, category });
+    // Update on server with error recovery
+    updateCategoryMutation.mutate({ senderId, category }, {
+      onError: () => {
+        // Rollback on error
+        if (originalSender) {
+          setProcessedSenders(prev => 
+            prev.map(sender => 
+              sender.id === senderId ? originalSender : sender
+            )
+          );
+        }
+      }
+    });
   };
 
   const handleContinue = () => {

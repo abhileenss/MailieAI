@@ -77,9 +77,11 @@ export class GmailService {
       return new Promise((resolve, reject) => {
         this.oauth2Client.getToken(code, (err, tokens) => {
           if (err) reject(err);
-          else {
-            this.oauth2Client.setCredentials(tokens!);
+          else if (tokens) {
+            this.oauth2Client.setCredentials(tokens);
             resolve(tokens);
+          } else {
+            reject(new Error('No tokens received'));
           }
         });
       });
@@ -96,10 +98,10 @@ export class GmailService {
         return false;
       }
 
-      this.oauth2Client.setCredentials({
+      this.oauth2Client?.setCredentials({
         access_token: userToken.accessToken,
         refresh_token: userToken.refreshToken,
-        expiry_date: userToken.expiresAt?.getTime()
+        expiry_date: userToken.expiresAt?.getTime() || undefined
       });
 
       return true;

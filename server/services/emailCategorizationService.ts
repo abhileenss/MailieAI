@@ -321,11 +321,15 @@ export class EmailCategorizationService {
         4. Ends with a professional sign-off
       `;
 
-      const response = await this.openai.chat.completions.create({
+      const response = await this.openai?.chat.completions.create({
         model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
         messages: [{ role: "user", content: prompt }],
         temperature: 0.7
       });
+
+      if (!response) {
+        throw new Error('OpenAI service not available');
+      }
 
       return response.choices[0].message.content || "Hey! Just checking in with your email digest. Everything looks manageable today.";
     } catch (error) {

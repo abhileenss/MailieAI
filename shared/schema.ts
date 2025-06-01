@@ -69,6 +69,7 @@ export const callLogs = pgTable("call_logs", {
   status: varchar("status"),
   duration: integer("duration"),
   callType: varchar("call_type"), // 'reminder', 'digest', 'urgent'
+  script: text("script"), // Voice call script content
   emailCount: integer("email_count").default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });
