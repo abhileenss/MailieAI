@@ -350,81 +350,90 @@ export default function EmailCategorization() {
               })}
             </div>
 
-            {/* Email Type Quick Filters */}
-            <div className="space-y-2">
+            {/* Email Type Quick Filters - Mobile Responsive */}
+            <div className="space-y-3">
               <p className="text-sm font-medium text-muted-foreground">Quick Filters by Email Type:</p>
-              <div className="flex gap-2 flex-wrap">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSearchTerm("newsletter")}
-                  className="text-xs"
+                  className="text-xs h-8 justify-start"
                 >
-                  📰 Newsletters
+                  <span className="mr-1">📰</span>
+                  <span className="truncate">Newsletters</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSearchTerm("bank")}
-                  className="text-xs"
+                  className="text-xs h-8 justify-start"
                 >
-                  🏦 Banking
+                  <span className="mr-1">🏦</span>
+                  <span className="truncate">Banking</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSearchTerm("event")}
-                  className="text-xs"
+                  className="text-xs h-8 justify-start"
                 >
-                  📅 Events
+                  <span className="mr-1">📅</span>
+                  <span className="truncate">Events</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSearchTerm("tool")}
-                  className="text-xs"
+                  className="text-xs h-8 justify-start"
                 >
-                  🔧 Tools
+                  <span className="mr-1">🔧</span>
+                  <span className="truncate">Tools</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSearchTerm("job")}
-                  className="text-xs"
+                  className="text-xs h-8 justify-start"
                 >
-                  💼 Jobs
+                  <span className="mr-1">💼</span>
+                  <span className="truncate">Jobs</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSearchTerm("social")}
-                  className="text-xs"
+                  className="text-xs h-8 justify-start"
                 >
-                  👥 Social
+                  <span className="mr-1">👥</span>
+                  <span className="truncate">Social</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSearchTerm("shopping")}
-                  className="text-xs"
+                  className="text-xs h-8 justify-start"
                 >
-                  🛒 Shopping
+                  <span className="mr-1">🛒</span>
+                  <span className="truncate">Shopping</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSearchTerm("consulting")}
-                  className="text-xs"
+                  className="text-xs h-8 justify-start"
                 >
-                  💡 Consulting
+                  <span className="mr-1">💡</span>
+                  <span className="truncate">Consulting</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSearchTerm("")}
-                  className="text-xs bg-gray-100"
+                  className="text-xs h-8 bg-gray-100 justify-start col-span-2 sm:col-span-1"
                 >
-                  ✕ Clear
+                  <span className="mr-1">✕</span>
+                  <span className="truncate">Clear Filter</span>
                 </Button>
               </div>
             </div>
@@ -452,30 +461,31 @@ export default function EmailCategorization() {
                       transition={{ duration: 0.3, delay: domainIndex * 0.05 }}
                       className="bg-card border rounded-lg p-6 hover:shadow-md transition-shadow"
                     >
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Left Side - Sender Info */}
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <Mail className="w-6 h-6 text-primary" />
+                      {/* Mobile-First Responsive Layout */}
+                      <div className="space-y-4">
+                        {/* Sender Info - Optimized for Mobile */}
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                           </div>
                           
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-semibold text-lg truncate">{sender.name}</h3>
-                              <Badge variant="secondary" className="text-sm">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
+                              <h3 className="font-semibold text-base sm:text-lg truncate">{sender.name}</h3>
+                              <Badge variant="secondary" className="text-xs w-fit">
                                 {sender.emailCount} emails
                               </Badge>
                             </div>
                             <p className="text-sm text-muted-foreground truncate mb-1">{sender.email}</p>
-                            <p className="text-xs text-muted-foreground">{sender.domain}</p>
-                            <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                            <p className="text-xs text-muted-foreground mb-1">{sender.domain}</p>
+                            <p className="text-xs text-muted-foreground line-clamp-2 sm:line-clamp-1">
                               Latest: {sender.latestSubject}
                             </p>
                           </div>
                         </div>
                         
-                        {/* Right Side - Action Buttons */}
-                        <div className="space-y-2">
+                        {/* Action Buttons - Mobile Optimized Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                           {Object.entries(categoryConfig).map(([key, config]) => {
                             const isSelected = sender.category === key;
                             const Icon = config.icon;
@@ -486,16 +496,16 @@ export default function EmailCategorization() {
                                 variant={isSelected ? "default" : "outline"}
                                 size="sm"
                                 onClick={() => handleCategoryChange(sender.id, key)}
-                                className={`w-full justify-start text-sm h-10 ${
+                                className={`justify-start text-xs sm:text-sm h-9 sm:h-10 transition-all duration-200 ${
                                   isSelected 
-                                    ? `${config.color} text-white border-0 shadow-sm` 
-                                    : 'hover:border-primary/50'
-                                }`}
+                                    ? `${config.color} text-white border-0 shadow-sm transform scale-105` 
+                                    : 'hover:border-primary/50 hover:shadow-sm'
+                                } ${updateCategoryMutation.isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 disabled={updateCategoryMutation.isPending}
                               >
-                                <Icon className="w-4 h-4 mr-3" />
-                                {config.title}
-                                {isSelected && <Check className="w-4 h-4 ml-auto" />}
+                                <Icon className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                                <span className="truncate">{config.title}</span>
+                                {isSelected && <Check className="w-3 h-3 sm:w-4 sm:h-4 ml-auto flex-shrink-0" />}
                               </Button>
                             );
                           })}
