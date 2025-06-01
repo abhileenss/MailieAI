@@ -38,10 +38,9 @@ PookAi is an intelligent email concierge designed for busy professionals who are
 
 ### 3. Email Processing Engine
 - Scans 100 recent emails per session
-- AI provides categorization suggestions using OpenAI GPT-4
+- AI suggests smart categorization (you approve every decision)
 - Processes authentic email data (tested with 102 real senders)
-- User reviews and approves all AI suggestions
-- Fallback suggestions when AI unavailable
+- Fallback logic when needed
 
 ### 4. Smart Categories System
 Our AI suggests sorting emails into intuitive, human-friendly buckets (you approve all suggestions):
@@ -307,14 +306,13 @@ Imagine starting your day with a friendly 2-minute phone call:
 - Our agent framework analyzes sender patterns and communication urgency
 - Learns what "founder important" actually means (spoiler: it's not another growth hack newsletter)
 
-**Step 2: AI Suggestions with User Approval**
-- **AI suggests categories** but **YOU decide the final placement**
+**Step 2: Quirky but Smart Categorization (with Your Approval)**
 - **"Call Me For This"** - Payment failures, investor replies, customer emergencies
 - **"Remind Me About This"** - Important but not burn-the-house-down urgent
 - **"Keep But Don't Care"** - Receipts, confirmations, legal stuff
 - **"Why Did I Sign Up For This?"** - Those newsletters you subscribed to at 2 AM
 - **"Don't Tell Anyone"** - Personal stuff that somehow ended up in work email
-- **User has final approval** on all categorizations - AI never decides for you
+- *AI suggests, you approve. No automatic decisions.*
 
 **Step 3: Precise Prompting for Perfect Summaries**
 - Natural language processing tuned for startup chaos
