@@ -92,9 +92,75 @@ Desktop-focused interface with sidebar navigation:
 - **Celebrity Voices**: Personalized experience with preferred voice
 - **Smart Scripts**: AI-generated call content based on email context
 
+## User Interface Guide
+
+### Main Dashboard
+The email categorization interface uses a comprehensive sidebar design:
+
+- **Left Panel**: Clean sidebar navigation with sections
+- **Main Area**: Email sender management with category cards
+- **Category Buttons**: Smart sorting with AI suggestions (you approve)
+- **Voice Settings**: Celebrity voice selection and customization
+
+### Navigation
+- **Email Scan**: Review and approve AI categorization suggestions
+- **Voice Settings**: Choose from 6 celebrity voices and customize delivery
+- **Notifications**: Configure call preferences and SMS alerts
+- **Call Schedule**: Manage daily digests and urgent alert timing
+- **Account**: User preferences and profile management
+
 ---
 
-## Technical Architecture
+## Privacy & Security
+
+### What We Access
+- Email sender information (names, addresses)
+- Email subject lines and timestamps
+- Your categorization preferences (after your approval)
+- Meeting calendar events (with permission)
+
+### What We DON'T Access
+- Email content or body text
+- Attachments or files
+- Personal conversations
+- Sensitive account information
+
+### How We Protect You
+- Military-grade encryption
+- Zero-knowledge architecture
+- Regular security audits
+- GDPR and CCPA compliant
+- No email storage - process and forget like a digital goldfish
+
+---
+
+## Support & Help
+
+### Getting Help
+- **Email Support**: support@pookai.com
+- **Founder Feedback**: founders@pookai.com
+- **Security Issues**: security@pookai.com
+
+### Response Times
+- **Critical Issues**: < 2 hours
+- **General Support**: < 24 hours
+- **Feature Requests**: < 3 days
+
+### Common Questions
+**Q: Is my email data safe?** 
+A: Yes, we use end-to-end encryption and never store email content.
+
+**Q: Which email providers work?** 
+A: Currently Gmail with full OAuth integration, more coming soon.
+
+**Q: Do I have control over AI decisions?** 
+A: Absolutely - AI only suggests, you approve every categorization.
+
+---
+
+## For Developers & Technical Details
+
+### Technical Architecture
 
 ### Frontend Stack
 - **React 18** with TypeScript for type safety
