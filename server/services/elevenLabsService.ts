@@ -6,48 +6,105 @@ export class ElevenLabsService {
     this.apiKey = process.env.ELEVENLABS_API_KEY;
   }
 
+  async createConversationalAgent(userId: string, emailData: any): Promise<any> {
+    if (!this.apiKey) {
+      throw new Error('11 Labs API key not configured. Please provide ELEVENLABS_API_KEY');
+    }
+
+    const agentConfig = this.generateAgentConfig(emailData);
+    
+    try {
+      // Create conversational agent with 11 Labs
+      const agentResponse = await fetch(`${this.baseUrl}/convai/conversations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'xi-api-key': this.apiKey
+        },
+        body: JSON.stringify({
+          agent_id: process.env.ELEVENLABS_AGENT_ID || 'your-agent-id',
+          ...agentConfig
+        })
+      });
+
+      if (!agentResponse.ok) {
+        throw new Error(`11 Labs Conversational AI error: ${agentResponse.statusText}`);
+      }
+
+      const conversationData = await agentResponse.json();
+
+      return {
+        success: true,
+        conversationId: conversationData.conversation_id,
+        message: 'Conversational AI agent created for email summary',
+        emailContext: emailData
+      };
+    } catch (error) {
+      console.error('11 Labs conversational AI error:', error);
+      throw error;
+    }
+  }
+
   async makeVoiceCall(userId: string, phoneNumber: string, callType: string, emailData: any): Promise<any> {
     if (!this.apiKey) {
       throw new Error('11 Labs API key not configured. Please provide ELEVENLABS_API_KEY');
     }
 
-    const voiceScript = this.generateVoiceScript(callType, emailData);
+    // Create conversational agent first
+    const agentResult = await this.createConversationalAgent(userId, emailData);
     
-    try {
-      // Generate audio with 11 Labs
-      const audioResponse = await fetch(`${this.baseUrl}/text-to-speech/your-voice-id`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': this.apiKey
-        },
-        body: JSON.stringify({
-          text: voiceScript,
-          model_id: "eleven_monolingual_v1",
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.5
-          }
-        })
-      });
+    return {
+      success: true,
+      message: 'Voice conversation ready with 11 Labs Conversational AI',
+      conversationId: agentResult.conversationId,
+      callType,
+      emailData,
+      phoneNumber
+    };
+  }
 
-      if (!audioResponse.ok) {
-        throw new Error(`11 Labs API error: ${audioResponse.statusText}`);
+  private generateAgentConfig(emailData: any): any {
+    const context = this.buildEmailContext(emailData);
+    
+    return {
+      system_prompt: `You are PookAi, a helpful AI assistant for busy startup founders. You're calling to provide an email summary and help prioritize important communications. 
+
+Email Context: ${context}
+
+Be concise, friendly, and professional. Ask if the user wants details about specific emails or senders.`,
+      
+      first_message: this.generateOpeningMessage(emailData),
+      
+      language: "en",
+      
+      voice_settings: {
+        stability: 0.7,
+        similarity_boost: 0.8,
+        style: 0.3,
+        use_speaker_boost: true
       }
+    };
+  }
 
-      // 11 Labs returns audio data - you would integrate this with your calling system
-      // For now, return success response
-      return {
-        success: true,
-        message: 'Voice call prepared with 11 Labs',
-        audioGenerated: true,
-        script: voiceScript
-      };
-    } catch (error) {
-      console.error('11 Labs voice generation error:', error);
-      throw error;
+  private buildEmailContext(emailData: any): string {
+    const { domain, category, senderCount, totalEmails, senders } = emailData;
+    
+    if (domain && category) {
+      const topSenders = senders?.slice(0, 3).map(s => `${s.name} (${s.emailCount} emails)`).join(', ') || '';
+      return `${totalEmails} emails from ${senderCount} senders at ${domain} in ${category} category. Key senders: ${topSenders}`;
     }
+    
+    return `Email summary with ${emailData.emailCount || 0} total emails requiring attention.`;
+  }
+
+  private generateOpeningMessage(emailData: any): string {
+    const { domain, category, senderCount, totalEmails } = emailData;
+    
+    if (domain && category) {
+      return `Hi! This is PookAi calling about your ${category} emails. You have ${totalEmails} new emails from ${domain} that need your attention. Would you like me to summarize them for you?`;
+    }
+    
+    return `Hi! This is PookAi with your email update. You have ${emailData.emailCount || 0} emails to review. How can I help you prioritize them?`;
   }
 
   private generateVoiceScript(callType: string, emailData: any): string {

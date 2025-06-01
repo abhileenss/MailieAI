@@ -101,10 +101,19 @@ export default function EmailCategorization() {
   // Update sender category mutation
   const updateCategoryMutation = useMutation({
     mutationFn: async ({ senderId, category }: { senderId: string; category: string }) => {
-      const response = await apiRequest(`/api/emails/senders/${senderId}/category`, {
+      const response = await fetch(`/api/emails/senders/${senderId}/category`, {
         method: 'PATCH',
-        body: { category }
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ category })
       });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to update category: ${response.statusText}`);
+      }
+      
       return response.json();
     },
     onSuccess: () => {
