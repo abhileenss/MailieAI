@@ -11,11 +11,12 @@ import { SEOHead } from "@/components/seo-head";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
 interface CallScript {
-  intro: string;
-  emailSummary: string;
-  actionItems: string[];
-  outro: string;
-  estimatedDuration: string;
+  script: string;
+  intro?: string;
+  emailSummary?: string;
+  actionItems?: string[];
+  outro?: string;
+  estimatedDuration?: string;
 }
 
 export default function CallConfig() {
@@ -347,12 +348,10 @@ export default function CallConfig() {
                         </div>
 
                         <div>
-                          <h4 className="font-medium mb-2">Action Items</h4>
-                          <ul className="text-sm bg-muted p-3 rounded space-y-1">
-                            {generatedScript.actionItems.map((item, index) => (
-                              <li key={index}>• {item}</li>
-                            ))}
-                          </ul>
+                          <h4 className="font-medium mb-2">Call Script</h4>
+                          <div className="text-sm bg-muted p-3 rounded whitespace-pre-line">
+                            {generatedScript.script || generatedScript.emailSummary || 'Script generation in progress...'}
+                          </div>
                         </div>
 
                         <div>
