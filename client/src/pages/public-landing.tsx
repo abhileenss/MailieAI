@@ -1,16 +1,15 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Brain, Phone, Lock, ArrowRight, Mail, Users, Building, Clock, Target, Zap, CheckCircle } from "lucide-react";
+import { Brain, Phone, Lock, ArrowRight, Mail, Users, Building, Clock, Target, Zap, CheckCircle, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface UserProfile {
   role: string;
-  companyStage: string;
-  emailVolume: string;
+  industry: string;
   priorityTypes: string[];
   communicationStyle: string;
-  urgencyPreference: string;
+  referralSource: string;
 }
 
 export default function PublicLanding() {
@@ -18,65 +17,70 @@ export default function PublicLanding() {
   const [currentStep, setCurrentStep] = useState(0);
   const [userProfile, setUserProfile] = useState<UserProfile>({
     role: '',
-    companyStage: '',
-    emailVolume: '',
+    industry: '',
     priorityTypes: [],
     communicationStyle: '',
-    urgencyPreference: ''
+    referralSource: ''
   });
 
   const onboardingSteps = [
     {
       title: "What's your role?",
-      subtitle: "Help us understand your responsibilities",
+      subtitle: "Help us understand your work",
       options: [
-        { value: 'founder-ceo', label: 'Founder / CEO', icon: Building },
-        { value: 'founder-cto', label: 'Founder / CTO', icon: Brain },
-        { value: 'founder-other', label: 'Co-founder / Other', icon: Users },
-        { value: 'executive', label: 'Executive / C-Level', icon: Target }
+        { value: 'founder', label: 'Founder / Business Owner', icon: Building },
+        { value: 'manager', label: 'Manager / Team Lead', icon: Users },
+        { value: 'designer', label: 'Designer / Creative', icon: Brain },
+        { value: 'developer', label: 'Developer / Engineer', icon: Target },
+        { value: 'consultant', label: 'Consultant / Freelancer', icon: Zap },
+        { value: 'other', label: 'Other', icon: Users }
       ]
     },
     {
-      title: "What stage is your company?",
-      subtitle: "This helps us understand your communication patterns",
+      title: "What industry are you in?",
+      subtitle: "This helps us understand your email patterns",
       options: [
-        { value: 'idea', label: 'Idea / Pre-seed', icon: Zap },
-        { value: 'seed', label: 'Seed Stage', icon: Building },
-        { value: 'series-a', label: 'Series A+', icon: Target },
-        { value: 'established', label: 'Established Company', icon: Users }
+        { value: 'technology', label: 'Technology / Software', icon: Brain },
+        { value: 'finance', label: 'Finance / Banking', icon: Building },
+        { value: 'healthcare', label: 'Healthcare / Medical', icon: Users },
+        { value: 'education', label: 'Education / Training', icon: Target },
+        { value: 'consulting', label: 'Consulting / Services', icon: Zap },
+        { value: 'other', label: 'Other Industry', icon: Building }
       ]
     },
     {
-      title: "How many emails do you get daily?",
-      subtitle: "Let's gauge your inbox volume",
-      options: [
-        { value: '50-100', label: '50-100 emails', icon: Mail },
-        { value: '100-200', label: '100-200 emails', icon: Mail },
-        { value: '200-500', label: '200-500 emails', icon: Mail },
-        { value: '500+', label: '500+ emails', icon: Mail }
-      ]
-    },
-    {
-      title: "What requires your immediate attention?",
+      title: "What emails need your attention most?",
       subtitle: "Select all that apply",
       multiSelect: true,
       options: [
-        { value: 'investors', label: 'Investor Communications', icon: Target },
-        { value: 'customers', label: 'Customer Issues', icon: Users },
-        { value: 'team', label: 'Team Emergencies', icon: Users },
-        { value: 'payments', label: 'Payment/Billing Issues', icon: Building },
-        { value: 'security', label: 'Security Alerts', icon: Lock },
-        { value: 'partnerships', label: 'Partnership Opportunities', icon: Building }
+        { value: 'clients', label: 'Client Communications', icon: Users },
+        { value: 'team', label: 'Team Updates', icon: Users },
+        { value: 'billing', label: 'Billing & Payments', icon: Building },
+        { value: 'security', label: 'Security & Alerts', icon: Lock },
+        { value: 'partnerships', label: 'Business Opportunities', icon: Target },
+        { value: 'personal', label: 'Personal Important', icon: Mail }
       ]
     },
     {
-      title: "How do you prefer urgent updates?",
+      title: "How do you prefer notifications?",
       subtitle: "Choose your communication style",
       options: [
-        { value: 'immediate-call', label: 'Immediate phone call', icon: Phone },
-        { value: 'scheduled-call', label: 'Scheduled daily calls', icon: Clock },
-        { value: 'text-first', label: 'Text summary first, then call', icon: Mail },
-        { value: 'flexible', label: 'Flexible based on urgency', icon: Brain }
+        { value: 'immediate', label: 'Immediate alerts for urgent items', icon: Phone },
+        { value: 'daily', label: 'Daily summary calls', icon: Clock },
+        { value: 'text-first', label: 'Text summary then call if needed', icon: Mail },
+        { value: 'minimal', label: 'Only critical emergencies', icon: Brain }
+      ]
+    },
+    {
+      title: "How did you hear about us?",
+      subtitle: "Help us improve our outreach",
+      options: [
+        { value: 'search', label: 'Google Search', icon: Target },
+        { value: 'social', label: 'Social Media', icon: Users },
+        { value: 'friend', label: 'Friend / Colleague', icon: Users },
+        { value: 'article', label: 'Article / Blog Post', icon: Mail },
+        { value: 'ad', label: 'Advertisement', icon: Zap },
+        { value: 'other', label: 'Other', icon: Brain }
       ]
     }
   ];
@@ -95,7 +99,7 @@ export default function PublicLanding() {
         priorityTypes: updatedValues
       }));
     } else {
-      const fieldMap = ['role', 'companyStage', 'emailVolume', 'priorityTypes', 'communicationStyle'];
+      const fieldMap = ['role', 'industry', 'priorityTypes', 'communicationStyle', 'referralSource'];
       const field = fieldMap[currentStep] as keyof UserProfile;
       
       setUserProfile(prev => ({
@@ -244,15 +248,15 @@ export default function PublicLanding() {
             className="text-center mb-16"
           >
             <h1 className="text-6xl md:text-7xl font-bold mb-8 leading-tight">
-              Your Founder's
+              Your Personal
               <br />
               <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
-                AI Concierge
+                AI Assistant
               </span>
             </h1>
             <p className="text-2xl text-muted-foreground mb-12 max-w-4xl mx-auto leading-relaxed">
-              Stop drowning in email chaos. Your AI concierge calls you daily with what actually matters, 
-              filters the noise, and keeps you focused on building your startup.
+              Stop drowning in email chaos. Your AI assistant calls you with what actually matters, 
+              filters the noise, and keeps you focused on what's important.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
@@ -282,7 +286,7 @@ export default function PublicLanding() {
               </div>
               <h3 className="text-2xl font-bold mb-4">Smart Categories</h3>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                "Call Me For This", "Why Did I Sign Up?", "Don't Tell Anyone" - categories that make sense for founders
+                "Call Me For This", "Why Did I Sign Up?", "Don't Tell Anyone" - categories that make sense for busy professionals
               </p>
             </Card>
             
