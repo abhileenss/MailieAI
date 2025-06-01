@@ -344,7 +344,7 @@ export class EmailCategorizationService {
 
   // Fallback categorization without AI
   private fallbackCategorization(message: EmailMessage): CategoryResult {
-    const subject = message.subject.toLowerCase();
+    const subject = (message.subject || '').toLowerCase();
     const from = message.from.toLowerCase();
 
     // Simple keyword-based categorization

@@ -5,15 +5,15 @@ import { randomBytes } from 'crypto';
 
 export interface EmailMessage {
   id: string;
-  threadId: string;
-  subject: string;
+  threadId?: string;
+  subject: string | null;
   from: string;
-  to: string;
+  to?: string;
   date: Date;
   snippet: string;
   body: string;
-  labels: string[];
-  isRead: boolean;
+  labels?: string[];
+  isRead?: boolean;
 }
 
 export interface EmailSender {
@@ -75,10 +75,10 @@ export class GmailService {
   async getAccessToken(code: string): Promise<any> {
     try {
       return new Promise((resolve, reject) => {
-        this.oauth2Client.getToken(code, (err, tokens) => {
+        this.oauth2Client?.getToken(code, (err, tokens) => {
           if (err) reject(err);
           else if (tokens) {
-            this.oauth2Client.setCredentials(tokens);
+            this.oauth2Client?.setCredentials(tokens);
             resolve(tokens);
           } else {
             reject(new Error('No tokens received'));
