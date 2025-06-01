@@ -273,50 +273,151 @@ export default function Dashboard() {
     </div>
   );
 
-  const renderEmailManagement = () => (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Email Management</h2>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
-          Fine-tune how your emails are categorized and prioritized.
-        </p>
-      </div>
+  const renderEmailManagement = () => {
+    const categories = {
+      'call-me': { 
+        name: 'Call Me For This', 
+        description: 'High priority emails that need immediate attention',
+        color: 'text-red-400',
+        bgColor: 'bg-red-400/10'
+      },
+      'remind-me': { 
+        name: 'Remind Me Later', 
+        description: 'Important but not urgent emails',
+        color: 'text-yellow-400',
+        bgColor: 'bg-yellow-400/10'
+      },
+      'keep-quiet': { 
+        name: 'Keep Quiet', 
+        description: 'Low priority emails, minimal notifications',
+        color: 'text-blue-400',
+        bgColor: 'bg-blue-400/10'
+      },
+      'newsletter': { 
+        name: 'Newsletters', 
+        description: 'Subscriptions and regular updates',
+        color: 'text-purple-400',
+        bgColor: 'bg-purple-400/10'
+      },
+      'why-did-i-signup': { 
+        name: 'Why Did I Sign Up?', 
+        description: 'Subscriptions you might want to unsubscribe from',
+        color: 'text-gray-400',
+        bgColor: 'bg-gray-400/10'
+      },
+      'dont-tell-anyone': { 
+        name: "Don't Tell Anyone", 
+        description: 'Personal or sensitive emails',
+        color: 'text-green-400',
+        bgColor: 'bg-green-400/10'
+      }
+    };
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {Object.entries(emailData?.categorizedSenders || {}).map(([category, senders]) => (
-          <Card key={category}>
-            <CardHeader>
-              <CardTitle className="capitalize text-lg">
-                {category.replace('-', ' ')} ({(senders as EmailSender[]).length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3 max-h-96 overflow-y-auto">
-                {(senders as EmailSender[]).slice(0, 5).map((sender) => (
-                  <div key={sender.id} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-sm">{sender.name}</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">{sender.email}</p>
-                      </div>
-                      <Badge variant="secondary" className="text-xs">
-                        {sender.emailCount}
-                      </Badge>
-                    </div>
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-white">Email Sender Management</h2>
+          <p className="text-muted-foreground mt-2">
+            Manage your {(emailData as any)?.totalSenders || 0} email senders across smart categories. Drag and drop to reassign or customize preferences.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {Object.entries(categories).map(([categoryKey, categoryInfo]) => {
+            const senders = (emailData as any)?.categorizedSenders?.[categoryKey] || [];
+            
+            return (
+              <Card key={categoryKey} className="neopop-card bg-surface border-border">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className={`w-3 h-3 rounded-full ${categoryInfo.bgColor}`}></div>
+                    <Badge variant="secondary" className="text-xs">
+                      {senders.length}
+                    </Badge>
                   </div>
-                ))}
-                {(senders as EmailSender[]).length > 5 && (
-                  <Button variant="ghost" size="sm" className="w-full">
-                    View {(senders as EmailSender[]).length - 5} more
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                  <CardTitle className={`text-lg ${categoryInfo.color}`}>
+                    {categoryInfo.name}
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground">
+                    {categoryInfo.description}
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 max-h-80 overflow-y-auto">
+                    {senders.slice(0, 8).map((sender: EmailSender) => (
+                      <motion.div 
+                        key={sender.id} 
+                        className="p-3 bg-surface-elevated rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm text-white truncate">{sender.name}</p>
+                            <p className="text-xs text-muted-foreground truncate">{sender.domain}</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {sender.emailCount} emails • {new Date(sender.lastEmailDate).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                              <Settings className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                    
+                    {senders.length > 8 && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="w-full text-muted-foreground hover:text-white"
+                      >
+                        View {senders.length - 8} more senders
+                      </Button>
+                    )}
+                    
+                    {senders.length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Mail className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">No senders in this category yet</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        <Card className="neopop-card bg-surface border-border">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <Target className="w-5 h-5" />
+              Bulk Actions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Button variant="outline" className="flex items-center gap-2">
+                <Zap className="w-4 h-4" />
+                Auto-categorize New Senders
+              </Button>
+              <Button variant="outline" className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Export All Categories
+              </Button>
+              <Button variant="outline" className="flex items-center gap-2">
+                <Brain className="w-4 h-4" />
+                Refresh AI Analysis
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderNotifications = () => (
     <div className="space-y-6">
