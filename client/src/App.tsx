@@ -22,6 +22,7 @@ function Router() {
       <Route path="/privacy" component={Privacy} />
       <Route path="/security" component={Security} />
       <Route path="/support" component={Support} />
+      <Route path="/demo" component={PublicLanding} />
       
       {/* Landing page - public but checks auth to redirect */}
       <Route path="/">
