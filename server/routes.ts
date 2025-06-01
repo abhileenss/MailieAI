@@ -5,10 +5,12 @@ import { setupAuth, isAuthenticated } from "./replitAuth";
 import { VoiceService } from "./services/voiceService";
 import { GmailService } from "./services/gmailService";
 import { EmailCategorizationService } from "./services/emailCategorizationService";
+import { OutboundCallService } from "./services/outboundCallService";
 
 const voiceService = new VoiceService();
 const gmailService = new GmailService();
 const categorizationService = new EmailCategorizationService();
+const outboundCallService = new OutboundCallService();
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -928,6 +930,131 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Error during manual email scan:', error);
       res.status(500).json({ 
         message: 'Failed to scan emails',
+        error: error.message
+      });
+    }
+  });
+
+  // Outbound calling endpoints for email reminders
+  app.post("/api/calls/schedule-reminder", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { phoneNumber, senderIds, category, voiceId = 'rachel', reminderTime } = req.body;
+
+      if (!phoneNumber || !senderIds || !Array.isArray(senderIds)) {
+        return res.status(400).json({ message: 'Phone number and sender IDs are required' });
+      }
+
+      // Get email senders for the reminder
+      const allSenders = await storage.getEmailSenders(userId);
+      const selectedSenders = allSenders.filter(sender => senderIds.includes(sender.id));
+
+      if (selectedSenders.length === 0) {
+        return res.status(400).json({ message: 'No valid senders found for reminder' });
+      }
+
+      // Prepare email data for the call
+      const emailData = {
+        userId,
+        category: category || 'reminder',
+        senders: selectedSenders.map(sender => ({
+          name: sender.name,
+          email: sender.email,
+          emailCount: sender.emailCount,
+          latestSubject: sender.latestSubject,
+          domain: sender.domain
+        }))
+      };
+
+      // Schedule the outbound call
+      const callResult = await outboundCallService.scheduleReminder(
+        userId,
+        phoneNumber,
+        emailData,
+        reminderTime ? new Date(reminderTime) : new Date(),
+        voiceId
+      );
+
+      res.json({
+        success: true,
+        message: `Reminder call scheduled for ${selectedSenders.length} email senders`,
+        callSid: callResult.callSid,
+        scheduledFor: reminderTime || 'immediate',
+        voiceUsed: voiceId,
+        senderCount: selectedSenders.length
+      });
+
+    } catch (error: any) {
+      console.error('Error scheduling reminder call:', error);
+      res.status(500).json({ 
+        message: 'Failed to schedule reminder call',
+        error: error.message
+      });
+    }
+  });
+
+  app.post("/api/calls/make-instant", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { phoneNumber, emailData, voiceId = 'rachel', callType = 'reminder' } = req.body;
+
+      if (!phoneNumber) {
+        return res.status(400).json({ message: 'Phone number is required' });
+      }
+
+      // Make immediate outbound call
+      const callResult = await outboundCallService.makeOutboundCall({
+        phoneNumber,
+        voiceId,
+        callType,
+        emailData: { ...emailData, userId }
+      });
+
+      res.json({
+        success: true,
+        message: `Instant call initiated to ${phoneNumber}`,
+        ...callResult
+      });
+
+    } catch (error: any) {
+      console.error('Error making instant call:', error);
+      res.status(500).json({ 
+        message: 'Failed to make instant call',
+        error: error.message
+      });
+    }
+  });
+
+  app.get("/api/calls/voices", async (req, res) => {
+    try {
+      const voices = await outboundCallService.getAvailableVoices();
+      res.json({
+        success: true,
+        voices: voices,
+        defaultVoice: 'rachel'
+      });
+    } catch (error: any) {
+      res.status(500).json({ 
+        message: 'Failed to get available voices',
+        error: error.message
+      });
+    }
+  });
+
+  app.get("/api/calls/logs", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const callLogs = await storage.getCallLogs(userId);
+      
+      res.json({
+        success: true,
+        calls: callLogs,
+        totalCalls: callLogs.length
+      });
+    } catch (error: any) {
+      console.error('Error fetching call logs:', error);
+      res.status(500).json({ 
+        message: 'Failed to fetch call logs',
         error: error.message
       });
     }
