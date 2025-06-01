@@ -79,6 +79,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User preferences routes
+  app.get('/api/user/preferences', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const preferences = await storage.getUserPreferences(userId);
+      res.json(preferences);
+    } catch (error) {
+      console.error("Error fetching user preferences:", error);
+      res.status(500).json({ message: "Failed to fetch preferences" });
+    }
+  });
+
+  app.post('/api/user/preferences', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const preferences = req.body;
+      
+      if (!Array.isArray(preferences)) {
+        return res.status(400).json({ message: "Preferences must be an array" });
+      }
+
+      // Update each preference
+      for (const pref of preferences) {
+        await storage.upsertUserPreference({
+          userId,
+          senderId: pref.senderId,
+          category: pref.category,
+          enableCalls: pref.enableCalls || false,
+          enableSMS: pref.enableSMS || false,
+          priority: pref.priority || 'low',
+          customNotes: pref.customNotes || null
+        });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error updating user preferences:", error);
+      res.status(500).json({ message: "Failed to update preferences" });
+    }
+  });
+
   // Email Management Routes
   app.post("/api/emails/scan", isAuthenticated, async (req: any, res) => {
     try {
