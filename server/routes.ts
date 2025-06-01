@@ -269,7 +269,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Trigger call for specific email categories
+  // Trigger call for specific email categories using 11 Labs
   app.post("/api/voice/trigger-call", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
@@ -287,8 +287,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const totalEmails = filteredSenders.reduce((sum, sender) => sum + (sender.emailCount || 0), 0);
       
-      const voiceService = new VoiceService();
-      const result = await voiceService.makeOutboundCall(userId, phoneNumber, "category-alert", {
+      // Use 11 Labs for voice generation
+      const { ElevenLabsService } = require("./services/elevenLabsService");
+      const elevenLabsService = new ElevenLabsService();
+      
+      const result = await elevenLabsService.makeVoiceCall(userId, phoneNumber, "category-alert", {
         domain,
         category,
         senderCount: filteredSenders.length,
@@ -298,12 +301,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ 
         success: true, 
-        callSid: result.sid,
-        message: `Call triggered for ${filteredSenders.length} senders from ${domain} in category ${category}`
+        audioGenerated: result.audioGenerated,
+        message: `Voice call prepared for ${filteredSenders.length} senders from ${domain} in category ${category}`,
+        script: result.script
       });
     } catch (error) {
-      console.error("Category call error:", error);
-      res.status(500).json({ message: "Failed to trigger category call", error: error.message });
+      console.error("Voice call generation error:", error);
+      res.status(500).json({ message: "Failed to generate voice call", error: error.message });
     }
   });
 

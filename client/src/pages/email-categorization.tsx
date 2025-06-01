@@ -101,19 +101,25 @@ export default function EmailCategorization() {
   // Update sender category mutation
   const updateCategoryMutation = useMutation({
     mutationFn: async ({ senderId, category }: { senderId: string; category: string }) => {
-      return apiRequest(`/api/emails/sender/${senderId}/category`, {
+      const response = await apiRequest(`/api/emails/senders/${senderId}/category`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ category })
+        body: { category }
       });
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/emails/processed'] });
       toast({
         title: "Category Updated",
         description: "Email sender category has been updated successfully.",
+      });
+    },
+    onError: (error) => {
+      console.error('Category update error:', error);
+      toast({
+        title: "Update Failed",
+        description: "Failed to update category. Please try again.",
+        variant: "destructive",
       });
     }
   });
