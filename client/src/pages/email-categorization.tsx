@@ -256,14 +256,65 @@ export default function EmailCategorization() {
             </motion.div>
           </div>
 
-          {/* Search and Filter Bar */}
+          {/* Progress Summary and Actions - MOVED TO TOP */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-col md:flex-row gap-4 mb-8"
+            className="mb-8"
           >
-            <div className="relative flex-1">
+            <Card className="neopop-card">
+              <CardHeader className="text-center">
+                <CardTitle>Email Categorization Progress</CardTitle>
+                <CardDescription>
+                  {processedSenders.filter(s => s.category !== 'unassigned').length} of {processedSenders.length} senders categorized
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6">
+                  {Object.entries(categoryConfig).map(([key, config]) => {
+                    const count = processedSenders.filter(s => s.category === key).length;
+                    const Icon = config.icon;
+                    return (
+                      <div key={key} className="text-center">
+                        <div className={`w-8 h-8 rounded-lg ${config.color} mx-auto mb-2 flex items-center justify-center`}>
+                          <Icon className="w-4 h-4 text-white" />
+                        </div>
+                        <p className="text-lg font-bold">{count}</p>
+                        <p className="text-xs text-muted-foreground">{config.title}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                <div className="flex gap-3 justify-center">
+                  <Button 
+                    onClick={() => setLocation('/preferences')}
+                    variant="outline"
+                    className="flex-1 max-w-[200px]"
+                  >
+                    Set Call Preferences
+                  </Button>
+                  <Button 
+                    onClick={handleContinue}
+                    className="neopop-button neopop-button-primary flex-1 max-w-[200px]"
+                  >
+                    View Dashboard
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Search and Category Filters */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="space-y-4 mb-8"
+          >
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 placeholder="Search by name, email, or domain..."
