@@ -88,10 +88,56 @@ const categories = {
   }
 };
 
+// Smart content filters based on email patterns
+const contentFilters = {
+  'billing': {
+    title: 'Billing & Payments',
+    keywords: ['invoice', 'payment', 'bill', 'receipt', 'subscription', 'charge', 'amount', 'due'],
+    domains: ['billing', 'payments', 'finance']
+  },
+  'security': {
+    title: 'Security & Alerts',
+    keywords: ['security', 'login', 'alert', 'verification', 'otp', 'password', 'suspicious'],
+    domains: ['security', 'alerts', 'noreply']
+  },
+  'newsletters': {
+    title: 'Newsletters & Updates',
+    keywords: ['newsletter', 'update', 'digest', 'weekly', 'monthly', 'insights', 'trends'],
+    domains: ['newsletter', 'email', 'mail']
+  },
+  'banking': {
+    title: 'Banking & Finance',
+    keywords: ['bank', 'account', 'transaction', 'balance', 'credit', 'debit', 'statement'],
+    domains: ['bank', 'icici', 'hdfc', 'sbi', 'kotak']
+  },
+  'ecommerce': {
+    title: 'E-commerce & Shopping',
+    keywords: ['order', 'delivery', 'shipped', 'cart', 'purchase', 'product', 'offer', 'sale'],
+    domains: ['amazon', 'flipkart', 'myntra', 'bigbasket']
+  },
+  'social': {
+    title: 'Social Media',
+    keywords: ['notification', 'mentioned', 'tagged', 'friend', 'connection', 'post'],
+    domains: ['instagram', 'facebook', 'linkedin', 'twitter']
+  },
+  'tools': {
+    title: 'Tools & Platforms',
+    keywords: ['api', 'github', 'deployment', 'build', 'commit', 'merge', 'issue'],
+    domains: ['github', 'vercel', 'replit', 'notion']
+  },
+  'jobs': {
+    title: 'Job & Career',
+    keywords: ['job', 'career', 'opportunity', 'hiring', 'interview', 'application'],
+    domains: ['linkedin', 'naukri', 'indeed']
+  }
+};
+
 export default function MainDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSender, setSelectedSender] = useState<EmailSender | null>(null);
   const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [contentFilter, setContentFilter] = useState<string>('all');
+  const [booleanSearch, setBooleanSearch] = useState('');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -118,7 +164,50 @@ export default function MainDashboard() {
     return companies;
   }, [processedEmails]);
 
-  // Filter companies based on search and category
+  // Smart content matching function
+  const matchesContentFilter = (senders: EmailSender[], filter: string): boolean => {
+    if (filter === 'all') return true;
+    
+    const filterConfig = contentFilters[filter as keyof typeof contentFilters];
+    if (!filterConfig) return true;
+    
+    return senders.some(sender => {
+      // Check domain patterns
+      const domainMatch = filterConfig.domains.some(domain => 
+        sender.domain.toLowerCase().includes(domain.toLowerCase())
+      );
+      
+      // Check subject line keywords
+      const subjectMatch = filterConfig.keywords.some(keyword =>
+        sender.latestSubject.toLowerCase().includes(keyword.toLowerCase())
+      );
+      
+      // Check sender name patterns
+      const nameMatch = filterConfig.keywords.some(keyword =>
+        sender.name.toLowerCase().includes(keyword.toLowerCase())
+      );
+      
+      return domainMatch || subjectMatch || nameMatch;
+    });
+  };
+
+  // Boolean search function
+  const matchesBooleanSearch = (senders: EmailSender[], query: string): boolean => {
+    if (!query.trim()) return true;
+    
+    const terms = query.toLowerCase().split(/\s+/);
+    return senders.some(sender => {
+      const searchText = `${sender.name} ${sender.email} ${sender.domain} ${sender.latestSubject}`.toLowerCase();
+      return terms.every(term => {
+        if (term.startsWith('-')) {
+          return !searchText.includes(term.slice(1));
+        }
+        return searchText.includes(term);
+      });
+    });
+  };
+
+  // Filter companies based on all criteria
   const filteredCompanies = useMemo(() => {
     const filtered: Record<string, EmailSender[]> = {};
     
@@ -129,13 +218,16 @@ export default function MainDashboard() {
       const matchesCategory = filterCategory === 'all' || 
         senders.some(s => s.category === filterCategory);
       
-      if (matchesSearch && matchesCategory) {
+      const matchesContent = matchesContentFilter(senders, contentFilter);
+      const matchesBoolean = matchesBooleanSearch(senders, booleanSearch);
+      
+      if (matchesSearch && matchesCategory && matchesContent && matchesBoolean) {
         filtered[company] = senders;
       }
     });
     
     return filtered;
-  }, [companySenders, searchTerm, filterCategory]);
+  }, [companySenders, searchTerm, filterCategory, contentFilter, booleanSearch]);
 
   // Update sender category mutation
   const updateCategoryMutation = useMutation({
@@ -249,12 +341,31 @@ export default function MainDashboard() {
                   className="pl-10"
                 />
               </div>
+              
+              {/* Content Type Filter */}
               <div className="flex items-center space-x-2">
                 <Filter className="w-4 h-4 text-muted-foreground" />
                 <select
+                  value={contentFilter}
+                  onChange={(e) => setContentFilter(e.target.value)}
+                  className="text-sm border border-border rounded px-2 py-1 bg-background flex-1"
+                >
+                  <option value="all">All Content Types</option>
+                  {Object.entries(contentFilters).map(([key, filter]) => (
+                    <option key={key} value={key}>{filter.title}</option>
+                  ))}
+                </select>
+              </div>
+              
+              {/* Category Filter */}
+              <div className="flex items-center space-x-2">
+                <Badge variant="outline" className="w-4 h-4 text-muted-foreground p-0 border-0">
+                  C
+                </Badge>
+                <select
                   value={filterCategory}
                   onChange={(e) => setFilterCategory(e.target.value)}
-                  className="text-sm border border-border rounded px-2 py-1 bg-background"
+                  className="text-sm border border-border rounded px-2 py-1 bg-background flex-1"
                 >
                   <option value="all">All Categories</option>
                   {Object.entries(categories).map(([key, cat]) => (
@@ -263,6 +374,55 @@ export default function MainDashboard() {
                   <option value="unassigned">Unassigned</option>
                 </select>
               </div>
+              
+              {/* Boolean Search */}
+              <div className="relative">
+                <Input
+                  placeholder="Boolean search: billing AND bank -notification"
+                  value={booleanSearch}
+                  onChange={(e) => setBooleanSearch(e.target.value)}
+                  className="text-xs"
+                />
+              </div>
+              
+              {/* Active Filters Summary */}
+              {(contentFilter !== 'all' || filterCategory !== 'all' || booleanSearch) && (
+                <div className="flex flex-wrap gap-1">
+                  {contentFilter !== 'all' && (
+                    <Badge variant="secondary" className="text-xs">
+                      {contentFilters[contentFilter as keyof typeof contentFilters]?.title}
+                      <button 
+                        onClick={() => setContentFilter('all')}
+                        className="ml-1 text-muted-foreground hover:text-foreground"
+                      >
+                        ×
+                      </button>
+                    </Badge>
+                  )}
+                  {filterCategory !== 'all' && (
+                    <Badge variant="secondary" className="text-xs">
+                      {categories[filterCategory as keyof typeof categories]?.title || filterCategory}
+                      <button 
+                        onClick={() => setFilterCategory('all')}
+                        className="ml-1 text-muted-foreground hover:text-foreground"
+                      >
+                        ×
+                      </button>
+                    </Badge>
+                  )}
+                  {booleanSearch && (
+                    <Badge variant="secondary" className="text-xs">
+                      "{booleanSearch}"
+                      <button 
+                        onClick={() => setBooleanSearch('')}
+                        className="ml-1 text-muted-foreground hover:text-foreground"
+                      >
+                        ×
+                      </button>
+                    </Badge>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
