@@ -10,6 +10,9 @@ import Dashboard from "@/pages/dashboard";
 import GuidedApp from "@/pages/guided-app";
 import EmailScanning from "@/pages/email-scanning";
 import TestCall from "@/pages/test-call";
+import GmailConnect from "@/pages/gmail-connect";
+import PhoneVerify from "@/pages/phone-verify";
+import EmailDashboard from "@/pages/email-dashboard";
 import Privacy from "@/pages/privacy";
 import Security from "@/pages/security";
 import Support from "@/pages/support";
@@ -31,6 +34,9 @@ function Router() {
       <Route path="/dashboard" component={AuthenticatedRoute} />
       <Route path="/scanning" component={AuthenticatedRoute} />
       <Route path="/test-call" component={AuthenticatedRoute} />
+      <Route path="/gmail-connect" component={AuthenticatedRoute} />
+      <Route path="/phone-verify" component={AuthenticatedRoute} />
+      <Route path="/email-dashboard" component={AuthenticatedRoute} />
       
       <Route component={NotFound} />
     </Switch>
@@ -68,6 +74,18 @@ function AuthenticatedRoute() {
   
   if (currentPath === '/scanning') {
     return <EmailScanning />;
+  }
+  
+  if (currentPath === '/gmail-connect') {
+    return <GmailConnect />;
+  }
+  
+  if (currentPath === '/phone-verify') {
+    return <PhoneVerify />;
+  }
+  
+  if (currentPath === '/email-dashboard') {
+    return <EmailDashboard />;
   }
   
   return <GuidedApp />;
