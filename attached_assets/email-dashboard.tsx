@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SEOHead } from "@/components/seo-head";
-import { CleanNavigation } from "@/components/clean-navigation";
+import { Navigation } from "@/components/navigation";
 import { apiRequest } from "@/lib/queryClient";
 
 interface EmailSender {
@@ -90,34 +90,6 @@ export default function EmailDashboard() {
     queryKey: ['/api/emails/processed'],
     refetchInterval: 30000 // Refresh every 30 seconds
   });
-
-  console.log('Dashboard data:', processedEmails);
-
-  // Handle the real data structure - redistribute unassigned emails for better visualization
-  const displayData = processedEmails ? {
-    ...processedEmails,
-    categorizedSenders: {
-      'call-me': processedEmails.categorizedSenders['call-me'] || [],
-      'remind-me': processedEmails.categorizedSenders['remind-me'] || [],
-      'keep-quiet': processedEmails.categorizedSenders['keep-quiet'] || [],
-      'newsletter': processedEmails.categorizedSenders.newsletter || [],
-      'why-did-i-signup': processedEmails.categorizedSenders['why-did-i-signup'] || [],
-      'dont-tell-anyone': processedEmails.categorizedSenders['dont-tell-anyone'] || [],
-    }
-  } : null;
-
-  // If we have unassigned emails, distribute them across categories for demo
-  if (processedEmails?.categorizedSenders?.unassigned?.length > 0) {
-    const unassigned = processedEmails.categorizedSenders.unassigned;
-    const categories = ['call-me', 'remind-me', 'keep-quiet', 'newsletter', 'why-did-i-signup', 'dont-tell-anyone'];
-    
-    unassigned.forEach((sender, index) => {
-      const categoryKey = categories[index % categories.length];
-      if (displayData) {
-        displayData.categorizedSenders[categoryKey].push(sender);
-      }
-    });
-  }
 
   // Process new emails through OpenAI
   const processEmailsMutation = useMutation({
@@ -238,7 +210,7 @@ export default function EmailDashboard() {
       />
       
       <div className="min-h-screen bg-background text-foreground">
-        <CleanNavigation currentPage="/dashboard" />
+        <Navigation currentPage="/dashboard" />
         
         <div className="container mx-auto px-6 py-8">
           {/* Header */}
@@ -267,13 +239,12 @@ export default function EmailDashboard() {
           </div>
 
           {/* Stats Cards */}
-          {processedEmails && processedEmails.success && (
+          {processedEmails && (
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
               {Object.entries(categoryConfig).map(([key, config]) => {
                 const count = processedEmails.categoryStats[key] || 0;
                 return (
-                  <Card key={key} className={`cursor-pointer transition-all ${activeTab === key ? 'ring-2 ring-primary' : ''}`}
-                        onClick={() => setActiveTab(key)}>
+                  <Card key={key} className={`cursor-pointer transition-all ${activeTab === key ? 'ring-2 ring-primary' : ''}`}>
                     <CardContent className="p-4 text-center">
                       <div className={`w-8 h-8 rounded-lg ${config.color} mx-auto mb-2 flex items-center justify-center`}>
                         <config.icon className="w-4 h-4 text-white" />
@@ -292,7 +263,7 @@ export default function EmailDashboard() {
               <RefreshCw className="w-8 h-8 animate-spin text-primary" />
               <span className="ml-3 text-muted-foreground">Loading processed emails...</span>
             </div>
-          ) : processedEmails && processedEmails.success ? (
+          ) : processedEmails ? (
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-6">
                 {Object.entries(categoryConfig).map(([key, config]) => (

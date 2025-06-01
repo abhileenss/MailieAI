@@ -10,6 +10,7 @@ import EmailScan from "@/pages/email-scan";
 import EmailDashboard from "@/pages/email-dashboard";
 import EmailDiscovery from "@/pages/email-discovery";
 import EmailPreferences from "@/pages/email-preferences";
+import EmailCategoriesPreview from "@/pages/email-categories-preview";
 import Personalization from "@/pages/personalization";
 import CallConfig from "@/pages/call-config";
 import FinalSetup from "@/pages/final-setup";
@@ -42,8 +43,9 @@ function Router() {
           <Route path="/scanning" component={EmailScanning} />
           <Route path="/email-scan" component={EmailScan} />
           <Route path="/discovery" component={EmailDiscovery} />
-          <Route path="/dashboard" component={EmailDashboard} />
+          <Route path="/preview" component={EmailCategoriesPreview} />
           <Route path="/preferences" component={EmailPreferences} />
+          <Route path="/dashboard" component={EmailDashboard} />
           <Route path="/personalization" component={Personalization} />
           <Route path="/call-config" component={CallConfig} />
           <Route path="/final-setup" component={FinalSetup} />
