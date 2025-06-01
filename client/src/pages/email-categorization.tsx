@@ -88,6 +88,8 @@ export default function EmailCategorization() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [processedSenders, setProcessedSenders] = useState<EmailSender[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [domainsPerPage] = useState(20);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -140,17 +142,43 @@ export default function EmailCategorization() {
     setLocation('/dashboard');
   };
 
-  // Filter senders based on search term and selected category
-  const filteredSenders = processedSenders.filter(sender => {
+  // Group senders by domain and filter
+  const groupedByDomain = processedSenders.reduce((acc, sender) => {
+    const domain = sender.domain;
+    if (!acc[domain]) {
+      acc[domain] = [];
+    }
+    acc[domain].push(sender);
+    return acc;
+  }, {} as Record<string, EmailSender[]>);
+
+  // Filter domains based on search and category
+  const filteredDomains = Object.entries(groupedByDomain).filter(([domain, senders]) => {
     const matchesSearch = searchTerm === '' || 
-      sender.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sender.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sender.domain.toLowerCase().includes(searchTerm.toLowerCase());
+      domain.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      senders.some(sender => 
+        sender.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sender.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     
-    const matchesCategory = selectedCategory === null || sender.category === selectedCategory;
+    const matchesCategory = selectedCategory === null || 
+      senders.some(sender => sender.category === selectedCategory);
     
     return matchesSearch && matchesCategory;
   });
+
+  // Sort domains by total email count
+  const sortedDomains = filteredDomains.sort(([, sendersA], [, sendersB]) => {
+    const totalA = sendersA.reduce((sum, sender) => sum + sender.emailCount, 0);
+    const totalB = sendersB.reduce((sum, sender) => sum + sender.emailCount, 0);
+    return totalB - totalA;
+  });
+
+  // Pagination
+  const totalDomains = sortedDomains.length;
+  const totalPages = Math.ceil(totalDomains / domainsPerPage);
+  const startIndex = (currentPage - 1) * domainsPerPage;
+  const paginatedDomains = sortedDomains.slice(startIndex, startIndex + domainsPerPage);
 
   if (isLoading) {
     return (
@@ -254,93 +282,182 @@ export default function EmailCategorization() {
             </div>
           </motion.div>
 
-          {/* Senders List */}
+          {/* Domain Groups */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="space-y-4 mb-8"
+            className="space-y-6 mb-8"
           >
-            {filteredSenders.map((sender, index) => {
-              const currentCategory = categoryConfig[sender.category as keyof typeof categoryConfig];
+            {paginatedDomains.map(([domain, senders], domainIndex) => {
+              const totalEmails = senders.reduce((sum, sender) => sum + sender.emailCount, 0);
+              const primarySender = senders[0];
               
               return (
                 <motion.div
-                  key={sender.id}
+                  key={domain}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                  className="bg-card border rounded-lg p-4 hover:shadow-md transition-shadow"
+                  transition={{ duration: 0.3, delay: domainIndex * 0.1 }}
+                  className="bg-card border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 flex-1">
-                      {/* Sender Avatar */}
-                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                        <Mail className="w-6 h-6 text-primary" />
-                      </div>
-                      
-                      {/* Sender Info */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-semibold text-foreground truncate">{sender.name}</h3>
-                          <Badge variant="secondary" className="text-xs">
-                            {sender.emailCount} emails
-                          </Badge>
+                  {/* Domain Header */}
+                  <div className="bg-muted/50 px-6 py-4 border-b">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                          <Mail className="w-5 h-5 text-primary" />
                         </div>
-                        <p className="text-sm text-muted-foreground truncate">{sender.email}</p>
-                        <p className="text-xs text-muted-foreground">{sender.domain}</p>
+                        <div>
+                          <h3 className="font-semibold text-lg">{domain}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {senders.length} sender{senders.length > 1 ? 's' : ''} • {totalEmails} total emails
+                          </p>
+                        </div>
                       </div>
                       
-                      {/* Current Category */}
-                      {currentCategory && (
-                        <div className="flex items-center gap-2">
-                          <div className={`w-6 h-6 rounded ${currentCategory.color} flex items-center justify-center`}>
-                            <currentCategory.icon className="w-3 h-3 text-white" />
+                      {/* Bulk Domain Actions */}
+                      <div className="flex gap-2">
+                        {Object.entries(categoryConfig).map(([key, config]) => {
+                          const Icon = config.icon;
+                          const allSameCat = senders.every(s => s.category === key);
+                          
+                          return (
+                            <Button
+                              key={key}
+                              variant={allSameCat ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => {
+                                senders.forEach(sender => handleCategoryChange(sender.id, key));
+                              }}
+                              className={`min-w-[70px] text-xs ${
+                                allSameCat ? `${config.color} text-white` : ''
+                              }`}
+                              title={`Set all ${domain} emails to ${config.title}`}
+                            >
+                              <Icon className="w-3 h-3 mr-1" />
+                              {config.title.split(' ')[0]}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Individual Senders */}
+                  <div className="divide-y">
+                    {senders.map((sender, senderIndex) => {
+                      const currentCategory = categoryConfig[sender.category as keyof typeof categoryConfig];
+                      
+                      return (
+                        <div key={sender.id} className="px-6 py-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3 flex-1">
+                              <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+                                <User className="w-4 h-4 text-muted-foreground" />
+                              </div>
+                              
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <h4 className="font-medium text-sm truncate">{sender.name}</h4>
+                                  <Badge variant="secondary" className="text-xs">
+                                    {sender.emailCount}
+                                  </Badge>
+                                </div>
+                                <p className="text-xs text-muted-foreground truncate">{sender.email}</p>
+                              </div>
+                              
+                              {/* Current Category Indicator */}
+                              {currentCategory && (
+                                <div className="flex items-center gap-2">
+                                  <div className={`w-4 h-4 rounded ${currentCategory.color} flex items-center justify-center`}>
+                                    <currentCategory.icon className="w-2 h-2 text-white" />
+                                  </div>
+                                  <span className="text-xs font-medium">
+                                    {currentCategory.title}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Individual Actions */}
+                            <div className="flex gap-1 ml-4">
+                              {Object.entries(categoryConfig).map(([key, config]) => {
+                                const isSelected = sender.category === key;
+                                const Icon = config.icon;
+                                
+                                return (
+                                  <Button
+                                    key={key}
+                                    variant={isSelected ? "default" : "ghost"}
+                                    size="sm"
+                                    onClick={() => handleCategoryChange(sender.id, key)}
+                                    className={`w-8 h-8 p-0 transition-all ${
+                                      isSelected 
+                                        ? `${config.color} text-white` 
+                                        : 'hover:bg-muted'
+                                    }`}
+                                    title={config.title}
+                                  >
+                                    <Icon className="w-3 h-3" />
+                                  </Button>
+                                );
+                              })}
+                            </div>
                           </div>
-                          <span className="text-sm font-medium text-foreground">
-                            {currentCategory.title}
-                          </span>
                         </div>
-                      )}
-                    </div>
-                    
-                    {/* Category Actions */}
-                    <div className="flex gap-1 ml-4">
-                      {Object.entries(categoryConfig).map(([key, config]) => {
-                        const isSelected = sender.category === key;
-                        const Icon = config.icon;
-                        
-                        return (
-                          <Button
-                            key={key}
-                            variant={isSelected ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => handleCategoryChange(sender.id, key)}
-                            className={`min-w-[80px] text-xs transition-all duration-200 ${
-                              isSelected 
-                                ? `${config.color} text-white border-0 shadow-md` 
-                                : 'hover:border-gray-400'
-                            }`}
-                            title={config.description}
-                            disabled={updateCategoryMutation.isPending}
-                          >
-                            <Icon className="w-3 h-3 mr-1" />
-                            {isSelected ? config.title : config.title.split(' ')[0]}
-                            {isSelected && <Check className="w-3 h-3 ml-1" />}
-                          </Button>
-                        );
-                      })}
-                    </div>
+                      );
+                    })}
                   </div>
                 </motion.div>
               );
             })}
           </motion.div>
 
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center gap-2 mb-8">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              
+              <div className="flex gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  const page = i + 1;
+                  return (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                      className="w-8"
+                    >
+                      {page}
+                    </Button>
+                  );
+                })}
+              </div>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </Button>
+            </div>
+          )}
+
           {/* Results Summary */}
-          {filteredSenders.length === 0 && (
+          {totalDomains === 0 && (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">No senders match your search criteria.</p>
+              <p className="text-muted-foreground">No domains match your search criteria.</p>
             </div>
           )}
 
