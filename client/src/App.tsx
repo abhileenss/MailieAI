@@ -14,8 +14,6 @@ import Support from "@/pages/support";
 import NotFound from "@/pages/not-found";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
-
   return (
     <Switch>
       {/* Public routes - no authentication required */}
@@ -24,66 +22,37 @@ function Router() {
       <Route path="/support" component={Support} />
       <Route path="/demo" component={PublicLanding} />
       
-      {/* Landing page - public but checks auth to redirect */}
-      <Route path="/">
-        {() => {
-          if (isLoading) {
-            return (
-              <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p>Loading...</p>
-                </div>
-              </div>
-            );
-          }
-          
-          if (isAuthenticated) {
-            return <GuidedApp />;
-          }
-          
-          return <Landing />;
-        }}
-      </Route>
+      {/* Default to public landing page */}
+      <Route path="/" component={PublicLanding} />
       
-      {/* Protected routes */}
-      <Route path="/dashboard">
-        {() => {
-          if (isLoading) {
-            return (
-              <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p>Loading...</p>
-                </div>
-              </div>
-            );
-          }
-          
-          return isAuthenticated ? <GuidedApp /> : <Landing />;
-        }}
-      </Route>
-      
-      <Route path="/scanning">
-        {() => {
-          if (isLoading) {
-            return (
-              <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p>Loading...</p>
-                </div>
-              </div>
-            );
-          }
-          
-          return isAuthenticated ? <EmailScanning /> : <Landing />;
-        }}
-      </Route>
+      {/* Protected routes with authentication check */}
+      <Route path="/dashboard" component={AuthenticatedRoute} />
+      <Route path="/scanning" component={AuthenticatedRoute} />
       
       <Route component={NotFound} />
     </Switch>
   );
+}
+
+function AuthenticatedRoute() {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (!isAuthenticated) {
+    return <PublicLanding />;
+  }
+  
+  return <GuidedApp />;
 }
 
 function App() {
