@@ -1,7 +1,6 @@
 import { ElevenLabsService } from './elevenLabsService';
 import { EmailCategorizationService } from './emailCategorizationService';
 import { storage } from '../storage';
-import twilio from 'twilio';
 
 interface CallConfig {
   phoneNumber: string;
@@ -128,50 +127,22 @@ export class OutboundCallService {
   }
 
   private generateReminderScript(emailData: any): string {
-    const senders = emailData.senders || [];
+    const senderCount = emailData.senders?.length || 0;
     const category = emailData.category || 'important';
     
-    return `Hello! This is your PookAi assistant with important updates.
+    return `Hello! This is your PookAi assistant calling with an email reminder.
 
-${this.generateActionableContent(senders, category)}
+You have ${senderCount} emails in your ${category.replace('-', ' ')} category that need your attention.
 
-${this.getCategoryGuidance(category)}
+${emailData.senders?.map((sender: any) => 
+  `From ${sender.name || sender.email}: "${sender.latestSubject}" - ${sender.emailCount} total emails.`
+).join('\n\n') || ''}
 
-I can send you the specific action items via text message if that would be helpful.
+These emails were categorized as ${category.replace('-', ' ')}, which means they require your direct response.
 
-Thank you!`;
-  }
+Would you like me to read the full details, or shall I send you a summary via text? 
 
-  private generateActionableContent(senders: any[], category: string): string {
-    if (!senders.length) return 'You have new emails that need attention.';
-    
-    return senders.map((sender: any) => {
-      if (sender.name === '100x Engineers') {
-        return `Your 100x Engineers newsletter has arrived with new engineering opportunities and insights.`;
-      } else if (sender.name === 'McKinsey & Company') {
-        return `McKinsey has sent you their latest industry insights and business analysis.`;
-      } else if (sender.domain?.includes('bank') || sender.domain?.includes('financial')) {
-        return `You have important financial communications from ${sender.name} that may require action.`;
-      } else if (sender.latestSubject?.toLowerCase().includes('urgent') || 
-                 sender.latestSubject?.toLowerCase().includes('important')) {
-        return `${sender.name} has sent you a priority message: "${sender.latestSubject}".`;
-      } else {
-        return `${sender.name} has important updates for you. Latest: "${sender.latestSubject}".`;
-      }
-    }).join(' ');
-  }
-
-  private getCategoryGuidance(category: string): string {
-    switch (category) {
-      case 'call-me':
-        return 'These contacts typically expect quick responses and may have time-sensitive requests.';
-      case 'remind-me':
-        return 'These messages contain follow-up items or deadlines you should track.';
-      case 'newsletter':
-        return 'These are informational updates that can be reviewed when convenient.';
-      default:
-        return 'These emails have been prioritized for your review.';
-    }
+Thank you for using PookAi. Have a productive day!`;
   }
 
   private generateDigestScript(emailData: any): string {
@@ -221,25 +192,32 @@ Thank you!`;
   }
 
   private generateTwiML(script: string, voiceId: string): string {
+    const twilio = require('twilio');
     const VoiceResponse = twilio.twiml.VoiceResponse;
     const response = new VoiceResponse();
     
-    // Simple TwiML without voice parameters to avoid errors
-    response.say(script);
-    response.say('Thank you for using PookAi. Goodbye!');
+    // Use appropriate Twilio voice based on ElevenLabs voice selection
+    const twilioVoice = this.mapToTwilioVoice(voiceId);
+    
+    response.say({ 
+      voice: twilioVoice,
+      rate: '0.9'  // Slightly slower for clarity
+    }, script);
+    
+    response.say({ voice: twilioVoice }, 'Goodbye!');
     
     return response.toString();
   }
 
   private mapToTwilioVoice(elevenLabsVoiceId: string): string {
     const voiceMap: Record<string, string> = {
-      'rachel': 'woman',
-      'adam': 'man',
-      'domi': 'woman',
-      'elli': 'woman',
-      'josh': 'man',
-      'arnold': 'man',
-      'bella': 'woman',
+      'rachel': 'Polly.Joanna',
+      'adam': 'Polly.Matthew',
+      'domi': 'Polly.Amy',
+      'elli': 'Polly.Emma',
+      'josh': 'Polly.Joey',
+      'arnold': 'Polly.Brian',
+      'bella': 'Polly.Kimberly',
       'antoni': 'Polly.Russell',
       'sarah': 'Polly.Salli'
     };
