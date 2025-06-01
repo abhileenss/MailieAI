@@ -101,6 +101,9 @@ export default function EmailCategorization() {
     mutationFn: async ({ senderId, category }: { senderId: string; category: string }) => {
       return apiRequest(`/api/emails/sender/${senderId}/category`, {
         method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ category })
       });
     },
@@ -302,7 +305,7 @@ export default function EmailCategorization() {
                     </div>
                     
                     {/* Category Actions */}
-                    <div className="flex gap-2 ml-4">
+                    <div className="flex gap-1 ml-4">
                       {Object.entries(categoryConfig).map(([key, config]) => {
                         const isSelected = sender.category === key;
                         const Icon = config.icon;
@@ -313,10 +316,16 @@ export default function EmailCategorization() {
                             variant={isSelected ? "default" : "outline"}
                             size="sm"
                             onClick={() => handleCategoryChange(sender.id, key)}
-                            className={`min-w-0 ${isSelected ? config.color : ''}`}
-                            title={config.title}
+                            className={`min-w-[80px] text-xs transition-all duration-200 ${
+                              isSelected 
+                                ? `${config.color} text-white border-0 shadow-md` 
+                                : 'hover:border-gray-400'
+                            }`}
+                            title={config.description}
+                            disabled={updateCategoryMutation.isPending}
                           >
-                            <Icon className="w-4 h-4" />
+                            <Icon className="w-3 h-3 mr-1" />
+                            {isSelected ? config.title : config.title.split(' ')[0]}
                             {isSelected && <Check className="w-3 h-3 ml-1" />}
                           </Button>
                         );
@@ -335,28 +344,57 @@ export default function EmailCategorization() {
             </div>
           )}
 
-          {/* Continue Button */}
+          {/* Progress Summary */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
             className="text-center"
           >
-            <Card className="neopop-card max-w-md mx-auto">
+            <Card className="neopop-card max-w-2xl mx-auto">
               <CardHeader>
-                <CardTitle>Ready to Continue?</CardTitle>
+                <CardTitle>Categorization Progress</CardTitle>
                 <CardDescription>
-                  You can always come back and adjust these categories later in your dashboard.
+                  {processedSenders.filter(s => s.category !== 'unassigned').length} of {processedSenders.length} senders categorized
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button 
-                  onClick={handleContinue}
-                  className="neopop-button neopop-button-primary w-full"
-                >
-                  Go to Dashboard
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6">
+                  {Object.entries(categoryConfig).map(([key, config]) => {
+                    const count = processedSenders.filter(s => s.category === key).length;
+                    const Icon = config.icon;
+                    return (
+                      <div key={key} className="text-center">
+                        <div className={`w-8 h-8 rounded-lg ${config.color} mx-auto mb-2 flex items-center justify-center`}>
+                          <Icon className="w-4 h-4 text-white" />
+                        </div>
+                        <p className="text-lg font-bold">{count}</p>
+                        <p className="text-xs text-muted-foreground">{config.title}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                <div className="flex gap-3 justify-center">
+                  <Button 
+                    onClick={() => setLocation('/preferences')}
+                    variant="outline"
+                    className="flex-1 max-w-[200px]"
+                  >
+                    Set Call Preferences
+                  </Button>
+                  <Button 
+                    onClick={handleContinue}
+                    className="neopop-button neopop-button-primary flex-1 max-w-[200px]"
+                  >
+                    View Dashboard
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+                
+                <p className="text-sm text-muted-foreground mt-4">
+                  You can always adjust these categories later from your dashboard.
+                </p>
               </CardContent>
             </Card>
           </motion.div>

@@ -252,6 +252,14 @@ export default function EmailDashboard() {
             
             <div className="flex gap-3">
               <Button 
+                onClick={() => window.location.href = '/categorize'}
+                variant="outline"
+                className="neopop-button neopop-button-secondary"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Edit Categories
+              </Button>
+              <Button 
                 onClick={() => processEmailsMutation.mutate()}
                 disabled={processEmailsMutation.isPending}
                 className="neopop-button neopop-button-primary"
