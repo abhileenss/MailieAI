@@ -5,7 +5,7 @@ import { Mail, Users, BarChart3, Filter, ArrowRight, Edit3 } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Navigation } from "@/components/navigation";
+import { CleanNavigation } from "@/components/clean-navigation";
 import { SEOHead } from "@/components/seo-head";
 import { useLocation } from "wouter";
 

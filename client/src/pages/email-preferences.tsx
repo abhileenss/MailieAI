@@ -21,7 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { CleanNavigation } from "@/components/clean-navigation";
+import { Navigation } from "@/components/navigation";
 import { SEOHead } from "@/components/seo-head";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -161,7 +161,7 @@ export default function EmailPreferences() {
       />
       
       <div className="min-h-screen bg-background text-foreground">
-        <CleanNavigation currentPage="/preferences" />
+        <Navigation currentPage="/preferences" />
         
         <div className="container mx-auto px-6 py-8">
           {/* Header */}
