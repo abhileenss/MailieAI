@@ -125,18 +125,18 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className="flex h-screen bg-slate-900">
       <Sidebar />
       
       <div className="flex-1 overflow-auto">
         {/* Header */}
-        <div className="bg-white border-b border-slate-200 px-8 py-6">
+        <div className="bg-slate-800 border-b border-slate-700 px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">
+              <h1 className="text-2xl font-bold text-white">
                 {getGreeting()}, {user?.firstName || user?.email?.split('@')[0] || 'there'}
               </h1>
-              <p className="text-slate-600 mt-1">
+              <p className="text-slate-300 mt-1">
                 Welcome to your AI-powered email management dashboard
               </p>
             </div>
@@ -166,16 +166,16 @@ export default function Dashboard() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Card className="bg-white border-slate-200 hover:shadow-lg transition-shadow">
+                  <Card className="bg-slate-800 border-slate-700 hover:shadow-lg transition-shadow">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-slate-600 text-sm font-medium">{stat.label}</p>
-                          <p className="text-3xl font-bold text-slate-900 mt-1">
+                          <p className="text-slate-400 text-sm font-medium">{stat.label}</p>
+                          <p className="text-3xl font-bold text-white mt-1">
                             {isLoading ? '...' : stat.value.toLocaleString()}
                           </p>
                         </div>
-                        <div className={`w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center`}>
+                        <div className={`w-12 h-12 rounded-lg bg-slate-700 flex items-center justify-center`}>
                           <Icon className={`w-6 h-6 ${stat.color}`} />
                         </div>
                       </div>
