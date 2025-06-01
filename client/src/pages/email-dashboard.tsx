@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SEOHead } from "@/components/seo-head";
-import { Navigation } from "@/components/navigation";
+import { CleanNavigation } from "@/components/clean-navigation";
 import { apiRequest } from "@/lib/queryClient";
 
 interface EmailSender {
@@ -182,8 +182,8 @@ export default function EmailDashboard() {
           </Card>
         ) : (
           <div className="grid gap-4">
-            {senders.map((sender) => (
-              <SenderCard key={sender.id} sender={sender} />
+            {senders.map((sender, index) => (
+              <SenderCard key={`${sender.id}-${index}`} sender={sender} />
             ))}
           </div>
         )}
@@ -238,7 +238,7 @@ export default function EmailDashboard() {
       />
       
       <div className="min-h-screen bg-background text-foreground">
-        <Navigation currentPage="/dashboard" />
+        <CleanNavigation currentPage="/dashboard" />
         
         <div className="container mx-auto px-6 py-8">
           {/* Header */}
