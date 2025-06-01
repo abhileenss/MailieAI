@@ -91,6 +91,8 @@ export default function EmailDashboard() {
     refetchInterval: 30000 // Refresh every 30 seconds
   });
 
+  console.log('Dashboard data:', processedEmails);
+
   // Process new emails through OpenAI
   const processEmailsMutation = useMutation({
     mutationFn: () => apiRequest('/api/emails/process-full', { method: 'POST' }),
