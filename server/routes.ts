@@ -5,10 +5,12 @@ import { setupAuth, isAuthenticated } from "./replitAuth";
 import { VoiceService } from "./services/voiceService";
 import { GmailService } from "./services/gmailService";
 import { EmailCategorizationService } from "./services/emailCategorizationService";
+import { OutboundCallService } from "./services/outboundCallService";
 
 const voiceService = new VoiceService();
 const gmailService = new GmailService();
 const categorizationService = new EmailCategorizationService();
+const outboundCallService = new OutboundCallService();
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -69,6 +71,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
           scope: tokens.scope
         });
         console.log('Gmail tokens stored for user:', user.claims.sub);
+      }
+
+      // After storing tokens, automatically scan and process emails
+      if (user?.claims?.sub) {
+        try {
+          console.log('Starting automatic email scan for newly authenticated user...');
+          
+          // Get fresh emails from Gmail
+          const messages = await gmailService.getMessages(user.claims.sub, 200);
+          console.log(`Retrieved ${messages.length} emails for processing`);
+          
+          // Get sender analytics
+          const senders = await gmailService.getEmailSendersByDomain(user.claims.sub);
+          console.log(`Found ${senders.length} unique email senders`);
+          
+          // Store senders in database
+          await gmailService.storeEmailSenders(user.claims.sub, senders);
+          
+          // AI categorize emails if OpenAI is available
+          if (messages.length > 0) {
+            const categorizations = await categorizationService.categorizeEmails(messages);
+            console.log(`AI categorized ${categorizations.size} emails`);
+            
+            // Update sender categories based on AI analysis
+            for (const [messageId, categoryResult] of categorizations) {
+              const message = messages.find(m => m.id === messageId);
+              if (message) {
+                const senderEmail = gmailService.extractEmail(message.from);
+                const senderId = `${user.claims.sub}_${senderEmail}`;
+                
+                try {
+                  await storage.updateEmailSenderCategory(senderId, categoryResult.suggestedCategory);
+                } catch (error) {
+                  // Sender might not exist, continue processing
+                  console.log(`Could not update category for ${senderEmail}, continuing...`);
+                }
+              }
+            }
+          }
+          
+          console.log('Email scanning and categorization completed successfully');
+        } catch (scanError) {
+          console.error('Error during automatic email scan:', scanError);
+          // Don't fail the auth flow, just log the error
+        }
       }
 
       // Redirect to scanning page with success parameter
@@ -821,6 +868,282 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Manual email scanning endpoint for real-time processing
+  app.post("/api/emails/scan-now", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      console.log(`Manual email scan triggered for user: ${userId}`);
+      
+      // Check if user has Gmail credentials
+      const hasCredentials = await gmailService.setUserCredentials(userId);
+      if (!hasCredentials) {
+        return res.status(400).json({ 
+          message: 'Gmail not connected. Please connect your Gmail account first.',
+          needsAuth: true 
+        });
+      }
+      
+      // Get fresh emails from Gmail (increased limit for comprehensive scan)
+      const messages = await gmailService.getMessages(userId, 500);
+      console.log(`Retrieved ${messages.length} emails for processing`);
+      
+      // Get sender analytics by domain
+      const senders = await gmailService.getEmailSendersByDomain(userId);
+      console.log(`Found ${senders.length} unique email senders`);
+      
+      // Store/update senders in database
+      await gmailService.storeEmailSenders(userId, senders);
+      
+      // AI categorize emails using OpenAI
+      let categorizedCount = 0;
+      if (messages.length > 0) {
+        const categorizations = await categorizationService.categorizeEmails(messages);
+        console.log(`AI categorized ${categorizations.size} emails`);
+        
+        // Update sender categories based on AI analysis
+        for (const [messageId, categoryResult] of Array.from(categorizations.entries())) {
+          const message = messages.find(m => m.id === messageId);
+          if (message && categoryResult.suggestedCategory) {
+            const senderEmail = gmailService.extractEmail(message.from);
+            const senderId = `${userId}_${senderEmail}`;
+            
+            try {
+              await storage.updateEmailSenderCategory(senderId, categoryResult.suggestedCategory);
+              categorizedCount++;
+            } catch (error) {
+              console.log(`Could not update category for ${senderEmail}, continuing...`);
+            }
+          }
+        }
+      }
+      
+      res.json({ 
+        success: true,
+        message: 'Email scan completed successfully',
+        totalEmails: messages.length,
+        uniqueSenders: senders.length,
+        categorizedSenders: categorizedCount,
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error: any) {
+      console.error('Error during manual email scan:', error);
+      res.status(500).json({ 
+        message: 'Failed to scan emails',
+        error: error.message
+      });
+    }
+  });
+
+  // Outbound calling endpoints for email reminders
+  app.post("/api/calls/schedule-reminder", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { phoneNumber, senderIds, category, voiceId = 'rachel', reminderTime } = req.body;
+
+      if (!phoneNumber || !senderIds || !Array.isArray(senderIds)) {
+        return res.status(400).json({ message: 'Phone number and sender IDs are required' });
+      }
+
+      // Get email senders for the reminder
+      const allSenders = await storage.getEmailSenders(userId);
+      const selectedSenders = allSenders.filter(sender => senderIds.includes(sender.id));
+
+      if (selectedSenders.length === 0) {
+        return res.status(400).json({ message: 'No valid senders found for reminder' });
+      }
+
+      // Prepare email data for the call
+      const emailData = {
+        userId,
+        category: category || 'reminder',
+        senders: selectedSenders.map(sender => ({
+          name: sender.name,
+          email: sender.email,
+          emailCount: sender.emailCount,
+          latestSubject: sender.latestSubject,
+          domain: sender.domain
+        }))
+      };
+
+      // Schedule the outbound call
+      const callResult = await outboundCallService.scheduleReminder(
+        userId,
+        phoneNumber,
+        emailData,
+        reminderTime ? new Date(reminderTime) : new Date(),
+        voiceId
+      );
+
+      res.json({
+        success: true,
+        message: `Reminder call scheduled for ${selectedSenders.length} email senders`,
+        callSid: callResult.callSid,
+        scheduledFor: reminderTime || 'immediate',
+        voiceUsed: voiceId,
+        senderCount: selectedSenders.length
+      });
+
+    } catch (error: any) {
+      console.error('Error scheduling reminder call:', error);
+      res.status(500).json({ 
+        message: 'Failed to schedule reminder call',
+        error: error.message
+      });
+    }
+  });
+
+  app.post("/api/calls/make-instant", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { phoneNumber, emailData, voiceId = 'rachel', callType = 'reminder' } = req.body;
+
+      if (!phoneNumber) {
+        return res.status(400).json({ message: 'Phone number is required' });
+      }
+
+      // Make immediate outbound call
+      const callResult = await outboundCallService.makeOutboundCall({
+        phoneNumber,
+        voiceId,
+        callType,
+        emailData: { ...emailData, userId }
+      });
+
+      res.json({
+        success: true,
+        message: `Instant call initiated to ${phoneNumber}`,
+        ...callResult
+      });
+
+    } catch (error: any) {
+      console.error('Error making instant call:', error);
+      res.status(500).json({ 
+        message: 'Failed to make instant call',
+        error: error.message
+      });
+    }
+  });
+
+  app.get("/api/calls/voices", async (req, res) => {
+    try {
+      const voices = await outboundCallService.getAvailableVoices();
+      res.json({
+        success: true,
+        voices: voices,
+        defaultVoice: 'rachel'
+      });
+    } catch (error: any) {
+      res.status(500).json({ 
+        message: 'Failed to get available voices',
+        error: error.message
+      });
+    }
+  });
+
+  app.get("/api/calls/logs", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const callLogs = await storage.getCallLogs(userId);
+      
+      res.json({
+        success: true,
+        calls: callLogs,
+        totalCalls: callLogs.length
+      });
+    } catch (error: any) {
+      console.error('Error fetching call logs:', error);
+      res.status(500).json({ 
+        message: 'Failed to fetch call logs',
+        error: error.message
+      });
+    }
+  });
+
+  // Phone verification endpoints
+  const verificationCodes = new Map<string, { code: string, timestamp: number }>();
+
+  app.post("/api/phone/send-verification", isAuthenticated, async (req: any, res) => {
+    try {
+      const { phoneNumber } = req.body;
+      
+      if (!phoneNumber) {
+        return res.status(400).json({ message: 'Phone number is required' });
+      }
+
+      if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) {
+        return res.status(400).json({ message: 'Twilio credentials not configured' });
+      }
+
+      const twilioLib = await import('twilio');
+      const twilio = twilioLib.default;
+      const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+      
+      // Generate 6-digit verification code
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // Store verification code with timestamp (expires in 10 minutes)
+      verificationCodes.set(phoneNumber, { 
+        code, 
+        timestamp: Date.now() + 10 * 60 * 1000 
+      });
+      
+      // Send SMS
+      await client.messages.create({
+        body: `Your PookAi verification code is: ${code}`,
+        from: process.env.TWILIO_PHONE_NUMBER,
+        to: phoneNumber
+      });
+
+      res.json({ success: true, message: 'Verification code sent' });
+    } catch (error: any) {
+      console.error('Error sending verification code:', error);
+      res.status(500).json({ message: 'Failed to send verification code', error: error.message });
+    }
+  });
+
+  app.post("/api/phone/verify", isAuthenticated, async (req: any, res) => {
+    try {
+      const { phoneNumber, code } = req.body;
+      
+      if (!phoneNumber || !code) {
+        return res.status(400).json({ message: 'Phone number and code are required' });
+      }
+
+      const verification = verificationCodes.get(phoneNumber);
+      
+      if (!verification) {
+        return res.status(400).json({ message: 'No verification code found for this number' });
+      }
+
+      if (Date.now() > verification.timestamp) {
+        verificationCodes.delete(phoneNumber);
+        return res.status(400).json({ message: 'Verification code has expired' });
+      }
+
+      if (verification.code !== code) {
+        return res.status(400).json({ message: 'Invalid verification code' });
+      }
+
+      // Clear the verification code
+      verificationCodes.delete(phoneNumber);
+      
+      // Update user with verified phone number
+      const userId = req.user.claims.sub;
+      await storage.upsertUser({
+        id: userId,
+        email: req.user.claims.email,
+        name: req.user.claims.name,
+        phone: phoneNumber
+      });
+
+      res.json({ success: true, message: 'Phone number verified successfully' });
+    } catch (error: any) {
+      console.error('Error verifying phone:', error);
+      res.status(500).json({ message: 'Failed to verify phone number', error: error.message });
+    }
+  });
+
   // Test endpoint for Twilio voice calls
   app.post("/api/test/voice-call", async (req, res) => {
     try {
@@ -869,6 +1192,103 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: error.message,
         error: error.toString()
       });
+    }
+  });
+
+  // Gmail OAuth endpoints
+  app.get('/api/gmail/auth-url', async (req, res) => {
+    try {
+      const authUrl = await gmailService.getAuthUrl();
+      res.json({ authUrl });
+    } catch (error) {
+      console.error('Failed to get Gmail auth URL:', error);
+      res.status(500).json({ error: 'Failed to generate auth URL' });
+    }
+  });
+
+  app.get('/api/gmail/oauth/callback', async (req, res) => {
+    try {
+      const { code } = req.query;
+      if (!code || typeof code !== 'string') {
+        return res.status(400).json({ error: 'Authorization code required' });
+      }
+
+      const session = req.session as any;
+      if (!session?.userId) {
+        return res.redirect('/gmail-connect?error=not_authenticated');
+      }
+
+      await gmailService.handleOAuthCallback(code, session.userId);
+      res.redirect('/phone-verify?gmail_connected=true');
+    } catch (error) {
+      console.error('Gmail OAuth callback error:', error);
+      res.redirect('/gmail-connect?error=auth_failed');
+    }
+  });
+
+  // Calendar endpoints
+  app.get('/api/calendar/auth-url', async (req, res) => {
+    try {
+      const authUrl = await gmailService.getCalendarAuthUrl();
+      res.json({ authUrl });
+    } catch (error) {
+      console.error('Failed to get calendar auth URL:', error);
+      res.status(500).json({ error: 'Failed to generate calendar auth URL' });
+    }
+  });
+
+  app.get('/api/calendar/events', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const events = await gmailService.getUpcomingEvents(userId);
+      res.json({ success: true, events });
+    } catch (error) {
+      console.error('Failed to fetch calendar events:', error);
+      res.status(500).json({ error: 'Failed to fetch calendar events' });
+    }
+  });
+
+  app.get('/api/calendar/settings', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const settings = await storage.getUserPreferences(userId);
+      
+      // Extract calendar-specific settings
+      const calendarSettings = {
+        enablePreMeetingCalls: false,
+        minutesBefore: 15,
+        onlyWithExternalAttendees: true,
+        minimumMeetingDuration: 30,
+        excludeKeywords: ['standup', 'daily', 'internal']
+      };
+
+      res.json({ success: true, settings: calendarSettings });
+    } catch (error) {
+      console.error('Failed to load calendar settings:', error);
+      res.status(500).json({ error: 'Failed to load settings' });
+    }
+  });
+
+  app.post('/api/calendar/settings', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { settings } = req.body;
+      
+      // Save calendar settings as user preferences
+      await storage.upsertUserPreference({
+        userId,
+        senderId: 'calendar-settings',
+        category: 'calendar',
+        enableCalls: settings.enablePreMeetingCalls,
+        enableSMS: false,
+        priority: 'high',
+        customNotes: JSON.stringify(settings)
+      });
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Failed to save calendar settings:', error);
+      res.status(500).json({ error: 'Failed to save settings' });
     }
   });
 

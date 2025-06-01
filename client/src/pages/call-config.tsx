@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
-import { Phone, Mic, Settings, Clock, Download, Play, Pause, Volume2, MessageSquare } from "lucide-react";
+import { Phone, Mic, Settings, Clock, Download, Play, Pause, Volume2, MessageSquare, Check, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Navigation } from "@/components/navigation";
 import { SEOHead } from "@/components/seo-head";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 interface CallScript {
   script: string;
@@ -25,9 +26,15 @@ export default function CallConfig() {
   const [callTime, setCallTime] = useState('morning');
   const [voiceStyle, setVoiceStyle] = useState('professional');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isSendingCode, setIsSendingCode] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
   const [generatedScript, setGeneratedScript] = useState<CallScript | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const { toast } = useToast();
 
   // Fetch processed emails
   const { data: emailData, isLoading } = useQuery({
@@ -62,8 +69,64 @@ export default function CallConfig() {
     }
   });
 
+  const sendVerificationCode = async () => {
+    if (!phoneNumber) {
+      toast({ title: "Please enter your phone number", variant: "destructive" });
+      return;
+    }
+    
+    setIsSendingCode(true);
+    try {
+      const response = await fetch('/api/phone/send-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber })
+      });
+      
+      if (response.ok) {
+        setVerificationSent(true);
+        toast({ title: "Verification code sent!", description: "Check your phone for the SMS code" });
+      } else {
+        const error = await response.text();
+        toast({ title: "Failed to send code", description: error, variant: "destructive" });
+      }
+    } catch (error) {
+      toast({ title: "Error sending verification code", variant: "destructive" });
+    } finally {
+      setIsSendingCode(false);
+    }
+  };
+
+  const verifyPhone = async () => {
+    if (!verificationCode) {
+      toast({ title: "Please enter the verification code", variant: "destructive" });
+      return;
+    }
+    
+    setIsVerifying(true);
+    try {
+      const response = await fetch('/api/phone/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber, code: verificationCode })
+      });
+      
+      if (response.ok) {
+        setIsPhoneVerified(true);
+        toast({ title: "Phone verified successfully!" });
+      } else {
+        const error = await response.text();
+        toast({ title: "Invalid verification code", description: error, variant: "destructive" });
+      }
+    } catch (error) {
+      toast({ title: "Error verifying phone", variant: "destructive" });
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
   const generateCallScript = () => {
-    if (!emailData?.success) return;
+    if (!emailData?.success || !isPhoneVerified) return;
     
     setIsGenerating(true);
     
@@ -246,23 +309,77 @@ export default function CallConfig() {
                     </Select>
                   </div>
 
-                  {/* Phone Number */}
+                  {/* Phone Number Verification */}
                   <div>
                     <label className="text-sm font-medium mb-2 block">
                       Phone Number
                     </label>
-                    <input
-                      type="tel"
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      placeholder="+1 (555) 123-4567"
-                      className="w-full p-2 border border-border rounded-md bg-background"
-                    />
+                    <div className="space-y-3">
+                      <div className="flex space-x-2">
+                        <input
+                          type="tel"
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          placeholder="+1 (555) 123-4567"
+                          disabled={isPhoneVerified}
+                          className="flex-1 p-2 border border-border rounded-md bg-background disabled:bg-muted"
+                        />
+                        {isPhoneVerified ? (
+                          <div className="flex items-center px-3 py-2 bg-green-100 text-green-800 rounded-md">
+                            <Check className="w-4 h-4" />
+                          </div>
+                        ) : (
+                          <Button
+                            onClick={sendVerificationCode}
+                            disabled={!phoneNumber || isSendingCode}
+                            size="sm"
+                            variant="outline"
+                          >
+                            {isSendingCode ? (
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                            ) : (
+                              "Send Code"
+                            )}
+                          </Button>
+                        )}
+                      </div>
+                      
+                      {verificationSent && !isPhoneVerified && (
+                        <div className="flex space-x-2">
+                          <input
+                            type="text"
+                            value={verificationCode}
+                            onChange={(e) => setVerificationCode(e.target.value)}
+                            placeholder="Enter 6-digit code"
+                            maxLength={6}
+                            className="flex-1 p-2 border border-border rounded-md bg-background"
+                          />
+                          <Button
+                            onClick={verifyPhone}
+                            disabled={!verificationCode || isVerifying}
+                            size="sm"
+                          >
+                            {isVerifying ? (
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            ) : (
+                              "Verify"
+                            )}
+                          </Button>
+                        </div>
+                      )}
+                      
+                      {verificationSent && !isPhoneVerified && (
+                        <p className="text-xs text-muted-foreground flex items-center">
+                          <MessageSquare className="w-3 h-3 mr-1" />
+                          Check your phone for the verification code
+                        </p>
+                      )}
+                    </div>
                   </div>
 
                   <Button
                     onClick={generateCallScript}
-                    disabled={isGenerating || selectedCategories.length === 0}
+                    disabled={isGenerating || selectedCategories.length === 0 || !isPhoneVerified}
                     className="w-full"
                     size="lg"
                   >
@@ -270,6 +387,11 @@ export default function CallConfig() {
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                         Generating Script...
+                      </>
+                    ) : !isPhoneVerified ? (
+                      <>
+                        <AlertCircle className="w-4 h-4 mr-2" />
+                        Verify Phone First
                       </>
                     ) : (
                       <>
