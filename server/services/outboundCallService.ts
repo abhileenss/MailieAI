@@ -196,28 +196,22 @@ Thank you!`;
     const VoiceResponse = twilio.twiml.VoiceResponse;
     const response = new VoiceResponse();
     
-    // Use appropriate Twilio voice based on ElevenLabs voice selection
-    const twilioVoice = this.mapToTwilioVoice(voiceId);
-    
-    response.say({ 
-      voice: twilioVoice,
-      rate: '0.9'  // Slightly slower for clarity
-    }, script);
-    
-    response.say({ voice: twilioVoice }, 'Goodbye!');
+    // Simple TwiML without voice parameters to avoid errors
+    response.say(script);
+    response.say('Thank you for using PookAi. Goodbye!');
     
     return response.toString();
   }
 
   private mapToTwilioVoice(elevenLabsVoiceId: string): string {
     const voiceMap: Record<string, string> = {
-      'rachel': 'Polly.Joanna',
-      'adam': 'Polly.Matthew',
-      'domi': 'Polly.Amy',
-      'elli': 'Polly.Emma',
-      'josh': 'Polly.Joey',
-      'arnold': 'Polly.Brian',
-      'bella': 'Polly.Kimberly',
+      'rachel': 'woman',
+      'adam': 'man',
+      'domi': 'woman',
+      'elli': 'woman',
+      'josh': 'man',
+      'arnold': 'man',
+      'bella': 'woman',
       'antoni': 'Polly.Russell',
       'sarah': 'Polly.Salli'
     };
