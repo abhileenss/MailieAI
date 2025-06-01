@@ -4,6 +4,7 @@ import MainDashboard from './main-dashboard';
 import CallActionCenter from './call-action-center';
 import CallConfig from './call-config';
 import GuidedFooter from '@/components/ui/guided-footer';
+import { Button } from "@/components/ui/button";
 import { 
   Mail, 
   Phone, 
