@@ -611,21 +611,20 @@ export default function EmailCategorization() {
                             );
                           })}
                         </div>
-                      </div>
-                      
-                      {/* Current Category Indicator */}
-                      {currentCategory && (
-                        <div className="mt-4 pt-4 border-t">
-                          <div className="flex items-center gap-2 text-sm">
-                            <span className="text-muted-foreground">Current:</span>
-                            <div className={`w-4 h-4 rounded ${currentCategory.color} flex items-center justify-center`}>
-                              <currentCategory.icon className="w-2 h-2 text-white" />
+                        
+                        {/* Current Category Indicator */}
+                        {currentCategory && (
+                          <div className="mt-4 pt-4 border-t">
+                            <div className="flex items-center gap-2 text-sm">
+                              <span className="text-muted-foreground">Current:</span>
+                              <div className={`w-4 h-4 rounded ${currentCategory.color} flex items-center justify-center`}>
+                                <currentCategory.icon className="w-2 h-2 text-white" />
+                              </div>
+                              <span className="font-medium">{currentCategory.title}</span>
                             </div>
-                            <span className="font-medium">{currentCategory.title}</span>
                           </div>
-                        </div>
-                      )}
-                    </div>
+                        )}
+                      </div>
                   </motion.div>
                 );
               })}
