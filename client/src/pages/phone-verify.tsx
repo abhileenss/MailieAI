@@ -24,12 +24,36 @@ export default function PhoneVerify() {
       return;
     }
 
+    // Format phone number to E.164 format
+    let formattedNumber = phoneNumber.trim();
+    
+    // If it doesn't start with +, try to add it
+    if (!formattedNumber.startsWith('+')) {
+      // Remove any non-digits first
+      const digitsOnly = formattedNumber.replace(/\D/g, '');
+      
+      // Common country code handling
+      if (digitsOnly.length === 10) {
+        // Assume US number if 10 digits
+        formattedNumber = '+1' + digitsOnly;
+      } else if (digitsOnly.length === 12 && digitsOnly.startsWith('91')) {
+        // India number
+        formattedNumber = '+' + digitsOnly;
+      } else if (digitsOnly.length === 11 && digitsOnly.startsWith('1')) {
+        // US number with country code
+        formattedNumber = '+' + digitsOnly;
+      } else {
+        // For other cases, just add +
+        formattedNumber = '+' + digitsOnly;
+      }
+    }
+
     setIsLoading(true);
     try {
       const response = await fetch('/api/phone/send-verification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber })
+        body: JSON.stringify({ phoneNumber: formattedNumber })
       });
 
       if (response.ok) {
@@ -140,6 +164,9 @@ export default function PhoneVerify() {
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                   />
+                  <div className="text-xs text-muted-foreground">
+                    Enter with country code (e.g., +1 for US, +91 for India)
+                  </div>
                 </div>
 
                 <div className="bg-blue-50 dark:bg-blue-950/30 p-3 rounded border border-blue-200 dark:border-blue-800">
