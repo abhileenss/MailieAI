@@ -51,6 +51,19 @@ export default function GuidedApp() {
   const [currentStep, setCurrentStep] = useState('connect');
   const [steps, setSteps] = useState(APP_STEPS);
   const [, setLocation] = useLocation();
+  const [hasProcessedEmails, setHasProcessedEmails] = useState(false);
+
+  useEffect(() => {
+    // Check if user already has processed emails
+    fetch('/api/emails/processed')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.totalSenders > 0) {
+          setHasProcessedEmails(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Update step completion status
   useEffect(() => {
@@ -96,20 +109,81 @@ export default function GuidedApp() {
     }
   };
 
+  const handleStepAction = (stepId: string) => {
+    switch (stepId) {
+      case 'connect':
+        setLocation('/gmail-connect');
+        break;
+      case 'verify':
+        setLocation('/phone-verify');
+        break;
+      case 'categorize':
+        setLocation('/email-dashboard');
+        break;
+    }
+  };
+
   const renderCurrentStep = () => {
     switch (currentStep) {
       case 'connect':
-        // Redirect to Gmail connection page
-        setLocation('/gmail-connect');
-        return null;
+        return (
+          <div className="min-h-screen bg-background flex items-center justify-center p-6">
+            <div className="text-center max-w-md">
+              <h2 className="text-2xl font-bold mb-4">Welcome to PookAi</h2>
+              <p className="text-muted-foreground mb-6">
+                {hasProcessedEmails 
+                  ? "Your emails are already processed! Choose how to proceed:"
+                  : "Let's connect your Gmail account to start categorizing your emails"
+                }
+              </p>
+              {hasProcessedEmails ? (
+                <div className="space-y-3">
+                  <Button onClick={() => setLocation('/email-dashboard')} size="lg" className="w-full">
+                    Go to Email Dashboard
+                  </Button>
+                  <Button onClick={() => setLocation('/full-dashboard')} variant="outline" size="lg" className="w-full">
+                    Advanced Dashboard
+                  </Button>
+                  <Button onClick={() => handleStepAction('connect')} variant="ghost" size="sm">
+                    Setup from scratch
+                  </Button>
+                </div>
+              ) : (
+                <Button onClick={() => handleStepAction('connect')} size="lg">
+                  Connect Gmail Account
+                </Button>
+              )}
+            </div>
+          </div>
+        );
       case 'verify':
-        // Redirect to phone verification page
-        setLocation('/phone-verify');
-        return null;
+        return (
+          <div className="min-h-screen bg-background flex items-center justify-center p-6">
+            <div className="text-center max-w-md">
+              <h2 className="text-2xl font-bold mb-4">Verify Your Phone</h2>
+              <p className="text-muted-foreground mb-6">
+                Add your phone number to receive voice call notifications
+              </p>
+              <Button onClick={() => handleStepAction('verify')} size="lg">
+                Verify Phone Number
+              </Button>
+            </div>
+          </div>
+        );
       case 'categorize':
-        // Redirect to email dashboard
-        setLocation('/email-dashboard');
-        return null;
+        return (
+          <div className="min-h-screen bg-background flex items-center justify-center p-6">
+            <div className="text-center max-w-md">
+              <h2 className="text-2xl font-bold mb-4">Manage Your Emails</h2>
+              <p className="text-muted-foreground mb-6">
+                Review and manage your categorized email senders
+              </p>
+              <Button onClick={() => handleStepAction('categorize')} size="lg">
+                View Email Dashboard
+              </Button>
+            </div>
+          </div>
+        );
       case 'complete':
         return (
           <div className="min-h-screen bg-background flex items-center justify-center">

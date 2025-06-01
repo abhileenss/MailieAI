@@ -39,6 +39,7 @@ function Router() {
       <Route path="/phone-verify" component={AuthenticatedRoute} />
       <Route path="/email-dashboard" component={AuthenticatedRoute} />
       <Route path="/calendar-settings" component={AuthenticatedRoute} />
+      <Route path="/full-dashboard" component={AuthenticatedRoute} />
       
       <Route component={NotFound} />
     </Switch>
@@ -71,7 +72,7 @@ function AuthenticatedRoute() {
   }
   
   if (currentPath === '/dashboard') {
-    return <Dashboard />;
+    return <GuidedApp />;
   }
   
   if (currentPath === '/scanning') {
@@ -92,6 +93,10 @@ function AuthenticatedRoute() {
   
   if (currentPath === '/calendar-settings') {
     return <CalendarSettings />;
+  }
+  
+  if (currentPath === '/full-dashboard') {
+    return <Dashboard />;
   }
   
   return <GuidedApp />;
