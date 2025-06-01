@@ -2,7 +2,8 @@ import OpenAI from "openai";
 import { EmailMessage, EmailSender } from "./gmailService";
 
 export interface CategoryResult {
-  category: 'call-me' | 'remind-me' | 'keep-quiet' | 'why-did-i-signup' | 'dont-tell-anyone' | 'newsletter';
+  suggestedCategory: 'call-me' | 'remind-me' | 'keep-quiet' | 'why-did-i-signup' | 'dont-tell-anyone' | 'newsletter';
+  confidence: number; // 0-1 scale for AI confidence
   importance: number; // 1-5 scale
   reasoning: string;
   summary: string;
