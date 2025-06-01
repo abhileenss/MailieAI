@@ -821,6 +821,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Phone verification endpoints
+  const verificationCodes = new Map<string, { code: string, timestamp: number }>();
+
+  app.post("/api/phone/send-verification", isAuthenticated, async (req: any, res) => {
+    try {
+      const { phoneNumber } = req.body;
+      
+      if (!phoneNumber) {
+        return res.status(400).json({ message: 'Phone number is required' });
+      }
+
+      if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) {
+        return res.status(400).json({ message: 'Twilio credentials not configured' });
+      }
+
+      const twilioLib = await import('twilio');
+      const twilio = twilioLib.default;
+      const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+      
+      // Generate 6-digit verification code
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // Store verification code with timestamp (expires in 10 minutes)
+      verificationCodes.set(phoneNumber, { 
+        code, 
+        timestamp: Date.now() + 10 * 60 * 1000 
+      });
+      
+      // Send SMS
+      await client.messages.create({
+        body: `Your PookAi verification code is: ${code}`,
+        from: process.env.TWILIO_PHONE_NUMBER,
+        to: phoneNumber
+      });
+
+      res.json({ success: true, message: 'Verification code sent' });
+    } catch (error: any) {
+      console.error('Error sending verification code:', error);
+      res.status(500).json({ message: 'Failed to send verification code', error: error.message });
+    }
+  });
+
+  app.post("/api/phone/verify", isAuthenticated, async (req: any, res) => {
+    try {
+      const { phoneNumber, code } = req.body;
+      
+      if (!phoneNumber || !code) {
+        return res.status(400).json({ message: 'Phone number and code are required' });
+      }
+
+      const verification = verificationCodes.get(phoneNumber);
+      
+      if (!verification) {
+        return res.status(400).json({ message: 'No verification code found for this number' });
+      }
+
+      if (Date.now() > verification.timestamp) {
+        verificationCodes.delete(phoneNumber);
+        return res.status(400).json({ message: 'Verification code has expired' });
+      }
+
+      if (verification.code !== code) {
+        return res.status(400).json({ message: 'Invalid verification code' });
+      }
+
+      // Clear the verification code
+      verificationCodes.delete(phoneNumber);
+      
+      // Update user with verified phone number
+      const userId = req.user.claims.sub;
+      await storage.upsertUser({
+        id: userId,
+        email: req.user.claims.email,
+        name: req.user.claims.name,
+        phone: phoneNumber
+      });
+
+      res.json({ success: true, message: 'Phone number verified successfully' });
+    } catch (error: any) {
+      console.error('Error verifying phone:', error);
+      res.status(500).json({ message: 'Failed to verify phone number', error: error.message });
+    }
+  });
+
   // Test endpoint for Twilio voice calls
   app.post("/api/test/voice-call", async (req, res) => {
     try {
