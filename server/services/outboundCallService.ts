@@ -1,6 +1,7 @@
 import { ElevenLabsService } from './elevenLabsService';
 import { EmailCategorizationService } from './emailCategorizationService';
 import { storage } from '../storage';
+import twilio from 'twilio';
 
 interface CallConfig {
   phoneNumber: string;
@@ -192,7 +193,6 @@ Thank you!`;
   }
 
   private generateTwiML(script: string, voiceId: string): string {
-    const twilio = require('twilio');
     const VoiceResponse = twilio.twiml.VoiceResponse;
     const response = new VoiceResponse();
     
