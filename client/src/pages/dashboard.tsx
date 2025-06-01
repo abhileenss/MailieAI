@@ -318,7 +318,7 @@ export default function Dashboard() {
         <div>
           <h2 className="text-2xl font-bold text-white">Email Sender Management</h2>
           <p className="text-muted-foreground mt-2">
-            Review AI suggestions for your {(emailData as any)?.totalSenders || 0} email senders. You have final approval on all categorizations.
+            Manage your {(emailData as any)?.totalSenders || 0} email senders across smart categories. Drag and drop to reassign or customize preferences.
           </p>
         </div>
 

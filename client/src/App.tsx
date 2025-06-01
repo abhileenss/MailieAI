@@ -7,14 +7,12 @@ import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
 import PublicLanding from "@/pages/public-landing";
 import Dashboard from "@/pages/dashboard";
-import Onboarding from "@/pages/onboarding";
 import GuidedApp from "@/pages/guided-app";
 import EmailScanning from "@/pages/email-scanning";
 import Privacy from "@/pages/privacy";
 import Security from "@/pages/security";
 import Support from "@/pages/support";
 import NotFound from "@/pages/not-found";
-import { useState } from "react";
 
 function Router() {
   return (
@@ -39,7 +37,6 @@ function Router() {
 
 function AuthenticatedRoute() {
   const { isAuthenticated, isLoading } = useAuth();
-  const [onboardingComplete, setOnboardingComplete] = useState(false);
   
   if (isLoading) {
     return (
@@ -54,11 +51,6 @@ function AuthenticatedRoute() {
   
   if (!isAuthenticated) {
     return <PublicLanding />;
-  }
-  
-  // Show onboarding if user hasn't completed it yet
-  if (!onboardingComplete) {
-    return <Onboarding onComplete={() => setOnboardingComplete(true)} />;
   }
   
   return <Dashboard />;
