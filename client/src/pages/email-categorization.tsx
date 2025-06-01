@@ -282,136 +282,95 @@ export default function EmailCategorization() {
             </div>
           </motion.div>
 
-          {/* Domain Groups */}
+          {/* Unroll.Me Style Layout */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="space-y-6 mb-8"
+            className="mb-8"
           >
-            {paginatedDomains.map(([domain, senders], domainIndex) => {
-              const totalEmails = senders.reduce((sum, sender) => sum + sender.emailCount, 0);
-              const primarySender = senders[0];
-              
-              return (
-                <motion.div
-                  key={domain}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: domainIndex * 0.1 }}
-                  className="bg-card border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-                >
-                  {/* Domain Header */}
-                  <div className="bg-muted/50 px-4 md:px-6 py-4 border-b">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                          <Mail className="w-5 h-5 text-primary" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-lg">{domain}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {senders.length} sender{senders.length > 1 ? 's' : ''} • {totalEmails} total emails
-                          </p>
-                        </div>
-                      </div>
-                      
-                      {/* Bulk Domain Actions */}
-                      <div className="flex gap-1 flex-wrap">
-                        {Object.entries(categoryConfig).map(([key, config]) => {
-                          const Icon = config.icon;
-                          const allSameCat = senders.every(s => s.category === key);
-                          
-                          return (
-                            <Button
-                              key={key}
-                              variant={allSameCat ? "default" : "outline"}
-                              size="sm"
-                              onClick={() => {
-                                senders.forEach(sender => handleCategoryChange(sender.id, key));
-                              }}
-                              className={`min-w-[60px] text-xs ${
-                                allSameCat ? `${config.color} text-white` : ''
-                              }`}
-                              title={`Set all ${domain} emails to ${config.title}`}
-                            >
-                              <Icon className="w-3 h-3 mr-1" />
-                              <span className="hidden sm:inline">{config.title.split(' ')[0]}</span>
-                            </Button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
+            <div className="grid gap-4">
+              {paginatedDomains.map(([domain, senders], domainIndex) => {
+                const totalEmails = senders.reduce((sum, sender) => sum + sender.emailCount, 0);
+                
+                return senders.map((sender) => {
+                  const currentCategory = categoryConfig[sender.category as keyof typeof categoryConfig];
                   
-                  {/* Individual Senders */}
-                  <div className="divide-y">
-                    {senders.map((sender, senderIndex) => {
-                      const currentCategory = categoryConfig[sender.category as keyof typeof categoryConfig];
-                      
-                      return (
-                        <div key={sender.id} className="px-4 md:px-6 py-3">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div className="flex items-center gap-3 flex-1 min-w-0">
-                              <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
-                                <User className="w-4 h-4 text-muted-foreground" />
-                              </div>
-                              
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2">
-                                  <h4 className="font-medium text-sm truncate">{sender.name}</h4>
-                                  <Badge variant="secondary" className="text-xs">
-                                    {sender.emailCount}
-                                  </Badge>
-                                </div>
-                                <p className="text-xs text-muted-foreground truncate">{sender.email}</p>
-                              </div>
-                              
-                              {/* Current Category Indicator */}
-                              {currentCategory && (
-                                <div className="hidden md:flex items-center gap-2">
-                                  <div className={`w-4 h-4 rounded ${currentCategory.color} flex items-center justify-center`}>
-                                    <currentCategory.icon className="w-2 h-2 text-white" />
-                                  </div>
-                                  <span className="text-xs font-medium">
-                                    {currentCategory.title}
-                                  </span>
-                                </div>
-                              )}
+                  return (
+                    <motion.div
+                      key={sender.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: domainIndex * 0.05 }}
+                      className="bg-card border rounded-lg p-6 hover:shadow-md transition-shadow"
+                    >
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Left Side - Sender Info */}
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Mail className="w-6 h-6 text-primary" />
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-semibold text-lg truncate">{sender.name}</h3>
+                              <Badge variant="secondary" className="text-sm">
+                                {sender.emailCount} emails
+                              </Badge>
                             </div>
-                            
-                            {/* Individual Actions */}
-                            <div className="flex gap-1 justify-center sm:justify-end">
-                              {Object.entries(categoryConfig).map(([key, config]) => {
-                                const isSelected = sender.category === key;
-                                const Icon = config.icon;
-                                
-                                return (
-                                  <Button
-                                    key={key}
-                                    variant={isSelected ? "default" : "ghost"}
-                                    size="sm"
-                                    onClick={() => handleCategoryChange(sender.id, key)}
-                                    className={`w-8 h-8 p-0 transition-all ${
-                                      isSelected 
-                                        ? `${config.color} text-white` 
-                                        : 'hover:bg-muted'
-                                    }`}
-                                    title={config.title}
-                                  >
-                                    <Icon className="w-3 h-3" />
-                                  </Button>
-                                );
-                              })}
-                            </div>
+                            <p className="text-sm text-muted-foreground truncate mb-1">{sender.email}</p>
+                            <p className="text-xs text-muted-foreground">{sender.domain}</p>
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                              Latest: {sender.latestSubject}
+                            </p>
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              );
-            })}
+                        
+                        {/* Right Side - Action Buttons */}
+                        <div className="space-y-2">
+                          {Object.entries(categoryConfig).map(([key, config]) => {
+                            const isSelected = sender.category === key;
+                            const Icon = config.icon;
+                            
+                            return (
+                              <Button
+                                key={key}
+                                variant={isSelected ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => handleCategoryChange(sender.id, key)}
+                                className={`w-full justify-start text-sm h-10 ${
+                                  isSelected 
+                                    ? `${config.color} text-white border-0 shadow-sm` 
+                                    : 'hover:border-primary/50'
+                                }`}
+                                disabled={updateCategoryMutation.isPending}
+                              >
+                                <Icon className="w-4 h-4 mr-3" />
+                                {config.title}
+                                {isSelected && <Check className="w-4 h-4 ml-auto" />}
+                              </Button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      
+                      {/* Current Category Indicator */}
+                      {currentCategory && (
+                        <div className="mt-4 pt-4 border-t">
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-muted-foreground">Current:</span>
+                            <div className={`w-4 h-4 rounded ${currentCategory.color} flex items-center justify-center`}>
+                              <currentCategory.icon className="w-2 h-2 text-white" />
+                            </div>
+                            <span className="font-medium">{currentCategory.title}</span>
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  );
+                });
+              })}
+            </div>
           </motion.div>
 
           {/* Pagination */}
