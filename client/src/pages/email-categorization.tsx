@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
-import { Mail, Brain, Phone, Archive, Trash2, User, ArrowRight, Search, Check } from "lucide-react";
+import { Mail, Brain, Phone, Archive, Trash2, User, ArrowRight, Search, Check, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -174,6 +174,76 @@ export default function EmailCategorization() {
     });
   };
 
+  // Smart defaults function to apply common-sense categorization
+  const applySmartDefaults = () => {
+    const updatedSenders = [...processedSenders];
+    let changesCount = 0;
+    
+    updatedSenders.forEach(sender => {
+      const oldCategory = sender.category;
+      
+      // Banking emails should be "keep-quiet" by default (not call-me)
+      if (
+        sender.domain.includes('bank') || 
+        sender.domain.includes('financial') ||
+        sender.name.toLowerCase().includes('bank') ||
+        sender.name.toLowerCase().includes('credit') ||
+        sender.domain.includes('icici') ||
+        sender.domain.includes('hdfc') ||
+        sender.domain.includes('axis') ||
+        sender.domain.includes('sbi')
+      ) {
+        sender.category = 'keep-quiet';
+      }
+      
+      // Newsletter patterns
+      else if (
+        sender.domain.includes('newsletter') ||
+        sender.domain.includes('news') ||
+        sender.latestSubject.toLowerCase().includes('newsletter') ||
+        sender.domain.includes('substack') ||
+        sender.domain.includes('medium')
+      ) {
+        sender.category = 'newsletter';
+      }
+      
+      // Promotional/marketing emails
+      else if (
+        sender.latestSubject.toLowerCase().includes('offer') ||
+        sender.latestSubject.toLowerCase().includes('discount') ||
+        sender.latestSubject.toLowerCase().includes('sale') ||
+        sender.latestSubject.toLowerCase().includes('deal') ||
+        sender.domain.includes('marketing') ||
+        sender.domain.includes('promo')
+      ) {
+        sender.category = 'why-did-i-signup';
+      }
+      
+      // Automated system emails
+      else if (
+        sender.email.includes('noreply') ||
+        sender.email.includes('no-reply') ||
+        sender.email.includes('donotreply') ||
+        sender.name.toLowerCase().includes('automated') ||
+        sender.latestSubject.toLowerCase().includes('confirmation') ||
+        sender.latestSubject.toLowerCase().includes('receipt')
+      ) {
+        sender.category = 'keep-quiet';
+      }
+      
+      if (oldCategory !== sender.category) {
+        changesCount++;
+      }
+    });
+    
+    setProcessedSenders(updatedSenders);
+    
+    toast({
+      title: "Smart Defaults Applied",
+      description: `Updated ${changesCount} email senders with sensible categories.`,
+    });
+  };
+
   const handleContinue = () => {
     setLocation('/dashboard');
   };
@@ -315,6 +385,10 @@ export default function EmailCategorization() {
                 </div>
                 
                 <div className="flex gap-3 justify-center">
+                  <Button onClick={applySmartDefaults} variant="outline" size="sm">
+                    <Wand2 className="w-4 h-4 mr-2" />
+                    Apply Smart Defaults
+                  </Button>
                   <Button 
                     onClick={() => setLocation('/preferences')}
                     variant="outline"
