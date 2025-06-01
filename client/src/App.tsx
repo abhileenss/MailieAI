@@ -13,6 +13,7 @@ import TestCall from "@/pages/test-call";
 import GmailConnect from "@/pages/gmail-connect";
 import PhoneVerify from "@/pages/phone-verify";
 import EmailDashboard from "@/pages/email-dashboard";
+import CalendarSettings from "@/pages/calendar-settings";
 import Privacy from "@/pages/privacy";
 import Security from "@/pages/security";
 import Support from "@/pages/support";
@@ -37,6 +38,7 @@ function Router() {
       <Route path="/gmail-connect" component={AuthenticatedRoute} />
       <Route path="/phone-verify" component={AuthenticatedRoute} />
       <Route path="/email-dashboard" component={AuthenticatedRoute} />
+      <Route path="/calendar-settings" component={AuthenticatedRoute} />
       
       <Route component={NotFound} />
     </Switch>
@@ -86,6 +88,10 @@ function AuthenticatedRoute() {
   
   if (currentPath === '/email-dashboard') {
     return <EmailDashboard />;
+  }
+  
+  if (currentPath === '/calendar-settings') {
+    return <CalendarSettings />;
   }
   
   return <GuidedApp />;

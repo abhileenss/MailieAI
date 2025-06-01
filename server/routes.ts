@@ -1226,6 +1226,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Calendar endpoints
+  app.get('/api/calendar/auth-url', async (req, res) => {
+    try {
+      const authUrl = await gmailService.getCalendarAuthUrl();
+      res.json({ authUrl });
+    } catch (error) {
+      console.error('Failed to get calendar auth URL:', error);
+      res.status(500).json({ error: 'Failed to generate calendar auth URL' });
+    }
+  });
+
+  app.get('/api/calendar/events', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const events = await gmailService.getUpcomingEvents(userId);
+      res.json({ success: true, events });
+    } catch (error) {
+      console.error('Failed to fetch calendar events:', error);
+      res.status(500).json({ error: 'Failed to fetch calendar events' });
+    }
+  });
+
+  app.get('/api/calendar/settings', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const settings = await storage.getUserPreferences(userId);
+      
+      // Extract calendar-specific settings
+      const calendarSettings = {
+        enablePreMeetingCalls: false,
+        minutesBefore: 15,
+        onlyWithExternalAttendees: true,
+        minimumMeetingDuration: 30,
+        excludeKeywords: ['standup', 'daily', 'internal']
+      };
+
+      res.json({ success: true, settings: calendarSettings });
+    } catch (error) {
+      console.error('Failed to load calendar settings:', error);
+      res.status(500).json({ error: 'Failed to load settings' });
+    }
+  });
+
+  app.post('/api/calendar/settings', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { settings } = req.body;
+      
+      // Save calendar settings as user preferences
+      await storage.upsertUserPreference({
+        userId,
+        senderId: 'calendar-settings',
+        category: 'calendar',
+        enableCalls: settings.enablePreMeetingCalls,
+        enableSMS: false,
+        priority: 'high',
+        customNotes: JSON.stringify(settings)
+      });
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Failed to save calendar settings:', error);
+      res.status(500).json({ error: 'Failed to save settings' });
+    }
+  });
+
   // Check API setup status
   app.get("/api/setup/status", async (req, res) => {
     const status = {

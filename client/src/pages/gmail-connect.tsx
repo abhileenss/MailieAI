@@ -81,6 +81,13 @@ export default function GmailConnect() {
                   <div>We never see or store your Gmail password</div>
                 </div>
               </div>
+              <div className="flex items-start space-x-3">
+                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5" />
+                <div>
+                  <div className="font-medium text-foreground">Calendar access</div>
+                  <div>Read calendar to call before meetings</div>
+                </div>
+              </div>
             </div>
 
             <div className="bg-blue-50 dark:bg-blue-950/30 p-3 rounded border border-blue-200 dark:border-blue-800">

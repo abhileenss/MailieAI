@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Mail, Phone, Filter, Search, MoreVertical, Bell, Settings } from "lucide-react";
+import { Mail, Phone, Filter, Search, MoreVertical, Bell, Settings, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -102,6 +102,14 @@ export default function EmailDashboard() {
             </p>
           </div>
           <div className="flex space-x-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => window.location.href = '/calendar-settings'}
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Calendar
+            </Button>
             <Button variant="outline" size="sm">
               <Settings className="w-4 h-4 mr-2" />
               Settings
