@@ -53,7 +53,7 @@ function AuthenticatedRoute() {
     return <PublicLanding />;
   }
   
-  return <Dashboard />;
+  return <GuidedApp />;
 }
 
 function App() {
