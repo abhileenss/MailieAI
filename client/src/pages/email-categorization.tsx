@@ -11,6 +11,8 @@ import { SEOHead } from "@/components/seo-head";
 import { NavigationFooter } from "@/components/navigation-footer";
 import { CleanNavigation } from "@/components/clean-navigation";
 import { ProgressStepper } from "@/components/progress-stepper";
+import { Pagination } from "@/components/pagination";
+import { usePagination } from "@/hooks/usePagination";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -90,8 +92,6 @@ export default function EmailCategorization() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [processedSenders, setProcessedSenders] = useState<EmailSender[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [domainsPerPage] = useState(20);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -248,43 +248,34 @@ export default function EmailCategorization() {
     setLocation('/dashboard');
   };
 
-  // Group senders by domain and filter
-  const groupedByDomain = processedSenders.reduce((acc, sender) => {
-    const domain = sender.domain;
-    if (!acc[domain]) {
-      acc[domain] = [];
-    }
-    acc[domain].push(sender);
-    return acc;
-  }, {} as Record<string, EmailSender[]>);
-
-  // Filter domains based on search and category
-  const filteredDomains = Object.entries(groupedByDomain).filter(([domain, senders]) => {
+  // Filter and sort senders
+  const filteredSenders = processedSenders.filter(sender => {
     const matchesSearch = searchTerm === '' || 
-      domain.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      senders.some(sender => 
-        sender.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sender.email.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      sender.domain.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      sender.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      sender.email.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesCategory = selectedCategory === null || 
-      senders.some(sender => sender.category === selectedCategory);
+    const matchesCategory = selectedCategory === null || sender.category === selectedCategory;
     
     return matchesSearch && matchesCategory;
   });
 
-  // Sort domains by total email count
-  const sortedDomains = filteredDomains.sort(([, sendersA], [, sendersB]) => {
-    const totalA = sendersA.reduce((sum, sender) => sum + sender.emailCount, 0);
-    const totalB = sendersB.reduce((sum, sender) => sum + sender.emailCount, 0);
-    return totalB - totalA;
-  });
+  // Sort senders by email count
+  const sortedSenders = filteredSenders.sort((a, b) => b.emailCount - a.emailCount);
 
-  // Pagination
-  const totalDomains = sortedDomains.length;
-  const totalPages = Math.ceil(totalDomains / domainsPerPage);
-  const startIndex = (currentPage - 1) * domainsPerPage;
-  const paginatedDomains = sortedDomains.slice(startIndex, startIndex + domainsPerPage);
+  // Use pagination hook
+  const {
+    currentPage,
+    totalPages,
+    itemsPerPage,
+    totalItems,
+    paginatedData: paginatedSenders,
+    setCurrentPage,
+    setItemsPerPage
+  } = usePagination({
+    data: sortedSenders,
+    itemsPerPage: 25
+  });
 
   if (isLoading) {
     return (
@@ -540,7 +531,19 @@ export default function EmailCategorization() {
             </div>
           </motion.div>
 
-          {/* Unroll.Me Style Layout */}
+          {/* Pagination Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mb-6"
+          >
+            <p className="text-muted-foreground text-center">
+              Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} email senders
+            </p>
+          </motion.div>
+
+          {/* Unroll.Me Style Layout - Paginated */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -548,45 +551,42 @@ export default function EmailCategorization() {
             className="mb-8"
           >
             <div className="grid gap-4">
-              {paginatedDomains.map(([domain, senders], domainIndex) => {
-                const totalEmails = senders.reduce((sum, sender) => sum + sender.emailCount, 0);
+              {paginatedSenders.map((sender, senderIndex) => {
+                const currentCategory = categoryConfig[sender.category as keyof typeof categoryConfig];
                 
-                return senders.map((sender) => {
-                  const currentCategory = categoryConfig[sender.category as keyof typeof categoryConfig];
-                  
-                  return (
-                    <motion.div
-                      key={sender.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: domainIndex * 0.05 }}
-                      className="bg-card border rounded-lg p-6 hover:shadow-md transition-shadow"
-                    >
-                      {/* Mobile-First Responsive Layout */}
-                      <div className="space-y-4">
-                        {/* Sender Info - Optimized for Mobile */}
-                        <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-                          </div>
-                          
-                          <div className="flex-1 min-w-0">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
-                              <h3 className="font-semibold text-base sm:text-lg truncate">{sender.name}</h3>
-                              <Badge variant="secondary" className="text-xs w-fit">
-                                {sender.emailCount} emails
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground truncate mb-1">{sender.email}</p>
-                            <p className="text-xs text-muted-foreground mb-1">{sender.domain}</p>
-                            <p className="text-xs text-muted-foreground line-clamp-2 sm:line-clamp-1">
-                              Latest: {sender.latestSubject}
-                            </p>
-                          </div>
+                return (
+                  <motion.div
+                    key={sender.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: senderIndex * 0.02 }}
+                    className="bg-card border rounded-lg p-6 hover:shadow-md transition-shadow"
+                  >
+                    {/* Mobile-First Responsive Layout */}
+                    <div className="space-y-4">
+                      {/* Sender Info - Optimized for Mobile */}
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                         </div>
                         
-                        {/* Action Buttons - Mobile Optimized Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
+                            <h3 className="font-semibold text-base sm:text-lg truncate">{sender.name}</h3>
+                            <Badge variant="secondary" className="text-xs w-fit">
+                              {sender.emailCount} emails
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground truncate mb-1">{sender.email}</p>
+                          <p className="text-xs text-muted-foreground mb-1">{sender.domain}</p>
+                          <p className="text-xs text-muted-foreground line-clamp-2 sm:line-clamp-1">
+                            Latest: {sender.latestSubject}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Action Buttons - Mobile Optimized Grid */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                           {Object.entries(categoryConfig).map(([key, config]) => {
                             const isSelected = sender.category === key;
                             const Icon = config.icon;
@@ -625,55 +625,26 @@ export default function EmailCategorization() {
                           </div>
                         </div>
                       )}
-                    </motion.div>
-                  );
-                });
+                    </div>
+                  </motion.div>
+                );
               })}
             </div>
           </motion.div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center gap-2 mb-8">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </Button>
-              
-              <div className="flex gap-1">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const page = i + 1;
-                  return (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setCurrentPage(page)}
-                      className="w-8"
-                    >
-                      {page}
-                    </Button>
-                  );
-                })}
-              </div>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </Button>
-            </div>
-          )}
+          {/* Pagination Component */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            itemsPerPage={itemsPerPage}
+            totalItems={totalItems}
+            onPageChange={setCurrentPage}
+            onItemsPerPageChange={setItemsPerPage}
+            className="mb-8"
+          />
 
           {/* Results Summary */}
-          {totalDomains === 0 && (
+          {totalItems === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">No domains match your search criteria.</p>
             </div>
