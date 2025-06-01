@@ -218,6 +218,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Trigger call for specific email categories
+  app.post("/api/voice/trigger-call", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { phoneNumber, domain, category } = req.body;
+
+      // Get senders from the specific domain and category
+      const senders = await storage.getEmailSenders(userId);
+      const filteredSenders = senders.filter(sender => 
+        sender.domain === domain && sender.category === category
+      );
+
+      if (filteredSenders.length === 0) {
+        return res.status(400).json({ message: "No emails found for this domain and category" });
+      }
+
+      const totalEmails = filteredSenders.reduce((sum, sender) => sum + (sender.emailCount || 0), 0);
+      
+      const voiceService = new VoiceService();
+      const result = await voiceService.makeOutboundCall(userId, phoneNumber, "category-alert", {
+        domain,
+        category,
+        senderCount: filteredSenders.length,
+        totalEmails,
+        senders: filteredSenders.map(s => ({ name: s.name, emailCount: s.emailCount }))
+      });
+
+      res.json({ 
+        success: true, 
+        callSid: result.sid,
+        message: `Call triggered for ${filteredSenders.length} senders from ${domain} in category ${category}`
+      });
+    } catch (error) {
+      console.error("Category call error:", error);
+      res.status(500).json({ message: "Failed to trigger category call", error: error.message });
+    }
+  });
+
   // Update email sender category (persist category assignments)
   app.patch("/api/emails/senders/:senderId/category", isAuthenticated, async (req: any, res) => {
     try {

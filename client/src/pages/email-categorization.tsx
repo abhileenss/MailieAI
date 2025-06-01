@@ -302,8 +302,8 @@ export default function EmailCategorization() {
                   className="bg-card border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
                 >
                   {/* Domain Header */}
-                  <div className="bg-muted/50 px-6 py-4 border-b">
-                    <div className="flex items-center justify-between">
+                  <div className="bg-muted/50 px-4 md:px-6 py-4 border-b">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
                           <Mail className="w-5 h-5 text-primary" />
@@ -317,7 +317,7 @@ export default function EmailCategorization() {
                       </div>
                       
                       {/* Bulk Domain Actions */}
-                      <div className="flex gap-2">
+                      <div className="flex gap-1 flex-wrap">
                         {Object.entries(categoryConfig).map(([key, config]) => {
                           const Icon = config.icon;
                           const allSameCat = senders.every(s => s.category === key);
@@ -330,13 +330,13 @@ export default function EmailCategorization() {
                               onClick={() => {
                                 senders.forEach(sender => handleCategoryChange(sender.id, key));
                               }}
-                              className={`min-w-[70px] text-xs ${
+                              className={`min-w-[60px] text-xs ${
                                 allSameCat ? `${config.color} text-white` : ''
                               }`}
                               title={`Set all ${domain} emails to ${config.title}`}
                             >
                               <Icon className="w-3 h-3 mr-1" />
-                              {config.title.split(' ')[0]}
+                              <span className="hidden sm:inline">{config.title.split(' ')[0]}</span>
                             </Button>
                           );
                         })}
@@ -350,10 +350,10 @@ export default function EmailCategorization() {
                       const currentCategory = categoryConfig[sender.category as keyof typeof categoryConfig];
                       
                       return (
-                        <div key={sender.id} className="px-6 py-3">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3 flex-1">
-                              <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+                        <div key={sender.id} className="px-4 md:px-6 py-3">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
                                 <User className="w-4 h-4 text-muted-foreground" />
                               </div>
                               
@@ -369,7 +369,7 @@ export default function EmailCategorization() {
                               
                               {/* Current Category Indicator */}
                               {currentCategory && (
-                                <div className="flex items-center gap-2">
+                                <div className="hidden md:flex items-center gap-2">
                                   <div className={`w-4 h-4 rounded ${currentCategory.color} flex items-center justify-center`}>
                                     <currentCategory.icon className="w-2 h-2 text-white" />
                                   </div>
@@ -381,7 +381,7 @@ export default function EmailCategorization() {
                             </div>
                             
                             {/* Individual Actions */}
-                            <div className="flex gap-1 ml-4">
+                            <div className="flex gap-1 justify-center sm:justify-end">
                               {Object.entries(categoryConfig).map(([key, config]) => {
                                 const isSelected = sender.category === key;
                                 const Icon = config.icon;
