@@ -9,6 +9,7 @@ interface UserProfile {
   industry: string;
   priorityTypes: string[];
   communicationStyle: string;
+  voicePreference: string;
   referralSource: string;
 }
 
@@ -20,6 +21,7 @@ export default function PublicLanding() {
     industry: '',
     priorityTypes: [],
     communicationStyle: '',
+    voicePreference: '',
     referralSource: ''
   });
 
@@ -72,6 +74,18 @@ export default function PublicLanding() {
       ]
     },
     {
+      title: "Choose your AI voice",
+      subtitle: "Pick your preferred voice for call summaries",
+      options: [
+        { value: 'morgan-freeman', label: 'Morgan Freeman', icon: Phone, description: 'Deep, authoritative voice' },
+        { value: 'naval-ravikant', label: 'Naval Ravikant', icon: Brain, description: 'Calm, philosophical tone' },
+        { value: 'joe-rogan', label: 'Joe Rogan', icon: Users, description: 'Conversational, engaging style' },
+        { value: 'andrew-schulz', label: 'Andrew Schulz', icon: Zap, description: 'Energetic, direct delivery' },
+        { value: 'amitabh-bachchan', label: 'Amitabh Bachchan', icon: Target, description: 'Distinguished, commanding presence' },
+        { value: 'priyanka-chopra', label: 'Priyanka Chopra', icon: Mail, description: 'Professional, clear articulation' }
+      ]
+    },
+    {
       title: "How did you hear about us?",
       subtitle: "Help us improve our outreach",
       options: [
@@ -99,7 +113,7 @@ export default function PublicLanding() {
         priorityTypes: updatedValues
       }));
     } else {
-      const fieldMap = ['role', 'industry', 'priorityTypes', 'communicationStyle', 'referralSource'];
+      const fieldMap = ['role', 'industry', 'priorityTypes', 'communicationStyle', 'voicePreference', 'referralSource'];
       const field = fieldMap[currentStep] as keyof UserProfile;
       
       setUserProfile(prev => ({
@@ -191,6 +205,11 @@ export default function PublicLanding() {
                             </div>
                             <div>
                               <div className="font-semibold text-lg">{option.label}</div>
+                              {option.description && (
+                                <div className="text-sm text-muted-foreground mt-1">
+                                  {option.description}
+                                </div>
+                              )}
                               {isSelected && currentStepData.multiSelect && (
                                 <div className="flex items-center text-sm text-muted-foreground mt-1">
                                   <CheckCircle className="w-4 h-4 mr-2" />

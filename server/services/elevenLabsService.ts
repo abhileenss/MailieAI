@@ -63,11 +63,25 @@ export class ElevenLabsService {
     };
   }
 
+  private getVoiceId(voicePreference: string): string {
+    const voiceMapping = {
+      'morgan-freeman': 'pNInz6obpgDQGcFmaJgB', // Morgan Freeman style voice
+      'naval-ravikant': 'EXAVITQu4vr4xnSDxMaL', // Naval Ravikant style voice
+      'joe-rogan': 'VR6AewLTigWG4xSOukaG', // Joe Rogan style voice
+      'andrew-schulz': '29vD33N1CtxCmqQRPOHJ', // Andrew Schulz style voice
+      'amitabh-bachchan': 'TX3LPaxmHKxFdv7VOQHJ', // Amitabh Bachchan style voice
+      'priyanka-chopra': 'ThT5KcBeYPX3keUQqHPh' // Priyanka Chopra style voice
+    };
+    
+    return voiceMapping[voicePreference] || voiceMapping['morgan-freeman'];
+  }
+
   private generateAgentConfig(emailData: any): any {
     const context = this.buildEmailContext(emailData);
+    const voiceId = this.getVoiceId(emailData.voicePreference || 'morgan-freeman');
     
     return {
-      system_prompt: `You are PookAi, a helpful AI assistant for busy startup founders. You're calling to provide an email summary and help prioritize important communications. 
+      system_prompt: `You are PookAi, a helpful AI assistant for busy professionals. You're calling to provide an email summary and help prioritize important communications. 
 
 Email Context: ${context}
 
@@ -76,6 +90,8 @@ Be concise, friendly, and professional. Ask if the user wants details about spec
       first_message: this.generateOpeningMessage(emailData),
       
       language: "en",
+      
+      voice_id: voiceId,
       
       voice_settings: {
         stability: 0.7,
