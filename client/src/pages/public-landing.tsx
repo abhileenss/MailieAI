@@ -42,73 +42,34 @@ export default function PublicLanding() {
   const onboardingSteps: OnboardingStep[] = [
     {
       title: "What's your role?",
-      subtitle: "Help us understand your work",
+      subtitle: "Help us understand your priorities",
       options: [
-        { value: 'founder', label: 'Founder / Business Owner', icon: Building },
-        { value: 'manager', label: 'Manager / Team Lead', icon: Users },
-        { value: 'designer', label: 'Designer / Creative', icon: Brain },
-        { value: 'developer', label: 'Developer / Engineer', icon: Target },
-        { value: 'consultant', label: 'Consultant / Freelancer', icon: Zap },
-        { value: 'other', label: 'Other', icon: Users }
+        { value: 'founder-ceo', label: 'Founder / CEO', icon: Building },
+        { value: 'executive', label: 'Executive / Manager', icon: Users },
+        { value: 'professional', label: 'Professional / Individual', icon: Brain },
+        { value: 'other', label: 'Other', icon: Target }
       ]
     },
     {
-      title: "What industry are you in?",
-      subtitle: "This helps us understand your email patterns",
-      options: [
-        { value: 'technology', label: 'Technology / Software', icon: Brain },
-        { value: 'finance', label: 'Finance / Banking', icon: Building },
-        { value: 'healthcare', label: 'Healthcare / Medical', icon: Users },
-        { value: 'education', label: 'Education / Training', icon: Target },
-        { value: 'consulting', label: 'Consulting / Services', icon: Zap },
-        { value: 'other', label: 'Other Industry', icon: Building }
-      ]
-    },
-    {
-      title: "What emails need your attention most?",
-      subtitle: "Select all that apply",
+      title: "What needs your immediate attention?",
+      subtitle: "Select your top priorities",
       multiSelect: true,
       options: [
-        { value: 'clients', label: 'Client Communications', icon: Users },
+        { value: 'investors', label: 'Investor Communications', icon: Target },
+        { value: 'customers', label: 'Customer Issues', icon: Users },
         { value: 'team', label: 'Team Updates', icon: Users },
-        { value: 'billing', label: 'Billing & Payments', icon: Building },
-        { value: 'security', label: 'Security & Alerts', icon: Lock },
-        { value: 'partnerships', label: 'Business Opportunities', icon: Target },
+        { value: 'billing', label: 'Payment & Billing', icon: Building },
+        { value: 'security', label: 'Security Alerts', icon: Lock },
         { value: 'personal', label: 'Personal Important', icon: Mail }
       ]
     },
     {
-      title: "How do you prefer notifications?",
-      subtitle: "Choose your communication style",
+      title: "How should we notify you?",
+      subtitle: "Choose your preferred style",
       options: [
-        { value: 'immediate', label: 'Immediate alerts for urgent items', icon: Phone },
-        { value: 'daily', label: 'Daily summary calls', icon: Clock },
-        { value: 'text-first', label: 'Text summary then call if needed', icon: Mail },
-        { value: 'minimal', label: 'Only critical emergencies', icon: Brain }
-      ]
-    },
-    {
-      title: "Choose your AI voice",
-      subtitle: "Pick your preferred voice for call summaries",
-      options: [
-        { value: 'morgan-freeman', label: 'Morgan Freeman', icon: Phone, description: 'Deep, authoritative voice' },
-        { value: 'naval-ravikant', label: 'Naval Ravikant', icon: Brain, description: 'Calm, philosophical tone' },
-        { value: 'joe-rogan', label: 'Joe Rogan', icon: Users, description: 'Conversational, engaging style' },
-        { value: 'andrew-schulz', label: 'Andrew Schulz', icon: Zap, description: 'Energetic, direct delivery' },
-        { value: 'amitabh-bachchan', label: 'Amitabh Bachchan', icon: Target, description: 'Distinguished, commanding presence' },
-        { value: 'priyanka-chopra', label: 'Priyanka Chopra', icon: Mail, description: 'Professional, clear articulation' }
-      ]
-    },
-    {
-      title: "How did you hear about us?",
-      subtitle: "Help us improve our outreach",
-      options: [
-        { value: 'search', label: 'Google Search', icon: Target },
-        { value: 'social', label: 'Social Media', icon: Users },
-        { value: 'friend', label: 'Friend / Colleague', icon: Users },
-        { value: 'article', label: 'Article / Blog Post', icon: Mail },
-        { value: 'ad', label: 'Advertisement', icon: Zap },
-        { value: 'other', label: 'Other', icon: Brain }
+        { value: 'daily', label: 'Daily morning summary call', icon: Phone, description: 'Perfect for busy schedules' },
+        { value: 'immediate', label: 'Immediate alerts for urgent items', icon: Zap, description: 'Never miss critical emails' },
+        { value: 'text-first', label: 'Text summary, call if urgent', icon: Mail, description: 'Best of both worlds' }
       ]
     }
   ];
@@ -127,7 +88,7 @@ export default function PublicLanding() {
         priorityTypes: updatedValues
       }));
     } else {
-      const fieldMap = ['role', 'industry', 'priorityTypes', 'communicationStyle', 'voicePreference', 'referralSource'];
+      const fieldMap = ['role', 'priorityTypes', 'communicationStyle'];
       const field = fieldMap[currentStep] as keyof UserProfile;
       
       setUserProfile(prev => ({
@@ -295,51 +256,60 @@ export default function PublicLanding() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <div className="inline-flex items-center px-4 py-2 bg-purple-500/20 rounded-full border border-purple-500/30 mb-8">
-              <span className="text-sm font-medium text-purple-200">New: Voice-first email intelligence</span>
+            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full border border-purple-400/30 mb-10">
+              <span className="text-sm font-semibold text-purple-200">🎯 AI Email Intelligence for Busy Professionals</span>
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
+            <h1 className="text-6xl md:text-8xl font-black mb-10 leading-tight tracking-tight">
               Stop Missing What
               <br />
-              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-purple-300 via-pink-300 to-blue-300 bg-clip-text text-transparent">
                 Actually Matters
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed">
-              Your AI concierge calls you daily with what's urgent, filters the noise, 
-              and gives you back hours of focused time every day.
+            <p className="text-xl md:text-2xl text-gray-200 mb-14 max-w-5xl mx-auto leading-relaxed font-medium">
+              Your AI concierge calls you daily with urgent emails, filters promotional noise, 
+              and gives you back <span className="text-purple-300 font-bold">2+ hours</span> of focused time every day.
             </p>
             
             {/* Enhanced CTA Section */}
-            <div className="flex flex-col items-center space-y-6 mb-12">
+            <div className="flex flex-col items-center space-y-8 mb-16">
               <motion.button 
                 onClick={handleGetStarted}
-                className="group relative inline-flex items-center justify-center px-12 py-6 text-xl font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105"
-                whileHover={{ scale: 1.05 }}
+                className="group relative inline-flex items-center justify-center px-16 py-6 text-2xl font-black text-white bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 rounded-3xl shadow-2xl hover:shadow-purple-500/40 transition-all duration-300 transform hover:scale-105 active:scale-95"
+                whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <span className="relative z-10 flex items-center">
-                  Scan My Inbox Now
-                  <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                  Start 30-Second Setup
+                  <ArrowRight className="ml-4 w-7 h-7 group-hover:translate-x-2 transition-transform duration-300" />
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
               </motion.button>
               
-              <div className="flex items-center space-x-4 text-gray-400">
-                <div className="flex items-center space-x-1">
-                  <CheckCircle className="w-4 h-4 text-green-400" />
-                  <span>2-minute setup</span>
+              <div className="flex flex-wrap justify-center items-center gap-6 text-gray-300 text-lg">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-5 h-5 text-emerald-400" />
+                  <span className="font-medium">30-second setup</span>
                 </div>
-                <span>•</span>
-                <div className="flex items-center space-x-1">
-                  <CheckCircle className="w-4 h-4 text-green-400" />
-                  <span>No credit card</span>
+                <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-5 h-5 text-emerald-400" />
+                  <span className="font-medium">No credit card required</span>
                 </div>
-                <span>•</span>
-                <div className="flex items-center space-x-1">
-                  <CheckCircle className="w-4 h-4 text-green-400" />
-                  <span>Privacy first</span>
+                <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-5 h-5 text-emerald-400" />
+                  <span className="font-medium">Enterprise privacy</span>
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <p className="text-gray-400 text-sm mb-2">Join 500+ professionals who saved 10+ hours this week</p>
+                <div className="flex justify-center space-x-1">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full border-2 border-white/20 -ml-2 first:ml-0"></div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -347,38 +317,38 @@ export default function PublicLanding() {
 
           {/* Feature Grid */}
           <motion.div 
-            className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16"
+            className="grid grid-cols-1 lg:grid-cols-3 gap-10 mb-20"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 text-center hover:bg-white/10 transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl mx-auto mb-6 flex items-center justify-center">
-                <Brain className="text-white w-8 h-8" />
+            <div className="group bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-purple-300/20 rounded-3xl p-10 text-center hover:border-purple-300/40 hover:from-white/15 hover:to-white/8 transition-all duration-500 hover:scale-105">
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl mx-auto mb-8 flex items-center justify-center shadow-2xl group-hover:shadow-purple-500/25 transition-shadow duration-300">
+                <Brain className="text-white w-10 h-10" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">Smart Categories</h3>
-              <p className="text-lg text-gray-300 leading-relaxed">
-                "Call Me For This", "Why Did I Sign Up?", "Don't Tell Anyone" - categories that make sense for busy professionals
+              <h3 className="text-2xl font-bold mb-6 text-white">Smart Categories</h3>
+              <p className="text-lg text-gray-200 leading-relaxed">
+                "Call Me For This", "Why Did I Sign Up?", "Don't Tell Anyone" - categories that actually make sense for your workflow
               </p>
             </div>
             
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 text-center hover:bg-white/10 transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-600 rounded-xl mx-auto mb-6 flex items-center justify-center">
-                <Phone className="text-white w-8 h-8" />
+            <div className="group bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-pink-300/20 rounded-3xl p-10 text-center hover:border-pink-300/40 hover:from-white/15 hover:to-white/8 transition-all duration-500 hover:scale-105">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-pink-500 rounded-2xl mx-auto mb-8 flex items-center justify-center shadow-2xl group-hover:shadow-pink-500/25 transition-shadow duration-300">
+                <Phone className="text-white w-10 h-10" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">Daily Voice Calls</h3>
-              <p className="text-lg text-gray-300 leading-relaxed">
-                "Hey, 3 investor emails need responses and your payment processor is down" - delivered by voice
+              <h3 className="text-2xl font-bold mb-6 text-white">Voice Intelligence</h3>
+              <p className="text-lg text-gray-200 leading-relaxed">
+                "Hey, 3 investor emails need responses and your payment processor is down" - delivered naturally by voice
               </p>
             </div>
             
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 text-center hover:bg-white/10 transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl mx-auto mb-6 flex items-center justify-center">
-                <Lock className="text-white w-8 h-8" />
+            <div className="group bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-blue-300/20 rounded-3xl p-10 text-center hover:border-blue-300/40 hover:from-white/15 hover:to-white/8 transition-all duration-500 hover:scale-105">
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-400 to-blue-500 rounded-2xl mx-auto mb-8 flex items-center justify-center shadow-2xl group-hover:shadow-blue-500/25 transition-shadow duration-300">
+                <Lock className="text-white w-10 h-10" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">Privacy First</h3>
-              <p className="text-lg text-gray-300 leading-relaxed">
-                No data selling, no surveillance. Your inbox secrets stay between you and your AI concierge
+              <h3 className="text-2xl font-bold mb-6 text-white">Enterprise Privacy</h3>
+              <p className="text-lg text-gray-200 leading-relaxed">
+                Zero data selling, zero surveillance. Your email content stays completely private and secure
               </p>
             </div>
           </motion.div>
