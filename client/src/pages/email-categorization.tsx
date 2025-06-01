@@ -324,7 +324,8 @@ export default function EmailCategorization() {
               />
             </div>
             
-            <div className="flex gap-2 flex-wrap">
+            {/* Email Type Filters */}
+            <div className="flex gap-2 flex-wrap mb-4">
               <Button
                 variant={selectedCategory === null ? "default" : "outline"}
                 onClick={() => setSelectedCategory(null)}
@@ -347,6 +348,85 @@ export default function EmailCategorization() {
                   </Button>
                 );
               })}
+            </div>
+
+            {/* Email Type Quick Filters */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-muted-foreground">Quick Filters by Email Type:</p>
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSearchTerm("newsletter")}
+                  className="text-xs"
+                >
+                  📰 Newsletters
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSearchTerm("bank")}
+                  className="text-xs"
+                >
+                  🏦 Banking
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSearchTerm("event")}
+                  className="text-xs"
+                >
+                  📅 Events
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSearchTerm("tool")}
+                  className="text-xs"
+                >
+                  🔧 Tools
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSearchTerm("job")}
+                  className="text-xs"
+                >
+                  💼 Jobs
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSearchTerm("social")}
+                  className="text-xs"
+                >
+                  👥 Social
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSearchTerm("shopping")}
+                  className="text-xs"
+                >
+                  🛒 Shopping
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSearchTerm("consulting")}
+                  className="text-xs"
+                >
+                  💡 Consulting
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSearchTerm("")}
+                  className="text-xs bg-gray-100"
+                >
+                  ✕ Clear
+                </Button>
+              </div>
             </div>
           </motion.div>
 
@@ -488,60 +568,7 @@ export default function EmailCategorization() {
             </div>
           )}
 
-          {/* Progress Summary */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="text-center"
-          >
-            <Card className="neopop-card max-w-2xl mx-auto">
-              <CardHeader>
-                <CardTitle>Categorization Progress</CardTitle>
-                <CardDescription>
-                  {processedSenders.filter(s => s.category !== 'unassigned').length} of {processedSenders.length} senders categorized
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6">
-                  {Object.entries(categoryConfig).map(([key, config]) => {
-                    const count = processedSenders.filter(s => s.category === key).length;
-                    const Icon = config.icon;
-                    return (
-                      <div key={key} className="text-center">
-                        <div className={`w-8 h-8 rounded-lg ${config.color} mx-auto mb-2 flex items-center justify-center`}>
-                          <Icon className="w-4 h-4 text-white" />
-                        </div>
-                        <p className="text-lg font-bold">{count}</p>
-                        <p className="text-xs text-muted-foreground">{config.title}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-                
-                <div className="flex gap-3 justify-center">
-                  <Button 
-                    onClick={() => setLocation('/preferences')}
-                    variant="outline"
-                    className="flex-1 max-w-[200px]"
-                  >
-                    Set Call Preferences
-                  </Button>
-                  <Button 
-                    onClick={handleContinue}
-                    className="neopop-button neopop-button-primary flex-1 max-w-[200px]"
-                  >
-                    View Dashboard
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </div>
-                
-                <p className="text-sm text-muted-foreground mt-4">
-                  You can always adjust these categories later from your dashboard.
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
+
         </div>
       </div>
     </>
