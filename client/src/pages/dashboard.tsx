@@ -539,13 +539,13 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-black">
+    <div className="flex h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Sidebar */}
-      <div className="w-64 bg-surface border-r border-border flex flex-col">
+      <div className="w-64 bg-black/20 backdrop-blur-sm border-r border-white/10 flex flex-col">
         <div className="p-6">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-dark rounded-lg flex items-center justify-center">
-              <Brain className="w-5 h-5 text-black" />
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <Brain className="w-5 h-5 text-white" />
             </div>
             <h1 className="text-xl font-bold text-white">PookAi</h1>
           </div>
@@ -562,8 +562,8 @@ export default function Dashboard() {
                 onClick={() => setActiveSection(item.id)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${
                   isActive 
-                    ? 'bg-primary/10 text-primary border border-primary/20' 
-                    : 'text-muted-foreground hover:bg-surface-elevated hover:text-white'
+                    ? 'bg-purple-500/20 text-purple-200 border border-purple-500/30' 
+                    : 'text-gray-300 hover:bg-white/10 hover:text-white'
                 }`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -576,16 +576,16 @@ export default function Dashboard() {
           })}
         </nav>
 
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t border-white/10">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 bg-surface-elevated rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-muted-foreground" />
+            <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
+              <User className="w-4 h-4 text-gray-300" />
             </div>
             <div>
               <p className="text-sm font-medium text-white">
                 {(user as any)?.email?.split('@')[0]}
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-gray-400">
                 {(user as any)?.email}
               </p>
             </div>
@@ -594,7 +594,7 @@ export default function Dashboard() {
             variant="ghost" 
             size="sm" 
             onClick={logout}
-            className="w-full justify-start text-muted-foreground hover:text-white hover:bg-surface-elevated"
+            className="w-full justify-start text-gray-300 hover:text-white hover:bg-white/10"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Sign Out
@@ -611,20 +611,20 @@ export default function Dashboard() {
           {activeSection === 'notifications' && renderNotifications()}
           {activeSection === 'schedule' && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold">Call Schedule</h2>
-              <p className="text-gray-600 dark:text-gray-400">Schedule management coming soon...</p>
+              <h2 className="text-2xl font-bold text-white">Call Schedule</h2>
+              <p className="text-gray-300">Schedule management coming soon...</p>
             </div>
           )}
           {activeSection === 'preferences' && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold">Preferences</h2>
-              <p className="text-gray-600 dark:text-gray-400">Advanced preferences coming soon...</p>
+              <h2 className="text-2xl font-bold text-white">Preferences</h2>
+              <p className="text-gray-300">Advanced preferences coming soon...</p>
             </div>
           )}
           {activeSection === 'account' && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold">Account Settings</h2>
-              <p className="text-gray-600 dark:text-gray-400">Account management coming soon...</p>
+              <h2 className="text-2xl font-bold text-white">Account Settings</h2>
+              <p className="text-gray-300">Account management coming soon...</p>
             </div>
           )}
         </div>
