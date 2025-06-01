@@ -14,7 +14,7 @@ interface NavigationProps {
   currentPage?: string;
 }
 
-function CleanNavigation({ currentPage }: NavigationProps) {
+export function CleanNavigation({ currentPage }: NavigationProps) {
   const { user, isAuthenticated } = useAuth();
 
   const handleLogout = () => {
@@ -77,5 +77,3 @@ function CleanNavigation({ currentPage }: NavigationProps) {
     </nav>
   );
 }
-
-export { CleanNavigation };
