@@ -84,25 +84,27 @@ export default function Dashboard() {
   const renderOverview = () => (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-3xl font-bold text-white">
           Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {(user as any)?.email?.split('@')[0]}
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
+        <p className="text-muted-foreground mt-2">
           Your intelligent email concierge is ready to help you stay organized.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
+        <Card className="neopop-card bg-surface border-border">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-600 dark:text-blue-400 text-sm font-medium">Total Senders</p>
-                <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                <p className="text-primary text-sm font-medium">Total Senders</p>
+                <p className="text-2xl font-bold text-white">
                   {(emailData as any)?.totalSenders || 0}
                 </p>
               </div>
-              <Mail className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <Mail className="w-6 h-6 text-primary" />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -396,15 +398,15 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-screen bg-black">
       {/* Sidebar */}
-      <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+      <div className="w-64 bg-surface border-r border-border flex flex-col">
         <div className="p-6">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <Brain className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-dark rounded-lg flex items-center justify-center">
+              <Brain className="w-5 h-5 text-black" />
             </div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">PookAi</h1>
+            <h1 className="text-xl font-bold text-white">PookAi</h1>
           </div>
         </div>
 
@@ -419,8 +421,8 @@ export default function Dashboard() {
                 onClick={() => setActiveSection(item.id)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${
                   isActive 
-                    ? 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300' 
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    ? 'bg-primary/10 text-primary border border-primary/20' 
+                    : 'text-muted-foreground hover:bg-surface-elevated hover:text-white'
                 }`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -433,17 +435,17 @@ export default function Dashboard() {
           })}
         </nav>
 
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="p-4 border-t border-border">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4" />
+            <div className="w-8 h-8 bg-surface-elevated rounded-full flex items-center justify-center">
+              <User className="w-4 h-4 text-muted-foreground" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
-                {user?.email?.split('@')[0]}
+              <p className="text-sm font-medium text-white">
+                {(user as any)?.email?.split('@')[0]}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {user?.email}
+              <p className="text-xs text-muted-foreground">
+                {(user as any)?.email}
               </p>
             </div>
           </div>
@@ -451,7 +453,7 @@ export default function Dashboard() {
             variant="ghost" 
             size="sm" 
             onClick={logout}
-            className="w-full justify-start text-gray-600 dark:text-gray-400"
+            className="w-full justify-start text-muted-foreground hover:text-white hover:bg-surface-elevated"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Sign Out
