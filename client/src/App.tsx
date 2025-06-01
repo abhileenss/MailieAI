@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
-import PublicLanding from "@/pages/public-landing";
+import SimpleLanding from "@/pages/simple-landing";
 import Dashboard from "@/pages/dashboard";
 import GuidedApp from "@/pages/guided-app";
 import EmailScanning from "@/pages/email-scanning";
@@ -26,10 +26,10 @@ function Router() {
       <Route path="/privacy" component={Privacy} />
       <Route path="/security" component={Security} />
       <Route path="/support" component={Support} />
-      <Route path="/demo" component={PublicLanding} />
+      <Route path="/demo" component={SimpleLanding} />
       
       {/* Default to public landing page */}
-      <Route path="/" component={PublicLanding} />
+      <Route path="/" component={SimpleLanding} />
       
       {/* Protected routes with authentication check */}
       <Route path="/dashboard" component={AuthenticatedRoute} />
@@ -61,7 +61,7 @@ function AuthenticatedRoute() {
   }
   
   if (!isAuthenticated) {
-    return <PublicLanding />;
+    return <SimpleLanding />;
   }
   
   // Check current path to render appropriate component
