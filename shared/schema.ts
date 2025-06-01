@@ -55,7 +55,6 @@ export const emailSenders = pgTable("email_senders", {
 export const userPreferences = pgTable("user_preferences", {
   id: varchar("id").primaryKey().notNull(),
   userId: varchar("user_id").notNull().references(() => users.id),
-  senderId: varchar("sender_id").references(() => emailSenders.id),
   category: varchar("category").notNull(),
   action: varchar("action").notNull(), // 'call-me', 'digest', 'off'
   createdAt: timestamp("created_at").defaultNow(),
@@ -67,7 +66,6 @@ export const callLogs = pgTable("call_logs", {
   userId: varchar("user_id").notNull().references(() => users.id),
   phoneNumber: varchar("phone_number"),
   callSid: varchar("call_sid"),
-  twilioSid: varchar("twilio_sid"), // Twilio-specific call identifier
   status: varchar("status"),
   duration: integer("duration"),
   callType: varchar("call_type"), // 'reminder', 'digest', 'urgent'

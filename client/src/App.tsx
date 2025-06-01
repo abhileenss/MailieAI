@@ -5,15 +5,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
-import SimpleLanding from "@/pages/simple-landing";
+import PublicLanding from "@/pages/public-landing";
 import Dashboard from "@/pages/dashboard";
 import GuidedApp from "@/pages/guided-app";
 import EmailScanning from "@/pages/email-scanning";
 import TestCall from "@/pages/test-call";
-import GmailConnect from "@/pages/gmail-connect";
-import PhoneVerify from "@/pages/phone-verify";
-import EmailDashboard from "@/pages/email-dashboard";
-import CalendarSettings from "@/pages/calendar-settings";
 import Privacy from "@/pages/privacy";
 import Security from "@/pages/security";
 import Support from "@/pages/support";
@@ -26,20 +22,15 @@ function Router() {
       <Route path="/privacy" component={Privacy} />
       <Route path="/security" component={Security} />
       <Route path="/support" component={Support} />
-      <Route path="/demo" component={SimpleLanding} />
+      <Route path="/demo" component={PublicLanding} />
       
       {/* Default to public landing page */}
-      <Route path="/" component={SimpleLanding} />
+      <Route path="/" component={PublicLanding} />
       
       {/* Protected routes with authentication check */}
       <Route path="/dashboard" component={AuthenticatedRoute} />
       <Route path="/scanning" component={AuthenticatedRoute} />
       <Route path="/test-call" component={AuthenticatedRoute} />
-      <Route path="/gmail-connect" component={AuthenticatedRoute} />
-      <Route path="/phone-verify" component={AuthenticatedRoute} />
-      <Route path="/email-dashboard" component={AuthenticatedRoute} />
-      <Route path="/calendar-settings" component={AuthenticatedRoute} />
-      <Route path="/full-dashboard" component={AuthenticatedRoute} />
       
       <Route component={NotFound} />
     </Switch>
@@ -61,7 +52,7 @@ function AuthenticatedRoute() {
   }
   
   if (!isAuthenticated) {
-    return <SimpleLanding />;
+    return <PublicLanding />;
   }
   
   // Check current path to render appropriate component
@@ -72,31 +63,11 @@ function AuthenticatedRoute() {
   }
   
   if (currentPath === '/dashboard') {
-    return <GuidedApp />;
+    return <Dashboard />;
   }
   
   if (currentPath === '/scanning') {
     return <EmailScanning />;
-  }
-  
-  if (currentPath === '/gmail-connect') {
-    return <GmailConnect />;
-  }
-  
-  if (currentPath === '/phone-verify') {
-    return <PhoneVerify />;
-  }
-  
-  if (currentPath === '/email-dashboard') {
-    return <EmailDashboard />;
-  }
-  
-  if (currentPath === '/calendar-settings') {
-    return <CalendarSettings />;
-  }
-  
-  if (currentPath === '/full-dashboard') {
-    return <Dashboard />;
   }
   
   return <GuidedApp />;
