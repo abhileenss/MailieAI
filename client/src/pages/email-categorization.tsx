@@ -263,6 +263,7 @@ export default function EmailCategorization() {
                 variant={selectedCategory === null ? "default" : "outline"}
                 onClick={() => setSelectedCategory(null)}
                 size="sm"
+                className={selectedCategory === null ? "bg-orange-500 text-white border-0" : ""}
               >
                 All ({processedEmails.totalSenders})
               </Button>
@@ -274,6 +275,7 @@ export default function EmailCategorization() {
                     variant={selectedCategory === key ? "default" : "outline"}
                     onClick={() => setSelectedCategory(key)}
                     size="sm"
+                    className={selectedCategory === key ? `${config.color} text-white border-0` : ""}
                   >
                     {config.title} ({count})
                   </Button>
