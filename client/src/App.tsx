@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
+import PublicLanding from "@/pages/public-landing";
 import GuidedApp from "@/pages/guided-app";
 import EmailScanning from "@/pages/email-scanning";
 import Privacy from "@/pages/privacy";
@@ -15,31 +16,70 @@ import NotFound from "@/pages/not-found";
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <Switch>
-      {!isAuthenticated ? (
-        <Route path="/" component={Landing} />
-      ) : (
-        <>
-          <Route path="/" component={GuidedApp} />
-          <Route path="/dashboard" component={GuidedApp} />
-          <Route path="/scanning" component={EmailScanning} />
-        </>
-      )}
+      {/* Public routes - no authentication required */}
       <Route path="/privacy" component={Privacy} />
       <Route path="/security" component={Security} />
       <Route path="/support" component={Support} />
+      
+      {/* Landing page - public but checks auth to redirect */}
+      <Route path="/">
+        {() => {
+          if (isLoading) {
+            return (
+              <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p>Loading...</p>
+                </div>
+              </div>
+            );
+          }
+          
+          if (isAuthenticated) {
+            return <GuidedApp />;
+          }
+          
+          return <Landing />;
+        }}
+      </Route>
+      
+      {/* Protected routes */}
+      <Route path="/dashboard">
+        {() => {
+          if (isLoading) {
+            return (
+              <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p>Loading...</p>
+                </div>
+              </div>
+            );
+          }
+          
+          return isAuthenticated ? <GuidedApp /> : <Landing />;
+        }}
+      </Route>
+      
+      <Route path="/scanning">
+        {() => {
+          if (isLoading) {
+            return (
+              <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p>Loading...</p>
+                </div>
+              </div>
+            );
+          }
+          
+          return isAuthenticated ? <EmailScanning /> : <Landing />;
+        }}
+      </Route>
+      
       <Route component={NotFound} />
     </Switch>
   );
