@@ -11,9 +11,14 @@ export function useAuth() {
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
+  const logout = () => {
+    window.location.href = '/api/logout';
+  };
+
   return {
     user,
     isLoading,
     isAuthenticated: !!user && !error,
+    logout,
   };
 }

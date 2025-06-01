@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
 import PublicLanding from "@/pages/public-landing";
+import Dashboard from "@/pages/dashboard";
 import GuidedApp from "@/pages/guided-app";
 import EmailScanning from "@/pages/email-scanning";
 import Privacy from "@/pages/privacy";
@@ -52,7 +53,7 @@ function AuthenticatedRoute() {
     return <PublicLanding />;
   }
   
-  return <GuidedApp />;
+  return <Dashboard />;
 }
 
 function App() {
