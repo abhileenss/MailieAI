@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Brain, Phone, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SEOHead } from "@/components/seo-head";
-import { Navigation } from "@/components/navigation";
+import { CleanNavigation } from "@/components/clean-navigation";
 
 export default function Landing() {
   const [, setLocation] = useLocation();
@@ -51,7 +51,7 @@ export default function Landing() {
       
       <div className="min-h-screen flex flex-col bg-background text-foreground font-primary">
         {/* Navigation */}
-        <Navigation currentPage="/" />
+        <CleanNavigation currentPage="/" />
 
         {/* Hero Section */}
         <div className="flex-1 flex items-center justify-center px-6 md:px-8 py-20">

@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Brain, Phone, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SEOHead } from "@/components/seo-head";
-import { Navigation } from "@/components/navigation";
+import { CleanNavigation } from "@/components/clean-navigation";
 
 export default function Landing() {
   const [, setLocation] = useLocation();
