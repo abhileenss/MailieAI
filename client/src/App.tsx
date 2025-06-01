@@ -9,6 +9,7 @@ import PublicLanding from "@/pages/public-landing";
 import Dashboard from "@/pages/dashboard";
 import GuidedApp from "@/pages/guided-app";
 import EmailScanning from "@/pages/email-scanning";
+import TestCall from "@/pages/test-call";
 import Privacy from "@/pages/privacy";
 import Security from "@/pages/security";
 import Support from "@/pages/support";
@@ -29,6 +30,7 @@ function Router() {
       {/* Protected routes with authentication check */}
       <Route path="/dashboard" component={AuthenticatedRoute} />
       <Route path="/scanning" component={AuthenticatedRoute} />
+      <Route path="/test-call" component={AuthenticatedRoute} />
       
       <Route component={NotFound} />
     </Switch>
@@ -51,6 +53,21 @@ function AuthenticatedRoute() {
   
   if (!isAuthenticated) {
     return <PublicLanding />;
+  }
+  
+  // Check current path to render appropriate component
+  const currentPath = window.location.pathname;
+  
+  if (currentPath === '/test-call') {
+    return <TestCall />;
+  }
+  
+  if (currentPath === '/dashboard') {
+    return <Dashboard />;
+  }
+  
+  if (currentPath === '/scanning') {
+    return <EmailScanning />;
   }
   
   return <GuidedApp />;
