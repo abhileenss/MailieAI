@@ -14,26 +14,26 @@ import {
 
 const APP_STEPS = [
   {
-    id: 'categorize',
-    title: 'Categorize',
-    description: 'Sort your emails',
+    id: 'connect',
+    title: 'Connect',
+    description: 'Gmail setup',
     icon: Mail,
     completed: false,
     active: true
-  },
-  {
-    id: 'calls',
-    title: 'Calls',
-    description: 'Review urgent items',
-    icon: Phone,
-    completed: false,
-    active: false
   },
   {
     id: 'verify',
     title: 'Verify',
     description: 'Phone verification',
     icon: CheckCircle,
+    completed: false,
+    active: false
+  },
+  {
+    id: 'categorize',
+    title: 'Categorize',
+    description: 'Sort your emails',
+    icon: Settings,
     completed: false,
     active: false
   },
@@ -48,7 +48,7 @@ const APP_STEPS = [
 ];
 
 export default function GuidedApp() {
-  const [currentStep, setCurrentStep] = useState('categorize');
+  const [currentStep, setCurrentStep] = useState('connect');
   const [steps, setSteps] = useState(APP_STEPS);
   const [, setLocation] = useLocation();
 
@@ -98,12 +98,18 @@ export default function GuidedApp() {
 
   const renderCurrentStep = () => {
     switch (currentStep) {
-      case 'categorize':
-        return <MainDashboard />;
-      case 'calls':
-        return <CallActionCenter />;
+      case 'connect':
+        // Redirect to Gmail connection page
+        setLocation('/gmail-connect');
+        return null;
       case 'verify':
-        return <CallConfig />;
+        // Redirect to phone verification page
+        setLocation('/phone-verify');
+        return null;
+      case 'categorize':
+        // Redirect to email dashboard
+        setLocation('/email-dashboard');
+        return null;
       case 'complete':
         return (
           <div className="min-h-screen bg-background flex items-center justify-center">

@@ -1195,6 +1195,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Gmail OAuth endpoints
+  app.get('/api/gmail/auth-url', async (req, res) => {
+    try {
+      const authUrl = await gmailService.getAuthUrl();
+      res.json({ authUrl });
+    } catch (error) {
+      console.error('Failed to get Gmail auth URL:', error);
+      res.status(500).json({ error: 'Failed to generate auth URL' });
+    }
+  });
+
+  app.get('/api/gmail/oauth/callback', async (req, res) => {
+    try {
+      const { code } = req.query;
+      if (!code || typeof code !== 'string') {
+        return res.status(400).json({ error: 'Authorization code required' });
+      }
+
+      const session = req.session as any;
+      if (!session?.userId) {
+        return res.redirect('/gmail-connect?error=not_authenticated');
+      }
+
+      await gmailService.handleOAuthCallback(code, session.userId);
+      res.redirect('/phone-verify?gmail_connected=true');
+    } catch (error) {
+      console.error('Gmail OAuth callback error:', error);
+      res.redirect('/gmail-connect?error=auth_failed');
+    }
+  });
+
   // Check API setup status
   app.get("/api/setup/status", async (req, res) => {
     const status = {
