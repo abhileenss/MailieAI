@@ -384,27 +384,7 @@ export default function SetupPreferences({ onComplete }: SetupPreferencesProps =
           </Card>
         </div>
 
-        {/* Save Button */}
-        <div className="mt-8 text-center">
-          <Button
-            onClick={handleSave}
-            disabled={savePreferencesMutation.isPending}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 text-lg font-semibold"
-          >
-            {savePreferencesMutation.isPending ? (
-              <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                <span>Saving...</span>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <Save className="w-5 h-5" />
-                <span>Complete Setup</span>
-                <ArrowRight className="w-5 h-5" />
-              </div>
-            )}
-          </Button>
-        </div>
+
       </div>
     </div>
   );
