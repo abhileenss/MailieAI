@@ -33,12 +33,19 @@ export default function PhoneSetup() {
       
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       setVerificationSent(true);
-      toast({
-        title: "Verification code sent",
-        description: "Check your phone for the verification code.",
-      });
+      if (data.demoCode) {
+        toast({
+          title: "Demo mode active",
+          description: `Use verification code: ${data.demoCode}`,
+        });
+      } else {
+        toast({
+          title: "Verification code sent",
+          description: "Check your phone for the verification code.",
+        });
+      }
     },
     onError: () => {
       toast({

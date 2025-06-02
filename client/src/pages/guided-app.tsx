@@ -3,6 +3,7 @@ import { useLocation } from 'wouter';
 import EmailCategorizationSimple from './email-categorization-simple';
 import PhoneSetup from './phone-setup';
 import GuidedFooter from '@/components/ui/guided-footer';
+import { Button } from "@/components/ui/button";
 import { 
   Mail, 
   Phone, 
@@ -91,9 +92,25 @@ export default function GuidedApp() {
       case 'setup':
         return <PhoneSetup />;
       case 'complete':
-        // Automatically redirect to main dashboard when complete
-        setLocation('/main-dashboard');
-        return null;
+        return (
+          <div className="min-h-screen bg-black flex items-center justify-center">
+            <div className="text-center p-8">
+              <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-8 rounded-3xl shadow-2xl mb-8">
+                <Sparkles className="w-20 h-20 text-black mx-auto mb-6" />
+                <h1 className="text-3xl font-bold text-black mb-4">PookAi is Ready!</h1>
+                <p className="text-black/90 text-lg mb-6">
+                  Your AI voice assistant is now configured and ready to manage your emails.
+                </p>
+                <Button
+                  onClick={() => setLocation('/main-dashboard')}
+                  className="bg-black text-orange-400 hover:bg-zinc-800 font-semibold px-8 py-3"
+                >
+                  Go to Dashboard
+                </Button>
+              </div>
+            </div>
+          </div>
+        );
       default:
         return <EmailCategorizationSimple />;
     }
