@@ -236,7 +236,7 @@ export default function MainDashboard() {
         <div className="max-w-6xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">PookAi Dashboard</h1>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">mailieAI Dashboard</h1>
               <p className="text-orange-300/80 font-medium">Your AI email assistant is active</p>
             </div>
             <div className="flex items-center space-x-4">
@@ -390,7 +390,7 @@ export default function MainDashboard() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-gray-400 text-sm">
-                  Test your voice setup and hear how PookAi will sound during actual calls.
+                  Test your voice setup and hear how mailieAI will sound during actual calls.
                 </p>
 
                 <Button
@@ -441,7 +441,7 @@ export default function MainDashboard() {
         <div className="max-w-6xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <p className="text-gray-400 text-sm">
-              PookAi © 2025 - Your AI Email Assistant
+              mailieAI © 2025 - Your AI Email Assistant
             </p>
             <div className="flex items-center space-x-4">
               <span className="text-xs text-green-400">● Active</span>

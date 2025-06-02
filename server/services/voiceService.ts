@@ -72,9 +72,9 @@ export class VoiceService {
 
   private generateVoiceScript(callType: string, emailCount: number): string {
     const greetings = [
-      "Hello! This is your PookAi assistant.",
+      "Hello! This is your mailieAI assistant.",
       "Hi there! Your personal email concierge calling.",
-      "Good day! PookAi here with your email update."
+      "Good day! mailieAI here with your email update."
     ];
 
     const greeting = greetings[Math.floor(Math.random() * greetings.length)];

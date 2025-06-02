@@ -57,7 +57,13 @@ export class EmailCategorizationService {
         - "remind-me": Important founder stuff - board meetings, investor updates, key hires, product launches  
         - "keep-quiet": Useful but not urgent - industry news you actually want, tool updates, team announcements
         - "why-did-i-signup": Marketing emails from tools you use - Stripe, AWS, Notion trying to upsell you again
-        - "dont-tell-anyone": Complete garbage - random newsletters, spam, LinkedIn spam, conference invites you'll never attend
+        - "dont-tell-anyone": Complete garbage - newsletters you never read, spam, LinkedIn spam, conference invites you'll never attend
+
+        IMPORTANT: Look for newsletter patterns:
+        - Emails with "newsletter", "digest", "weekly", "update", "insights" in subject/sender
+        - Regular content from McKinsey, Harvard Business Review, TechCrunch, etc.
+        - Unsubscribe links and newsletter-style formatting
+        - These should go to "dont-tell-anyone" unless clearly valuable to founders
 
         Email to categorize:
         From: ${message.from}
