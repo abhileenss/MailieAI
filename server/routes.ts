@@ -958,19 +958,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const currentSenders = await storage.getEmailSenders(userId);
       console.log(`Found ${currentSenders.length} senders in database`);
       
-      // Perform a lightweight Gmail scan with just 10 messages to check for new emails
+      // Find the latest email timestamp from our database
+      const latestEmailDate = currentSenders.length > 0 
+        ? new Date(Math.max(...currentSenders.map(s => s.latestMessageDate.getTime())))
+        : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // 7 days ago if no emails
+      
+      console.log(`Looking for emails newer than: ${latestEmailDate.toISOString()}`);
+      
+      // Check for emails newer than our latest processed email
       try {
-        console.log('Checking for new emails...');
+        console.log('Checking for new emails since last scan...');
         const recentMessages = await Promise.race([
-          gmailService.getMessages(userId, 10),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 10000))
+          gmailService.getMessages(userId, 50),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 15000))
         ]) as any[];
         
         console.log(`Retrieved ${recentMessages.length} recent messages`);
         
-        // Quick check for any new senders
+        // Filter messages that are newer than our latest processed email
+        const newMessages = recentMessages.filter(msg => new Date(msg.date) > latestEmailDate);
+        console.log(`Found ${newMessages.length} new messages since last scan`);
+        
+        // Count unique new senders from these new messages
         const newSenderEmails = new Set();
-        recentMessages.forEach(msg => {
+        newMessages.forEach(msg => {
           const senderEmail = gmailService.extractEmail(msg.from);
           if (!currentSenders.find(s => s.email === senderEmail)) {
             newSenderEmails.add(senderEmail);
@@ -980,15 +991,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const newSendersFound = newSenderEmails.size;
         const totalSenders = currentSenders.length + newSendersFound;
         
-        console.log(`Found ${newSendersFound} new email senders`);
+        console.log(`Found ${newSendersFound} genuinely new email senders`);
         console.log('Scan completed successfully');
         
         res.json({ 
           success: true,
           message: 'Email scan completed successfully',
-          totalEmails: recentMessages.length,
+          totalEmails: newMessages.length,
           totalSenders: totalSenders,
           categorizedSenders: Math.floor(totalSenders * 0.8),
+          newEmailsCount: newMessages.length,
           timestamp: new Date().toISOString()
         });
         
