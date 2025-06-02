@@ -70,6 +70,7 @@ function AuthenticatedRoute() {
     case '/scanning':
       return <EmailScanning />;
     default:
+      // Always show the guided onboarding flow for all users
       return <GuidedApp />;
   }
 }

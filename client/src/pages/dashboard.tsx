@@ -92,7 +92,7 @@ export default function Dashboard() {
           Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {(user as any)?.email?.split('@')[0]}
         </h1>
         <p className="text-xl text-gray-300 font-medium">
-          Your AI concierge has processed <span className="text-purple-300 font-bold">{(emailData as any)?.totalSenders || 0} senders</span> and is ready to help you stay organized.
+          Your AI concierge has processed <span className="text-orange-400 font-bold">{(emailData as any)?.totalSenders || 0} senders</span> and is ready to help you stay organized.
         </p>
       </motion.div>
 
@@ -102,17 +102,17 @@ export default function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        <Card className="group bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-purple-300/20 rounded-2xl p-6 hover:border-purple-300/40 hover:from-white/15 hover:to-white/8 transition-all duration-500 hover:scale-105">
+        <Card className="group bg-zinc-900 border-zinc-800 rounded-xl p-6 hover:border-orange-400/40 transition-all duration-300">
           <CardContent className="p-0">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-300 text-sm font-semibold mb-2">Total Senders</p>
+                <p className="text-orange-400 text-sm font-semibold mb-2">Total Senders</p>
                 <p className="text-3xl font-black text-white">
                   {(emailData as any)?.totalSenders || 0}
                 </p>
               </div>
-              <div className="w-14 h-14 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-purple-500/25 transition-shadow duration-300">
-                <Mail className="w-7 h-7 text-white" />
+              <div className="w-14 h-14 bg-orange-400 rounded-xl flex items-center justify-center shadow-lg">
+                <Mail className="w-7 h-7 text-black" />
               </div>
             </div>
           </CardContent>
