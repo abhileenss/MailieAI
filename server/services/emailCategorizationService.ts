@@ -103,7 +103,8 @@ export class EmailCategorizationService {
       const result = JSON.parse(response.choices[0].message.content || '{}');
       
       return {
-        category: result.category || 'keep-quiet',
+        suggestedCategory: result.category || 'keep-quiet',
+        confidence: Math.max(0, Math.min(1, result.confidence || 0.7)),
         importance: Math.max(1, Math.min(5, result.importance || 3)),
         reasoning: result.reasoning || 'Automated categorization',
         summary: result.summary || message.snippet,
@@ -301,8 +302,8 @@ export class EmailCategorizationService {
       const importantEmails: string[] = [];
 
       categorizedEmails.forEach((result, emailId) => {
-        const count = emailsByCategory.get(result.category) || 0;
-        emailsByCategory.set(result.category, count + 1);
+        const count = emailsByCategory.get(result.suggestedCategory) || 0;
+        emailsByCategory.set(result.suggestedCategory, count + 1);
 
         if (result.importance >= 4) {
           importantEmails.push(result.summary);
@@ -355,7 +356,8 @@ export class EmailCategorizationService {
     // Simple keyword-based categorization
     if (subject.includes('urgent') || subject.includes('asap') || subject.includes('immediate')) {
       return {
-        category: 'call-me',
+        suggestedCategory: 'call-me',
+        confidence: 0.8,
         importance: 4,
         reasoning: 'Contains urgent keywords',
         summary: message.snippet,
@@ -366,7 +368,8 @@ export class EmailCategorizationService {
 
     if (subject.includes('meeting') || subject.includes('call') || subject.includes('schedule')) {
       return {
-        category: 'remind-me',
+        suggestedCategory: 'remind-me',
+        confidence: 0.7,
         importance: 3,
         reasoning: 'Meeting or scheduling related',
         summary: message.snippet,
@@ -377,7 +380,8 @@ export class EmailCategorizationService {
 
     if (subject.includes('newsletter') || subject.includes('digest') || from.includes('noreply')) {
       return {
-        category: 'newsletter',
+        suggestedCategory: 'keep-quiet',
+        confidence: 0.8,
         importance: 2,
         reasoning: 'Appears to be newsletter content',
         summary: message.snippet,
@@ -388,7 +392,8 @@ export class EmailCategorizationService {
 
     if (subject.includes('promotion') || subject.includes('sale') || subject.includes('offer')) {
       return {
-        category: 'why-did-i-signup',
+        suggestedCategory: 'why-did-i-signup',
+        confidence: 0.6,
         importance: 1,
         reasoning: 'Promotional content',
         summary: message.snippet,
@@ -398,7 +403,8 @@ export class EmailCategorizationService {
     }
 
     return {
-      category: 'keep-quiet',
+      suggestedCategory: 'keep-quiet',
+      confidence: 0.5,
       importance: 2,
       reasoning: 'General email',
       summary: message.snippet,

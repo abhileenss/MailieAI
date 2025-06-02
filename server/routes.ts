@@ -225,7 +225,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           return {
             ...sender,
-            category: category?.category || 'unassigned',
+            category: category?.suggestedCategory || 'unassigned',
             importance: category?.importance || 2,
             sentiment: category?.sentiment,
             priority: category?.priority
