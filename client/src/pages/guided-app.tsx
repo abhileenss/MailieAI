@@ -93,44 +93,47 @@ export default function GuidedApp() {
         return <PhoneSetup />;
       case 'complete':
         return (
-          <div className="min-h-screen bg-black flex items-center justify-center p-6">
-            <div className="max-w-2xl w-full text-center">
-              <div className="bg-zinc-900 border border-zinc-800 p-12 rounded-2xl shadow-xl">
-                <Sparkles className="w-16 h-16 text-orange-400 mx-auto mb-6" />
-                <h1 className="text-4xl font-bold text-white mb-6">Setup Complete!</h1>
-                <p className="text-gray-300 text-lg mb-8 leading-relaxed">
+          <div className="min-h-screen bg-gradient-to-br from-orange-400 via-orange-500 to-red-600 flex items-center justify-center p-6 relative">
+            {/* Subtle overlay for depth */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+            
+            <div className="max-w-2xl w-full text-center relative z-10">
+              <div className="bg-black/90 backdrop-blur-sm border border-white/10 p-12 rounded-3xl shadow-2xl">
+                <Sparkles className="w-20 h-20 text-orange-300 mx-auto mb-6" />
+                <h1 className="text-5xl font-bold text-white mb-6 tracking-tight">Setup Complete!</h1>
+                <p className="text-white/80 text-xl mb-10 leading-relaxed font-light">
                   Your PookAi voice assistant is now configured and ready to manage your emails intelligently.
                 </p>
                 
                 {/* Configuration Summary */}
-                <div className="bg-zinc-800 rounded-xl p-6 mb-8 text-left">
-                  <h3 className="text-white font-semibold mb-4 flex items-center">
-                    <span className="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 mb-10 text-left">
+                  <h3 className="text-white font-semibold text-lg mb-6 flex items-center">
+                    <span className="w-3 h-3 bg-orange-400 rounded-full mr-3 shadow-lg shadow-orange-400/50"></span>
                     Configuration Summary
                   </h3>
-                  <div className="space-y-3 text-sm text-gray-300">
-                    <div className="flex justify-between">
-                      <span>Email Processing:</span>
-                      <span className="text-green-400">✓ Active</span>
+                  <div className="space-y-4 text-base">
+                    <div className="flex justify-between items-center py-2 border-b border-white/5">
+                      <span className="text-white/70">Email Processing:</span>
+                      <span className="text-orange-300 font-medium">✓ Active</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>AI Categorization:</span>
-                      <span className="text-green-400">✓ Configured</span>
+                    <div className="flex justify-between items-center py-2 border-b border-white/5">
+                      <span className="text-white/70">AI Categorization:</span>
+                      <span className="text-orange-300 font-medium">✓ Configured</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Phone Verification:</span>
-                      <span className="text-green-400">✓ Verified</span>
+                    <div className="flex justify-between items-center py-2 border-b border-white/5">
+                      <span className="text-white/70">Phone Verification:</span>
+                      <span className="text-orange-300 font-medium">✓ Verified</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Voice Calls:</span>
-                      <span className="text-green-400">✓ Ready</span>
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-white/70">Voice Calls:</span>
+                      <span className="text-orange-300 font-medium">✓ Ready</span>
                     </div>
                   </div>
                 </div>
                 
                 <Button
                   onClick={() => setLocation('/main-dashboard')}
-                  className="bg-orange-400 hover:bg-orange-500 text-black font-semibold px-8 py-3 text-lg"
+                  className="bg-white text-black hover:bg-orange-50 font-semibold px-10 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Launch Dashboard
                 </Button>
