@@ -166,41 +166,35 @@ export default function MainDashboard() {
       </header>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-6 py-8 relative z-10">
+      <div className="max-w-6xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Stats Overview */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6">
             <div>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-6">Email Intelligence</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Email Overview</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card className="bg-gradient-to-br from-zinc-900/80 to-zinc-800/60 border-zinc-700/50 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300 group">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                      <Mail className="w-6 h-6 text-white" />
-                    </div>
-                    <p className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">{totalSenders}</p>
-                    <p className="text-sm text-gray-400 font-medium">Total Senders</p>
+                <Card className="bg-zinc-900 border-zinc-800">
+                  <CardContent className="p-4 text-center">
+                    <Mail className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-white">{totalSenders}</p>
+                    <p className="text-xs text-gray-400">Total Senders</p>
                   </CardContent>
                 </Card>
                 
-                <Card className="bg-gradient-to-br from-zinc-900/80 to-zinc-800/60 border-zinc-700/50 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300 group">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-400 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                      <Phone className="w-6 h-6 text-white" />
-                    </div>
-                    <p className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">{callMeCount}</p>
-                    <p className="text-sm text-gray-400 font-medium">Call Me</p>
+                <Card className="bg-zinc-900 border-zinc-800">
+                  <CardContent className="p-4 text-center">
+                    <Phone className="w-8 h-8 text-red-400 mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-white">{callMeCount}</p>
+                    <p className="text-xs text-gray-400">Call Me</p>
                   </CardContent>
                 </Card>
                 
-                <Card className="bg-gradient-to-br from-zinc-900/80 to-zinc-800/60 border-zinc-700/50 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300 group">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                      <Settings className="w-6 h-6 text-black" />
-                    </div>
-                    <p className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">{remindMeCount}</p>
-                    <p className="text-sm text-gray-400 font-medium">Remind Me</p>
+                <Card className="bg-zinc-900 border-zinc-800">
+                  <CardContent className="p-4 text-center">
+                    <Settings className="w-8 h-8 text-orange-400 mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-white">{remindMeCount}</p>
+                    <p className="text-xs text-gray-400">Remind Me</p>
                   </CardContent>
                 </Card>
                 

@@ -216,26 +216,18 @@ export default function EmailCategorizationSimple() {
   const selectedCompanySenders = selectedCompany ? filteredCompanies[selectedCompany] || [] : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black flex relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-orange-500 to-orange-400 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-20 w-64 h-64 bg-gradient-to-r from-orange-400 to-orange-300 rounded-full blur-2xl"></div>
-        <div className="absolute top-1/2 left-1/4 w-48 h-48 bg-orange-300 rounded-full blur-xl"></div>
-      </div>
-      
+    <div className="min-h-screen bg-black flex">
       {/* Left Panel - Company List */}
-      <div className="w-1/2 bg-gradient-to-br from-zinc-900/80 to-zinc-800/60 backdrop-blur-md flex flex-col relative z-10">
+      <div className="w-1/2 bg-black flex flex-col">
         {/* Search Header */}
-        <div className="p-6 border-b border-zinc-700/50">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">Email Companies</h1>
+        <div className="p-4 border-b border-zinc-800">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-orange-300 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               placeholder="Search companies..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 bg-zinc-800/80 border-zinc-600/50 text-white placeholder-gray-400 rounded-xl h-12 backdrop-blur-sm focus:border-orange-400 transition-colors"
+              className="pl-10 bg-zinc-900 border-zinc-700 text-white placeholder-gray-400 rounded-lg"
             />
           </div>
         </div>
@@ -252,29 +244,21 @@ export default function EmailCategorizationSimple() {
             return (
               <Card 
                 key={company} 
-                className={`cursor-pointer transition-all duration-300 group hover:shadow-xl ${
-                  isSelected 
-                    ? 'bg-gradient-to-br from-orange-500/20 to-orange-400/10 border-orange-400/50 shadow-lg shadow-orange-500/20' 
-                    : 'bg-gradient-to-br from-zinc-800/80 to-zinc-700/60 border-zinc-600/50 hover:border-zinc-500/50 backdrop-blur-sm'
+                className={`cursor-pointer transition-all duration-200 bg-zinc-900 border-zinc-800 hover:border-zinc-700 ${
+                  isSelected ? 'ring-2 ring-orange-400 border-orange-400' : ''
                 }`}
                 onClick={() => setSelectedCompany(company)}
               >
-                <CardContent className="p-5">
+                <CardContent className="p-4">
                   <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                        isSelected 
-                          ? 'bg-gradient-to-r from-orange-500 to-orange-400 shadow-lg' 
-                          : 'bg-gradient-to-r from-zinc-700 to-zinc-600 group-hover:from-orange-500/80 group-hover:to-orange-400/80'
-                      } transition-all duration-300`}>
-                        <span className="text-white text-sm font-bold">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600">
+                        <AvatarFallback className="text-black text-sm font-semibold">
                           {company.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
+                        </AvatarFallback>
+                      </Avatar>
                       <div>
-                        <h3 className={`font-semibold ${isSelected ? 'text-white' : 'text-gray-200 group-hover:text-white'} transition-colors`}>
-                          {company}
-                        </h3>
+                        <h3 className="font-semibold text-white">{company}</h3>
                         <div className="flex items-center space-x-2 text-sm text-gray-400">
                           <Mail className="w-3 h-3" />
                           <span>{totalEmails} emails</span>
