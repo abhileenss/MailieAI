@@ -282,7 +282,7 @@ export default function MainDashboard() {
           <div className="lg:col-span-2 space-y-6">
             <div>
               <h2 className="text-xl font-semibold text-white mb-4">Email Overview</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 <Card className="bg-zinc-900 border-zinc-800">
                   <CardContent className="p-4 text-center">
                     <Mail className="w-8 h-8 text-blue-400 mx-auto mb-2" />
@@ -301,7 +301,7 @@ export default function MainDashboard() {
                 
                 <Card className="bg-zinc-900 border-zinc-800">
                   <CardContent className="p-4 text-center">
-                    <Settings className="w-8 h-8 text-orange-400 mx-auto mb-2" />
+                    <Clock className="w-8 h-8 text-orange-400 mx-auto mb-2" />
                     <p className="text-2xl font-bold text-white">{remindMeCount}</p>
                     <p className="text-xs text-gray-400">Remind Me</p>
                   </CardContent>
@@ -312,6 +312,22 @@ export default function MainDashboard() {
                     <Archive className="w-8 h-8 text-green-400 mx-auto mb-2" />
                     <p className="text-2xl font-bold text-white">{keepQuietCount}</p>
                     <p className="text-xs text-gray-400">Keep Quiet</p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-zinc-900 border-zinc-800">
+                  <CardContent className="p-4 text-center">
+                    <HelpCircle className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-white">{whySignupCount}</p>
+                    <p className="text-xs text-gray-400">Why Signup</p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-zinc-900 border-zinc-800">
+                  <CardContent className="p-4 text-center">
+                    <User className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-white">{dontTellCount}</p>
+                    <p className="text-xs text-gray-400">Don't Tell</p>
                   </CardContent>
                 </Card>
               </div>
