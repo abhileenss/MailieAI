@@ -341,7 +341,10 @@ export default function MainDashboard() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setIsEditingScript(!isEditingScript)}
+                    onClick={() => {
+                      console.log('Edit button clicked, current state:', isEditingScript);
+                      setIsEditingScript(!isEditingScript);
+                    }}
                     className="text-orange-400 hover:text-orange-300"
                   >
                     <Edit3 className="w-4 h-4" />
