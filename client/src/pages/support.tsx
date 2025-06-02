@@ -1,10 +1,83 @@
 import { motion } from "framer-motion";
-import { MessageCircle, Mail, Book, Headphones, Clock, CheckCircle } from "lucide-react";
+import { MessageCircle, Mail, Book, Headphones, Clock, CheckCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 
 export default function Support() {
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [formData, setFormData] = useState({
+    userEmail: '',
+    userName: '',
+    subject: '',
+    message: '',
+    supportType: 'general' as 'general' | 'technical' | 'founder-feedback'
+  });
+
+  const sendEmailMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      const response = await fetch('/api/support/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to send email');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Email sent successfully!",
+        description: "We'll get back to you within 24 hours.",
+      });
+      setShowEmailForm(false);
+      setFormData({
+        userEmail: '',
+        userName: '',
+        subject: '',
+        message: '',
+        supportType: 'general'
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to send email",
+        description: "Please try again or contact us directly at info.glitchowt@gmail.com",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSubmitEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.subject || !formData.message) {
+      toast({
+        title: "Please fill in required fields",
+        description: "Subject and message are required.",
+        variant: "destructive",
+      });
+      return;
+    }
+    sendEmailMutation.mutate(formData);
+  };
+
+  const openEmailForm = (type: 'general' | 'technical' | 'founder-feedback') => {
+    setFormData(prev => ({ ...prev, supportType: type }));
+    setShowEmailForm(true);
+  };
 
   return (
     <div className="min-h-screen bg-black text-white">

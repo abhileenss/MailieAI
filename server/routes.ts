@@ -7,6 +7,7 @@ import { VoiceService } from "./services/voiceService";
 import { GmailService } from "./services/gmailService";
 import { EmailCategorizationService } from "./services/emailCategorizationService";
 import { OutboundCallService } from "./services/outboundCallService";
+import { emailService } from "./services/emailService";
 
 const voiceService = new VoiceService();
 const gmailService = new GmailService();
@@ -1403,6 +1404,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: 'Failed to initiate test call',
         error: error.message 
       });
+    }
+  });
+
+  // Support email endpoint
+  app.post("/api/support/email", async (req, res) => {
+    try {
+      const { userEmail, userName, subject, message, supportType } = req.body;
+      
+      if (!subject || !message || !supportType) {
+        return res.status(400).json({ error: "Subject, message, and support type are required" });
+      }
+
+      const supportData = {
+        userEmail,
+        userName,
+        subject,
+        message,
+        supportType: supportType as 'general' | 'technical' | 'founder-feedback',
+        userAgent: req.headers['user-agent'],
+        timestamp: new Date()
+      };
+
+      // Send support email to info.glitchowt@gmail.com
+      const emailSent = await emailService.sendSupportEmail(supportData);
+      
+      if (!emailSent) {
+        return res.status(500).json({ error: "Failed to send support email" });
+      }
+
+      // Send auto-reply if user provided email
+      if (userEmail) {
+        await emailService.sendAutoReply(userEmail, supportType);
+      }
+
+      res.json({ success: true, message: "Support email sent successfully" });
+    } catch (error) {
+      console.error("Failed to send support email:", error);
+      res.status(500).json({ error: "Failed to send support email" });
     }
   });
 
