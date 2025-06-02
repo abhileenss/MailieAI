@@ -1246,7 +1246,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const phoneNumber = user.phone;
       
       // Use provided script or default
-      const callScript = script || "Hi! This is PookAi, your AI email assistant. This is a test call to verify your setup is working correctly.";
+      const callScript = script || "Hey! PookAi here - your new AI email sidekick. Quick test call to make sure everything's connected. Ready to tackle your inbox together? Sweet! Setup complete.";
       
       // Direct Twilio call for test
       if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) {

@@ -49,7 +49,7 @@ const categories = {
 export default function MainDashboard() {
   const [, setLocation] = useLocation();
   const [isEditingScript, setIsEditingScript] = useState(false);
-  const [callScript, setCallScript] = useState("Hi! This is PookAi, your AI email assistant. I have some important updates from your inbox today. You have 3 urgent emails that need your attention and 7 newsletter updates. Would you like me to go through them?");
+  const [callScript, setCallScript] = useState("Hey! PookAi here - your new AI email sidekick. Quick test call to make sure everything's connected. Ready to tackle your inbox together? Sweet! Setup complete.");
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuth() || {};
