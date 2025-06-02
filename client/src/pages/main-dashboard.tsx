@@ -225,7 +225,7 @@ export default function MainDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black relative overflow-hidden">
       {/* Background Elements */}
-      <div className="absolute inset-0 opacity-10">
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-orange-500 to-orange-400 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-20 w-64 h-64 bg-gradient-to-r from-orange-400 to-orange-300 rounded-full blur-2xl"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-orange-300 rounded-full blur-xl"></div>
