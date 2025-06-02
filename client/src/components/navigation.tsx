@@ -90,7 +90,7 @@ export function Navigation({ currentPage }: NavigationProps) {
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center neopop-button">
             <Mic className="text-primary-foreground text-lg" />
           </div>
-          <span className="text-2xl font-semibold text-foreground tracking-tight">PookAi</span>
+          <span className="text-2xl font-semibold text-foreground tracking-tight">mailieAI</span>
         </motion.div>
 
         {/* Desktop Navigation */}

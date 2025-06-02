@@ -103,7 +103,7 @@ export default function PhoneSetup({ onPhoneVerified }: PhoneSetupProps) {
             <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-white mb-2">Phone Verified!</h2>
             <p className="text-gray-400">
-              Your phone number has been successfully verified. PookAi can now call you with important updates.
+              Your phone number has been successfully verified. mailieAI can now call you with important updates.
             </p>
           </CardContent>
         </Card>

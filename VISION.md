@@ -120,15 +120,15 @@ Transform inbox chaos into organized voice summaries that respect founder priori
 - Investment opportunity pattern recognition
 - Growth bottleneck identification through communication analysis
 
-## Why Founders Love PookAi
+## Why Founders Love mailieAI
 
 ### "Finally, email that gets it"
-*"I was missing investor emails because they were buried under 40 newsletters. PookAi catches everything important and just tells me what matters. It's like having a perfect assistant who never sleeps."*
+*"I was missing investor emails because they were buried under 40 newsletters. mailieAI catches everything important and just tells me what matters. It's like having a perfect assistant who never sleeps."*
 
 **- Sarah Chen, Founder of DataFlow AI**
 
 ### "Stress relief I didn't know I needed"
-*"The anxiety of 'what if I missed something important' was killing me. Now I know if it matters, PookAi will call me. Everything else can wait."*
+*"The anxiety of 'what if I missed something important' was killing me. Now I know if it matters, mailieAI will call me. Everything else can wait."*
 
 **- Marcus Rodriguez, CEO of GreenTech Solutions**
 
@@ -217,7 +217,7 @@ Deep comprehension of startup ecosystem relationships, urgency patterns, and com
 
 ## The Future of Founder Productivity
 
-Email is just the beginning. PookAi represents a new category of **Concierge Intelligence** - AI that doesn't just automate tasks, but actually understands the unique cognitive load and priority patterns of startup founders.
+Email is just the beginning. mailieAI represents a new category of **Concierge Intelligence** - AI that doesn't just automate tasks, but actually understands the unique cognitive load and priority patterns of startup founders.
 
 We're building the AI assistant that every founder wishes they had: smart enough to understand what matters, reliable enough to trust with critical communications, and respectful enough of privacy to use with sensitive business information.
 

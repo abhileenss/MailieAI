@@ -1,8 +1,8 @@
-# PookAi MVP - Current Implementation
+# mailieAI MVP - Current Implementation
 
 ## Executive Summary
 
-PookAi is a functional voice-first email management platform that processes real Gmail data, categorizes emails by company using AI, and provides voice call functionality. The current MVP successfully handles 100+ email senders with working authentication, phone verification, and test calling features.
+mailieAI is a functional voice-first email management platform that processes real Gmail data, categorizes emails by company using AI, and provides voice call functionality. The current MVP successfully handles 100+ email senders with working authentication, phone verification, and test calling features.
 
 ## Current Workflow Implementation
 

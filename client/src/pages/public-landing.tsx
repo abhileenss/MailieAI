@@ -32,7 +32,7 @@ export default function PublicLanding() {
           <div className="w-6 h-6 bg-orange-400 rounded-lg flex items-center justify-center shadow-lg shadow-orange-400/25">
             <Brain className="w-4 h-4 text-black" />
           </div>
-          <span className="text-lg font-bold">PookAi</span>
+          <span className="text-lg font-bold">mailieAI</span>
         </div>
         <div className="hidden md:flex items-center space-x-6">
           <a href="/privacy" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy</a>

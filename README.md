@@ -1,6 +1,6 @@
-# PookAi - AI Voice Assistant for Email Management
+# mailieAI - AI Voice Assistant for Email Management
 
-PookAi is an intelligent voice-first email management platform for startup founders that connects to Gmail, categorizes emails by company using AI, and provides voice call summaries of important emails.
+mailieAI is an intelligent voice-first email management platform for startup founders that connects to Gmail, categorizes emails by company using AI, and provides voice call summaries of important emails.
 
 ## 🚀 Quick Start with Docker
 
@@ -21,7 +21,7 @@ cd pookai
 Create a `.env` file:
 ```env
 # Database
-DATABASE_URL=postgresql://pookai:your_password@postgres:5432/pookai
+DATABASE_URL=postgresql://mailieai:your_password@postgres:5432/mailieai
 POSTGRES_PASSWORD=your_secure_password
 
 # Google OAuth (Gmail Integration)
@@ -47,7 +47,7 @@ REPLIT_DOMAINS=your_domain
 docker-compose up -d
 
 # View logs
-docker-compose logs -f pookai
+docker-compose logs -f mailieai
 
 # Stop services
 docker-compose down
@@ -56,7 +56,7 @@ docker-compose down
 4. **Database Setup**
 ```bash
 # Push database schema
-docker-compose exec pookai npm run db:push
+docker-compose exec mailieai npm run db:push
 ```
 
 ### Manual Installation (Alternative)
@@ -442,14 +442,14 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ## Support
 
 - **Documentation**: [Full API Documentation](API.md)
-- **Issues**: [GitHub Issues](https://github.com/your-org/pookai/issues)
-- **Email**: support@pookai.com
+- **Issues**: [GitHub Issues](https://github.com/your-org/mailieai/issues)
+- **Email**: support@mailieai.com
 
 ---
 
 **Built for busy professionals who deserve better email management**
 
-*PookAi - Your intelligent email concierge*
+*mailieAI - Your intelligent email concierge*
 
 ### What if your email actually worked FOR you?
 
@@ -507,7 +507,7 @@ Imagine starting your day with a friendly 2-minute phone call:
 - **Day 3**: "I haven't missed anything important!"
 - **Day 7**: "How did I live without this?"
 
-## What Makes PookAi Different
+## What Makes mailieAI Different
 
 ### 🎯 Categories That Actually Make Sense
 Unlike generic email tools that give you "Primary/Social/Promotions" (thanks for nothing, Gmail), we use categories that match how founders actually think:

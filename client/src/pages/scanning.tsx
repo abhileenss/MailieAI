@@ -98,9 +98,9 @@ export default function Scanning() {
   return (
     <>
       <SEOHead 
-        title="Email Scanning - PookAi | AI Email Analysis & Categorization"
+        title="Email Scanning - mailieAI | AI Email Analysis & Categorization"
         description="Scan and analyze your emails with AI-powered categorization. Transform your inbox into organized, actionable insights for better productivity."
-        canonical="https://pookai.com/scanning"
+        canonical="https://mailieai.com/scanning"
         keywords="email scanning, AI email analysis, email categorization, inbox organization, email productivity"
       />
       
