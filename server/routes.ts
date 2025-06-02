@@ -1230,12 +1230,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Get user's phone number from database
-      const userTokens = await storage.getUserToken(userId, 'phone');
-      if (!userTokens?.accessToken) {
+      const user = await storage.getUser(userId);
+      if (!user?.phone) {
         return res.status(400).json({ message: 'Phone number not verified. Please complete phone setup first.' });
       }
 
-      const phoneNumber = userTokens.accessToken;
+      const phoneNumber = user.phone;
       
       // Use provided script or default
       const callScript = script || "Hi! This is PookAi, your AI email assistant. This is a test call to verify your setup is working correctly.";
