@@ -1,4 +1,4 @@
-# The PookAi Vision: Your Founder's Concierge
+# The mailieAI Vision: Your Founder's Concierge
 
 *Why we're building the AI assistant every founder actually needs*
 

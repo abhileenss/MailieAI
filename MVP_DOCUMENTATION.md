@@ -133,7 +133,7 @@ user_tokens (id, userId, provider, accessToken, refreshToken, expiresAt, created
 ### Environment Variables
 ```env
 # Database
-DATABASE_URL=postgresql://user:pass@host:5432/pookai
+DATABASE_URL=postgresql://user:pass@host:5432/mailieai
 
 # Google OAuth (Gmail)
 GOOGLE_CLIENT_ID=your_google_client_id

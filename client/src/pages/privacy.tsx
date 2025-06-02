@@ -11,25 +11,25 @@ export default function Privacy() {
   return (
     <>
       <SEOHead 
-        title="Privacy Policy - PookAi | Data Protection & Privacy Rights"
-        description="Learn how PookAi protects your email data with end-to-end encryption, zero-knowledge architecture, and GDPR compliance. Your privacy is our priority."
-        canonical="https://pookai.com/privacy"
+        title="Privacy Policy - mailieAI | Data Protection & Privacy Rights"
+        description="Learn how mailieAI protects your email data with end-to-end encryption, zero-knowledge architecture, and GDPR compliance. Your privacy is our priority."
+        canonical="https://mailieai.com/privacy"
         keywords="privacy policy, data protection, email privacy, GDPR compliance, data security, encryption, zero-knowledge, email safety, founder privacy"
         ogType="article"
         structuredData={{
           "@context": "https://schema.org",
           "@type": "Article",
-          "headline": "PookAi Privacy Policy - Data Protection & Privacy Rights",
-          "description": "Comprehensive privacy policy explaining how PookAi protects email data with encryption and privacy-first design",
+          "headline": "mailieAI Privacy Policy - Data Protection & Privacy Rights",
+          "description": "Comprehensive privacy policy explaining how mailieAI protects email data with encryption and privacy-first design",
           "author": {
             "@type": "Organization",
-            "name": "PookAi Team"
+            "name": "mailieAI Team"
           },
           "datePublished": "2025-05-31",
           "dateModified": "2025-05-31",
           "publisher": {
             "@type": "Organization",
-            "name": "PookAi"
+            "name": "mailieAI"
           }
         }}
       />

@@ -210,7 +210,7 @@ export default function PublicLanding() {
                 <div className="w-8 h-8 bg-orange-400 rounded-lg flex items-center justify-center">
                   <Brain className="w-5 h-5 text-black" />
                 </div>
-                <span className="text-xl font-bold text-white">PookAi</span>
+                <span className="text-xl font-bold text-white">mailieAI</span>
               </div>
               <p className="text-gray-400">
                 Your AI email concierge for busy professionals
