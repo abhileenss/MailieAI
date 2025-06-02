@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { randomBytes } from "crypto";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { VoiceService } from "./services/voiceService";
@@ -51,8 +52,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       
-      // Generate a unique state parameter and store in session
-      const state = require('crypto').randomBytes(32).toString('hex');
+      // Generate a unique state parameter and store in session  
+      const state = randomBytes(32).toString('hex');
       (req.session as any).gmailOAuthState = state;
       (req.session as any).gmailOAuthUserId = userId;
       
