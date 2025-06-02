@@ -1,6 +1,20 @@
 # Mailie - AI-Powered Email Intelligence Platform
 
-An intelligent communication management platform that transforms email workflows through AI-powered smart categorization, personalized communication strategies, and real-time Gmail integration.
+An intelligent communication management platform that transforms startup founders' email workflows through AI-powered smart categorization, personalized communication strategies, and dynamic user engagement.
+
+## Vision
+
+Mailie revolutionizes how entrepreneurs manage their email communication by providing intelligent, AI-driven insights that help prioritize what matters most. Built specifically for startup founders who receive hundreds of emails daily, Mailie categorizes, analyzes, and provides actionable intelligence on every message.
+
+The platform combines real-time Gmail integration with advanced OpenAI analysis to deliver personalized email management strategies, ensuring that critical communications are never missed while reducing noise from less important messages.
+
+## Core Value Proposition
+
+- **Intelligent Email Triage**: AI automatically categorizes emails into actionable buckets
+- **Startup-Focused Categories**: Custom categories designed for entrepreneurial workflows
+- **Real-Time Processing**: Immediate analysis and categorization of incoming emails  
+- **Voice-Enabled Responses**: Personalized communication preferences and voice settings
+- **Analytics Dashboard**: Comprehensive insights into email patterns and sender behavior
 
 ## Features
 
@@ -19,6 +33,103 @@ An intelligent communication management platform that transforms email workflows
 - **Authentication**: Replit Auth + Gmail OAuth2
 - **AI**: OpenAI GPT-4 for email analysis
 - **APIs**: Gmail API, Google OAuth2
+
+## Complete Local Setup Guide
+
+### Step 1: Prerequisites
+- Node.js 20+ installed
+- Docker and Docker Compose installed
+- Git for cloning the repository
+
+### Step 2: Google Cloud Console Setup
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing one
+3. Enable the Gmail API:
+   - Navigate to "APIs & Services" → "Library"
+   - Search for "Gmail API" and enable it
+4. Configure OAuth consent screen:
+   - Go to "APIs & Services" → "OAuth consent screen"
+   - Choose "External" user type
+   - Fill in app name, user support email, and developer contact
+   - Add your email as a test user if in testing mode
+5. Create OAuth 2.0 credentials:
+   - Go to "APIs & Services" → "Credentials"
+   - Click "Create Credentials" → "OAuth 2.0 Client IDs"
+   - Choose "Web application"
+   - Add authorized JavaScript origins: `http://localhost:5000`
+   - Add authorized redirect URIs: `http://localhost:5000/api/auth/gmail/callback`
+   - Save the Client ID and Client Secret
+
+### Step 3: OpenAI API Setup
+1. Go to [OpenAI Platform](https://platform.openai.com/)
+2. Create an account or sign in
+3. Navigate to API keys section
+4. Create a new API key and save it securely
+
+### Step 4: Clone and Configure
+```bash
+# Clone the repository
+git clone <your-repository-url>
+cd mailie
+
+# Create environment file
+cat > .env << EOF
+DATABASE_URL=postgresql://postgres:postgres@postgres:5432/mailie
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+OPENAI_API_KEY=your_openai_api_key_here
+POSTGRES_PASSWORD=secure_postgres_password
+SESSION_SECRET=your_secure_session_secret_here
+EOF
+```
+
+### Step 5: Run with Docker (Recommended)
+```bash
+# Start all services (app + database)
+docker-compose up -d
+
+# Check if services are running
+docker-compose ps
+
+# View application logs
+docker-compose logs -f app
+
+# View database logs
+docker-compose logs -f postgres
+```
+
+The application will be available at http://localhost:5000
+
+### Step 6: Testing the Application
+1. Open http://localhost:5000 in your browser
+2. Click "Login" to authenticate with Replit
+3. After login, click "Connect Gmail Account"
+4. Authorize Gmail access in the popup
+5. Wait for email processing to complete (may take 5-10 minutes)
+6. View your categorized emails in the dashboard
+
+### Alternative: Local Development Setup
+If you prefer running without Docker:
+
+```bash
+# Install dependencies
+npm install
+
+# Start PostgreSQL database only
+docker-compose up -d postgres
+
+# Set up database schema
+npm run db:push
+
+# Start development server
+npm run dev
+```
+
+### Troubleshooting
+- **OAuth Error**: Ensure redirect URIs match exactly in Google Cloud Console
+- **Database Connection**: Check PostgreSQL is running with `docker-compose ps`
+- **API Rate Limits**: OpenAI has token limits - processing will pause and resume automatically
+- **Gmail Permissions**: Make sure your email is added as a test user in Google OAuth consent screen
 
 ## Quick Start with Docker
 
