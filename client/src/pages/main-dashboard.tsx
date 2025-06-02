@@ -214,6 +214,21 @@ export default function MainDashboard() {
     );
   }
 
+  // Helper function to get category icon
+  const getCategoryIcon = (categoryKey: string) => {
+    switch (categoryKey) {
+      case 'call-me': return Phone;
+      case 'remind-me': return Clock;
+      case 'tools-billing': return CreditCard;
+      case 'events-calendar': return Calendar;
+      case 'updates-news': return Newspaper;
+      case 'sales-promo': return Tag;
+      case 'why-did-i-signup': return HelpCircle;
+      case 'keep-quiet': return Archive;
+      default: return Mail;
+    }
+  };
+
   const totalSenders = processedEmails?.totalSenders || 0;
   const callMeCount = processedEmails?.categoryStats?.['call-me'] || 0;
   const remindMeCount = processedEmails?.categoryStats?.['remind-me'] || 0;

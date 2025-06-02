@@ -40,37 +40,65 @@ const categories = {
     title: 'Call Me For This',
     description: 'Urgent items requiring immediate voice call',
     icon: Phone,
-    color: 'bg-red-500'
+    color: 'bg-red-500',
+    badgeColor: 'bg-red-500 text-white',
+    borderColor: 'border-red-500'
   },
   'remind-me': {
     title: 'Remind Me For This',
     description: 'Important but not urgent - send reminders',
     icon: Brain,
-    color: 'bg-orange-500'
+    color: 'bg-orange-500',
+    badgeColor: 'bg-orange-500 text-white',
+    borderColor: 'border-orange-500'
   },
-  'newsletter': {
-    title: 'Newsletter',
-    description: 'Industry insights and news updates',
-    icon: Mail,
-    color: 'bg-blue-500'
+  'tools-billing': {
+    title: 'Tools & Billing',
+    description: 'Software tools, subscriptions, and billing',
+    icon: CreditCard,
+    color: 'bg-blue-500',
+    badgeColor: 'bg-blue-500 text-white',
+    borderColor: 'border-blue-500'
+  },
+  'events-calendar': {
+    title: 'Events & Calendar',
+    description: 'Meeting invites and event notifications',
+    icon: Calendar,
+    color: 'bg-green-500',
+    badgeColor: 'bg-green-500 text-white',
+    borderColor: 'border-green-500'
+  },
+  'updates-news': {
+    title: 'Updates & News',
+    description: 'Product updates and industry news',
+    icon: Newspaper,
+    color: 'bg-purple-500',
+    badgeColor: 'bg-purple-500 text-white',
+    borderColor: 'border-purple-500'
+  },
+  'sales-promo': {
+    title: 'Sales & Promos',
+    description: 'Promotional emails and sales pitches',
+    icon: Tag,
+    color: 'bg-yellow-500',
+    badgeColor: 'bg-yellow-500 text-black',
+    borderColor: 'border-yellow-500'
   },
   'why-did-i-signup': {
     title: 'Why Did I Sign Up?',
-    description: 'Promotional emails I probably don\'t need',
-    icon: Trash2,
-    color: 'bg-gray-500'
+    description: 'Unwanted subscriptions to review',
+    icon: HelpCircle,
+    color: 'bg-gray-500',
+    badgeColor: 'bg-gray-500 text-white',
+    borderColor: 'border-gray-500'
   },
   'keep-quiet': {
     title: 'Keep But Don\'t Care',
-    description: 'Archive these - keep but no notifications',
+    description: 'Archive but don\'t notify',
     icon: Archive,
-    color: 'bg-green-500'
-  },
-  'dont-tell-anyone': {
-    title: "Don't Tell Anyone",
-    description: 'Personal emails in work inbox',
-    icon: User,
-    color: 'bg-purple-500'
+    color: 'bg-zinc-600',
+    badgeColor: 'bg-zinc-600 text-white',
+    borderColor: 'border-zinc-600'
   }
 };
 
@@ -272,7 +300,7 @@ export default function EmailCategorizationSimple() {
                       </div>
                     </div>
                     {categoryInfo && (
-                      <Badge className="bg-orange-400 text-black text-xs">
+                      <Badge className={`${categoryInfo.badgeColor} text-xs`}>
                         {categoryInfo.title}
                       </Badge>
                     )}
@@ -325,9 +353,7 @@ export default function EmailCategorizationSimple() {
                       variant="ghost"
                       className={`h-auto p-6 justify-start text-left rounded-2xl border-2 transition-all ${
                         isSelected 
-                          ? catKey === 'call-me' 
-                            ? 'bg-orange-400 border-orange-400 text-black hover:bg-orange-500' 
-                            : 'bg-zinc-800 border-zinc-600 text-white hover:bg-zinc-700'
+                          ? `${catInfo.color} ${catInfo.borderColor} text-white hover:opacity-90` 
                           : 'bg-zinc-900 border-zinc-800 text-gray-300 hover:bg-zinc-800 hover:border-zinc-700'
                       }`}
                       onClick={() => {
@@ -340,16 +366,12 @@ export default function EmailCategorizationSimple() {
                       <div className="flex items-start space-x-4 w-full">
                         <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
                           isSelected 
-                            ? catKey === 'call-me' 
-                              ? 'bg-black/20' 
-                              : 'bg-zinc-700'
+                            ? 'bg-black/20' 
                             : 'bg-zinc-800'
                         }`}>
                           <IconComponent className={`w-6 h-6 ${
                             isSelected 
-                              ? catKey === 'call-me' 
-                                ? 'text-black' 
-                                : 'text-white'
+                              ? catKey === 'sales-promo' ? 'text-black' : 'text-white'
                               : 'text-gray-400'
                           }`} />
                         </div>
@@ -357,9 +379,7 @@ export default function EmailCategorizationSimple() {
                           <h3 className="font-semibold text-lg mb-1">{catInfo.title}</h3>
                           <p className={`text-sm ${
                             isSelected 
-                              ? catKey === 'call-me' 
-                                ? 'text-black/80' 
-                                : 'text-gray-300'
+                              ? catKey === 'sales-promo' ? 'text-black/80' : 'text-gray-300'
                               : 'text-gray-500'
                           }`}>
                             {catInfo.description}
