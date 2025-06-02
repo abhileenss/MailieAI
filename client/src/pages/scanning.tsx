@@ -13,6 +13,8 @@ interface ScanProgress {
   currentAction: string;
   emailsProcessed: number;
   totalEmails: number;
+  newEmailsFound?: number;
+  previousTotal?: number;
 }
 
 export default function Scanning() {
@@ -52,10 +54,23 @@ export default function Scanning() {
       
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['/api/emails/processed'] });
-      setScanProgress(prev => ({ ...prev, step: 'complete', progress: 100 }));
-      setTimeout(() => setLocation('/dashboard'), 2000);
+      
+      // Calculate new emails found
+      const previousTotal = existingEmails?.totalSenders || 0;
+      const currentTotal = data.totalSenders || 0;
+      const newEmailsFound = Math.max(0, currentTotal - previousTotal);
+      
+      setScanProgress(prev => ({ 
+        ...prev, 
+        step: 'complete', 
+        progress: 100,
+        newEmailsFound,
+        previousTotal 
+      }));
+      
+      setTimeout(() => setLocation('/dashboard'), 3000);
     },
     onError: (error) => {
       console.error('Scan error:', error);
@@ -291,6 +306,26 @@ export default function Scanning() {
                   >
                     <CheckCircle className="w-12 h-12 mx-auto mb-4 text-green-500" />
                     <h4 className="text-lg font-semibold mb-2">Scan Complete!</h4>
+                    
+                    {scanProgress.newEmailsFound !== undefined && (
+                      <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 mb-4">
+                        <div className="flex items-center justify-center space-x-2">
+                          <Zap className="w-5 h-5 text-green-500" />
+                          <span className="font-semibold text-green-600">
+                            {scanProgress.newEmailsFound > 0 
+                              ? `Found ${scanProgress.newEmailsFound} new email${scanProgress.newEmailsFound === 1 ? '' : 's'}!`
+                              : 'No new emails since last scan'
+                            }
+                          </span>
+                        </div>
+                        {scanProgress.previousTotal !== undefined && (
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Total: {scanProgress.previousTotal + (scanProgress.newEmailsFound || 0)} senders processed
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    
                     <p className="text-muted-foreground mb-4">
                       Your emails have been analyzed and categorized. Redirecting to dashboard...
                     </p>

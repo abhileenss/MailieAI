@@ -24,7 +24,7 @@ export default function LiveChatWidget() {
     {
       id: '1',
       type: 'system',
-      content: 'Hi! How can we help you today? Please fill in your details below and we\'ll get back to you quickly.',
+      content: 'Welcome to Mailie Support! How can we help you today?',
       timestamp: new Date()
     }
   ]);
