@@ -80,7 +80,7 @@ const categories = {
 export default function MainDashboard() {
   const [, setLocation] = useLocation();
   const [isEditingScript, setIsEditingScript] = useState(false);
-  const [callScript, setCallScript] = useState("Hey! PookAi here. Quick update: McKinsey: Project timeline discussion. 100xEngineers: Buildathon invitation. These look important. Thanks for using PookAi!");
+  const [callScript, setCallScript] = useState("Hey! mailieAI here. Quick update: McKinsey: Project timeline discussion. 100xEngineers: Buildathon invitation. These look important. Thanks for using mailieAI!");
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuth() || {};

@@ -160,13 +160,13 @@ ${Object.entries(categories).map(([cat, count]) =>
 
 The most important items are in your "call me" and "remind me" categories. 
 
-Your PookAi assistant has everything organized and ready for your review.
+Your mailieAI assistant has everything organized and ready for your review.
 
 Have a great day!`;
   }
 
   private generateUrgentScript(emailData: any): string {
-    return `This is your PookAi assistant with an urgent email alert.
+    return `This is your mailieAI assistant with an urgent email alert.
 
 You have received high-priority emails that require immediate attention:
 
@@ -182,11 +182,11 @@ Thank you.`;
   }
 
   private generateGenericScript(emailData: any): string {
-    return `Hello! This is your PookAi assistant.
+    return `Hello! This is your mailieAI assistant.
 
 You have new emails that have been categorized and are ready for your review.
 
-Check your PookAi dashboard for the complete breakdown.
+Check your mailieAI dashboard for the complete breakdown.
 
 Thank you!`;
   }
