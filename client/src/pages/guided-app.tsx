@@ -23,9 +23,17 @@ const APP_STEPS = [
     active: true
   },
   {
-    id: 'setup',
+    id: 'preferences',
     title: 'Setup',
-    description: 'Voice & phone settings',
+    description: 'Configure preferences',
+    icon: Settings,
+    completed: false,
+    active: false
+  },
+  {
+    id: 'phone',
+    title: 'Verify',
+    description: 'Phone verification',
     icon: Phone,
     completed: false,
     active: false
@@ -99,7 +107,9 @@ export default function GuidedApp() {
     switch (currentStep) {
       case 'categorize':
         return true;
-      case 'setup':
+      case 'preferences':
+        return true;
+      case 'phone':
         return true;
       case 'complete':
         return true;
