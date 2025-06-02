@@ -4,12 +4,11 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
-import Landing from "@/pages/landing";
 import PublicLanding from "@/pages/public-landing";
 import Dashboard from "@/pages/dashboard";
 import MainDashboard from "@/pages/main-dashboard";
 import GuidedApp from "@/pages/guided-app";
-import EmailScanning from "@/pages/email-scanning";
+import Scanning from "@/pages/scanning";
 import Privacy from "@/pages/privacy";
 import Security from "@/pages/security";
 import Support from "@/pages/support";
@@ -73,14 +72,14 @@ function Router() {
       <Route path="/dashboard" component={DashboardRoute} />
       <Route path="/main-dashboard" component={MainDashboardRoute} />
       <Route path="/guided-app" component={AuthenticatedRoute} />
-      <Route path="/scanning" component={AuthenticatedRoute} />
+      <Route path="/scanning" component={() => <AuthenticatedRoute><Scanning /></AuthenticatedRoute>} />
       
       <Route component={NotFound} />
     </Switch>
   );
 }
 
-function AuthenticatedRoute() {
+function AuthenticatedRoute({ children }: { children?: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
@@ -98,7 +97,7 @@ function AuthenticatedRoute() {
     return <PublicLanding />;
   }
   
-  return <GuidedApp />;
+  return children ? <>{children}</> : <GuidedApp />;
 }
 
 function App() {
