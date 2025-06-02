@@ -229,19 +229,19 @@ export default function PublicLanding() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
+    <div className="min-h-screen flex flex-col bg-black text-white">
       {/* Navigation Header */}
-      <nav className="flex justify-between items-center p-6 max-w-7xl mx-auto w-full">
+      <nav className="flex justify-between items-center p-4 max-w-7xl mx-auto w-full">
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-            <Brain className="w-5 h-5 text-white" />
+          <div className="w-6 h-6 bg-orange-400 rounded-lg flex items-center justify-center">
+            <Brain className="w-4 h-4 text-black" />
           </div>
-          <span className="text-xl font-bold">PookAi</span>
+          <span className="text-lg font-bold">PookAi</span>
         </div>
-        <div className="hidden md:flex items-center space-x-8">
-          <a href="/privacy" className="text-gray-300 hover:text-white transition-colors">Privacy</a>
-          <a href="/security" className="text-gray-300 hover:text-white transition-colors">Security</a>
-          <a href="/support" className="text-gray-300 hover:text-white transition-colors">Support</a>
+        <div className="hidden md:flex items-center space-x-6">
+          <a href="/privacy" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy</a>
+          <a href="/security" className="text-gray-400 hover:text-white transition-colors text-sm">Security</a>
+          <a href="/support" className="text-gray-400 hover:text-white transition-colors text-sm">Support</a>
         </div>
       </nav>
 
@@ -256,27 +256,27 @@ export default function PublicLanding() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full border border-purple-400/30 mb-10">
-              <span className="text-sm font-semibold text-purple-200">AI Email Intelligence for Busy Professionals</span>
+            <div className="inline-flex items-center px-6 py-3 bg-orange-400/20 rounded-full border border-orange-400/30 mb-10">
+              <span className="text-sm font-semibold text-orange-200">AI Email Intelligence for Busy Professionals</span>
             </div>
             
-            <h1 className="text-6xl md:text-8xl font-black mb-10 leading-tight tracking-tight">
+            <h1 className="text-5xl md:text-7xl font-black mb-10 leading-tight tracking-tight">
               Stop Missing What
               <br />
-              <span className="bg-gradient-to-r from-purple-300 via-pink-300 to-blue-300 bg-clip-text text-transparent">
+              <span className="text-orange-400">
                 Actually Matters
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-200 mb-14 max-w-5xl mx-auto leading-relaxed font-medium">
               Your AI concierge calls you daily with urgent emails, filters promotional noise, 
-              and gives you back <span className="text-purple-300 font-bold">2+ hours</span> of focused time every day.
+              and gives you back <span className="text-orange-400 font-bold">2+ hours</span> of focused time every day.
             </p>
             
             {/* Enhanced CTA Section */}
             <div className="flex flex-col items-center space-y-8 mb-16">
               <motion.button 
                 onClick={handleGetStarted}
-                className="group relative inline-flex items-center justify-center px-16 py-6 text-2xl font-black text-white bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 rounded-3xl shadow-2xl hover:shadow-purple-500/40 transition-all duration-300 transform hover:scale-105 active:scale-95"
+                className="group relative inline-flex items-center justify-center px-16 py-6 text-2xl font-black text-black bg-orange-400 rounded-lg shadow-2xl hover:shadow-orange-500/40 transition-all duration-300 transform hover:scale-105 active:scale-95"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -284,22 +284,21 @@ export default function PublicLanding() {
                   Start 30-Second Setup
                   <ArrowRight className="ml-4 w-7 h-7 group-hover:translate-x-2 transition-transform duration-300" />
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 rounded-3xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
               </motion.button>
               
               <div className="flex flex-wrap justify-center items-center gap-6 text-gray-300 text-lg">
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-5 h-5 text-emerald-400" />
+                  <CheckCircle className="w-5 h-5 text-orange-400" />
                   <span className="font-medium">30-second setup</span>
                 </div>
                 <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-5 h-5 text-emerald-400" />
+                  <CheckCircle className="w-5 h-5 text-orange-400" />
                   <span className="font-medium">No credit card required</span>
                 </div>
                 <div className="w-1 h-1 bg-gray-500 rounded-full"></div>
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-5 h-5 text-emerald-400" />
+                  <CheckCircle className="w-5 h-5 text-orange-400" />
                   <span className="font-medium">Enterprise privacy</span>
                 </div>
               </div>
@@ -308,7 +307,7 @@ export default function PublicLanding() {
                 <p className="text-gray-400 text-sm mb-2">Join 500+ professionals who saved 10+ hours this week</p>
                 <div className="flex justify-center space-x-1">
                   {[...Array(5)].map((_, i) => (
-                    <div key={i} className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full border-2 border-white/20 -ml-2 first:ml-0"></div>
+                    <div key={i} className="w-8 h-8 bg-orange-400 rounded-full border-2 border-white/20 -ml-2 first:ml-0"></div>
                   ))}
                 </div>
               </div>
@@ -322,32 +321,32 @@ export default function PublicLanding() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <div className="group bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-purple-300/20 rounded-3xl p-10 text-center hover:border-purple-300/40 hover:from-white/15 hover:to-white/8 transition-all duration-500 hover:scale-105">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl mx-auto mb-8 flex items-center justify-center shadow-2xl group-hover:shadow-purple-500/25 transition-shadow duration-300">
-                <Brain className="text-white w-10 h-10" />
+            <div className="group bg-zinc-900 border border-zinc-800 rounded-lg p-10 text-center hover:border-orange-400/40 transition-all duration-500 hover:scale-105">
+              <div className="w-16 h-16 bg-orange-400 rounded-lg mx-auto mb-8 flex items-center justify-center shadow-lg">
+                <Brain className="text-black w-8 h-8" />
               </div>
               <h3 className="text-2xl font-bold mb-6 text-white">Smart Categories</h3>
-              <p className="text-lg text-gray-200 leading-relaxed">
+              <p className="text-lg text-gray-300 leading-relaxed">
                 "Call Me For This", "Why Did I Sign Up?", "Don't Tell Anyone" - categories that actually make sense for your workflow
               </p>
             </div>
             
-            <div className="group bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-pink-300/20 rounded-3xl p-10 text-center hover:border-pink-300/40 hover:from-white/15 hover:to-white/8 transition-all duration-500 hover:scale-105">
-              <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-pink-500 rounded-2xl mx-auto mb-8 flex items-center justify-center shadow-2xl group-hover:shadow-pink-500/25 transition-shadow duration-300">
-                <Phone className="text-white w-10 h-10" />
+            <div className="group bg-zinc-900 border border-zinc-800 rounded-lg p-10 text-center hover:border-orange-400/40 transition-all duration-500 hover:scale-105">
+              <div className="w-16 h-16 bg-orange-400 rounded-lg mx-auto mb-8 flex items-center justify-center shadow-lg">
+                <Phone className="text-black w-8 h-8" />
               </div>
               <h3 className="text-2xl font-bold mb-6 text-white">Voice Intelligence</h3>
-              <p className="text-lg text-gray-200 leading-relaxed">
+              <p className="text-lg text-gray-300 leading-relaxed">
                 "Hey, 3 investor emails need responses and your payment processor is down" - delivered naturally by voice
               </p>
             </div>
             
-            <div className="group bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-blue-300/20 rounded-3xl p-10 text-center hover:border-blue-300/40 hover:from-white/15 hover:to-white/8 transition-all duration-500 hover:scale-105">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-400 to-blue-500 rounded-2xl mx-auto mb-8 flex items-center justify-center shadow-2xl group-hover:shadow-blue-500/25 transition-shadow duration-300">
-                <Lock className="text-white w-10 h-10" />
+            <div className="group bg-zinc-900 border border-zinc-800 rounded-lg p-10 text-center hover:border-orange-400/40 transition-all duration-500 hover:scale-105">
+              <div className="w-16 h-16 bg-orange-400 rounded-lg mx-auto mb-8 flex items-center justify-center shadow-lg">
+                <Lock className="text-black w-8 h-8" />
               </div>
               <h3 className="text-2xl font-bold mb-6 text-white">Enterprise Privacy</h3>
-              <p className="text-lg text-gray-200 leading-relaxed">
+              <p className="text-lg text-gray-300 leading-relaxed">
                 Zero data selling, zero surveillance. Your email content stays completely private and secure
               </p>
             </div>
@@ -363,17 +362,17 @@ export default function PublicLanding() {
             <h2 className="text-4xl font-bold mb-12 text-white">How It Works</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4">1</div>
+                <div className="w-12 h-12 bg-orange-400 rounded-lg flex items-center justify-center text-black font-bold text-xl mb-4">1</div>
                 <h3 className="text-xl font-semibold mb-2 text-white">Connect Gmail</h3>
                 <p className="text-gray-300">Secure OAuth connection to your email</p>
               </div>
               <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4">2</div>
+                <div className="w-12 h-12 bg-orange-400 rounded-lg flex items-center justify-center text-black font-bold text-xl mb-4">2</div>
                 <h3 className="text-xl font-semibold mb-2 text-white">AI Categorizes</h3>
                 <p className="text-gray-300">Smart categorization of all your emails</p>
               </div>
               <div className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4">3</div>
+                <div className="w-12 h-12 bg-orange-400 rounded-lg flex items-center justify-center text-black font-bold text-xl mb-4">3</div>
                 <h3 className="text-xl font-semibold mb-2 text-white">Daily Voice Summary</h3>
                 <p className="text-gray-300">Get called with what actually matters</p>
               </div>
@@ -402,13 +401,13 @@ export default function PublicLanding() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 bg-black/20 backdrop-blur-sm">
+      <footer className="border-t border-zinc-800 bg-zinc-900/50">
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                  <Brain className="w-5 h-5 text-white" />
+                <div className="w-8 h-8 bg-orange-400 rounded-lg flex items-center justify-center">
+                  <Brain className="w-5 h-5 text-black" />
                 </div>
                 <span className="text-xl font-bold text-white">PookAi</span>
               </div>
