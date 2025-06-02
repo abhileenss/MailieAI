@@ -68,6 +68,9 @@ export default function GuidedApp() {
     const currentIndex = steps.findIndex(step => step.id === currentStep);
     if (currentIndex < steps.length - 1) {
       setCurrentStep(steps[currentIndex + 1].id);
+    } else if (currentStep === 'complete') {
+      // Navigate to main dashboard when flow is complete
+      setLocation('/dashboard');
     }
   };
 

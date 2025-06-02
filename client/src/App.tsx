@@ -28,7 +28,7 @@ function Router() {
       <Route path="/" component={PublicLanding} />
       
       {/* Protected routes with authentication check */}
-      <Route path="/dashboard" component={AuthenticatedRoute} />
+      <Route path="/dashboard" component={Dashboard} />
       <Route path="/scanning" component={AuthenticatedRoute} />
       <Route path="/preferences" component={AuthenticatedRoute} />
       
