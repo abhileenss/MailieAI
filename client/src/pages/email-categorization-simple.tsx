@@ -91,22 +91,58 @@ export default function EmailCategorizationSimple() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ category })
       });
-      if (!response.ok) throw new Error('Failed to update category');
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error('API Error:', response.status, errorData);
+        throw new Error(`Failed to update category: ${response.status}`);
+      }
       return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/emails/processed'] });
-      toast({
-        title: "Category updated",
-        description: "Email sender category has been successfully updated."
+    onMutate: async ({ senderId, category }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['/api/emails/processed'] });
+      
+      // Snapshot the previous value
+      const previousData = queryClient.getQueryData(['/api/emails/processed']);
+      
+      // Optimistically update the cache
+      queryClient.setQueryData(['/api/emails/processed'], (old: any) => {
+        if (!old?.categorizedSenders) return old;
+        
+        const updated = { ...old };
+        // Update the sender in all categories
+        Object.keys(updated.categorizedSenders).forEach(cat => {
+          updated.categorizedSenders[cat] = updated.categorizedSenders[cat].map((sender: EmailSender) => 
+            sender.id === senderId ? { ...sender, category } : sender
+          );
+        });
+        
+        return updated;
       });
+      
+      return { previousData };
     },
-    onError: () => {
+    onError: (error, variables, context) => {
+      // Rollback on error
+      if (context?.previousData) {
+        queryClient.setQueryData(['/api/emails/processed'], context.previousData);
+      }
+      console.error('Category update error:', error);
       toast({
         title: "Error",
         description: "Failed to update category. Please try again.",
         variant: "destructive"
       });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Category updated",
+        description: "Email sender category has been successfully updated."
+      });
+    },
+    onSettled: () => {
+      // Always refetch after error or success
+      queryClient.invalidateQueries({ queryKey: ['/api/emails/processed'] });
     }
   });
 
