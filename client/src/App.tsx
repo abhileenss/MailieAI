@@ -9,6 +9,7 @@ import PublicLanding from "@/pages/public-landing";
 import Dashboard from "@/pages/dashboard";
 import GuidedApp from "@/pages/guided-app";
 import EmailScanning from "@/pages/email-scanning";
+import NotificationPreferences from "@/pages/notification-preferences";
 import Privacy from "@/pages/privacy";
 import Security from "@/pages/security";
 import Support from "@/pages/support";
@@ -29,6 +30,7 @@ function Router() {
       {/* Protected routes with authentication check */}
       <Route path="/dashboard" component={AuthenticatedRoute} />
       <Route path="/scanning" component={AuthenticatedRoute} />
+      <Route path="/preferences" component={AuthenticatedRoute} />
       
       <Route component={NotFound} />
     </Switch>
