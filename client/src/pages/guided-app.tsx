@@ -137,7 +137,7 @@ export default function GuidedApp() {
                 <Sparkles className="w-20 h-20 text-orange-300 mx-auto mb-6" />
                 <h1 className="text-5xl font-bold text-white mb-6 tracking-tight">Setup Complete!</h1>
                 <p className="text-white/80 text-xl mb-10 leading-relaxed font-light">
-                  Your PookAi voice assistant is now configured and ready to manage your emails intelligently.
+                  Your mailieAI voice assistant is now configured and ready to manage your emails intelligently.
                 </p>
                 
                 {/* Configuration Summary */}

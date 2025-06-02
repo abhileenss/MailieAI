@@ -305,8 +305,8 @@ user_tokens (id, user_id, provider, access_token, refresh_token)
 ### Quick Start
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/pookai.git
-cd pookai
+git clone https://github.com/your-org/mailieai.git
+cd mailieai
 
 # Install dependencies
 npm install
@@ -324,7 +324,7 @@ npm run dev
 ### Environment Configuration
 ```bash
 # Database (Required)
-DATABASE_URL=postgresql://user:password@localhost:5432/pookai
+DATABASE_URL=postgresql://user:password@localhost:5432/mailieai
 
 # Google OAuth (Required - Working)
 GOOGLE_CLIENT_ID=your_google_client_id

@@ -1092,7 +1092,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Send SMS
         await client.messages.create({
-          body: `Your PookAi verification code is: ${code}`,
+          body: `Your mailieAI verification code is: ${code}`,
           from: process.env.TWILIO_PHONE_NUMBER,
           to: phoneNumber
         });
@@ -1171,13 +1171,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
       
       // Generate test script
-      const script = "Hello! This is your PookAi assistant calling to test the voice service. You have 7 emails in your queue. The system is working correctly!";
+      const script = "Hello! This is your mailieAI assistant calling to test the voice service. You have 7 emails in your queue. The system is working correctly!";
       
       // Create TwiML
       const VoiceResponse = twilio.twiml.VoiceResponse;
       const response = new VoiceResponse();
       response.say({ voice: 'Polly.Joanna' }, script);
-      response.say({ voice: 'Polly.Joanna' }, 'Thank you for testing PookAi. Goodbye!');
+      response.say({ voice: 'Polly.Joanna' }, 'Thank you for testing mailieAI. Goodbye!');
 
       // Make the call
       const call = await client.calls.create({

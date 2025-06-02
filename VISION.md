@@ -47,7 +47,7 @@ Picture this: It's 2 AM. You're finally done coding, product planning, or whatev
 - **Email scheduling:** Just delays the problem
 - **Team tools:** Add more notification chaos
 
-## The PookAi Solution: Your Personal Email Concierge
+## The mailieAI Solution: Your Personal Email Concierge
 
 ### What If Email Worked For You Instead of Against You?
 
