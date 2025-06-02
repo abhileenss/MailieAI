@@ -38,12 +38,54 @@ interface ProcessedEmailsResponse {
 }
 
 const categories = {
-  'call-me': { title: 'Call Me For This', color: 'bg-red-500 text-white' },
-  'remind-me': { title: 'Remind Me For This', color: 'bg-orange-500 text-white' },
-  'newsletter': { title: 'Newsletter', color: 'bg-blue-500 text-white' },
-  'why-did-i-signup': { title: 'Why Did I Sign Up?', color: 'bg-gray-500 text-white' },
-  'keep-quiet': { title: 'Keep But Don\'t Care', color: 'bg-green-500 text-white' },
-  'dont-tell-anyone': { title: "Don't Tell Anyone", color: 'bg-purple-500 text-white' }
+  'call-me': { 
+    title: 'Call Me For This', 
+    color: 'bg-red-500 text-white',
+    bgColor: 'bg-red-500/20 border-red-500',
+    description: 'Urgent emails that need immediate attention'
+  },
+  'remind-me': { 
+    title: 'Remind Me For This', 
+    color: 'bg-orange-500 text-white',
+    bgColor: 'bg-orange-500/20 border-orange-500',
+    description: 'Important emails to follow up on'
+  },
+  'tools-billing': { 
+    title: 'Tools & Billing', 
+    color: 'bg-blue-500 text-white',
+    bgColor: 'bg-blue-500/20 border-blue-500',
+    description: 'Software tools, subscriptions, and billing'
+  },
+  'events-calendar': { 
+    title: 'Events & Calendar', 
+    color: 'bg-green-500 text-white',
+    bgColor: 'bg-green-500/20 border-green-500',
+    description: 'Meeting invites and event notifications'
+  },
+  'updates-news': { 
+    title: 'Updates & News', 
+    color: 'bg-purple-500 text-white',
+    bgColor: 'bg-purple-500/20 border-purple-500',
+    description: 'Product updates and industry news'
+  },
+  'sales-promo': { 
+    title: 'Sales & Promos', 
+    color: 'bg-yellow-500 text-black',
+    bgColor: 'bg-yellow-500/20 border-yellow-500',
+    description: 'Promotional emails and sales pitches'
+  },
+  'why-did-i-signup': { 
+    title: 'Why Did I Sign Up?', 
+    color: 'bg-gray-500 text-white',
+    bgColor: 'bg-gray-500/20 border-gray-500',
+    description: 'Unwanted subscriptions to review'
+  },
+  'keep-quiet': { 
+    title: 'Keep But Don\'t Care', 
+    color: 'bg-zinc-600 text-white',
+    bgColor: 'bg-zinc-600/20 border-zinc-600',
+    description: 'Archive but don\'t notify'
+  }
 };
 
 export default function MainDashboard() {
@@ -55,8 +97,41 @@ export default function MainDashboard() {
   const { user } = useAuth() || {};
 
   // Fetch processed emails
-  const { data: processedEmails, isLoading } = useQuery<ProcessedEmailsResponse>({
+  const { data: processedEmails, isLoading, refetch: refetchEmails } = useQuery<ProcessedEmailsResponse>({
     queryKey: ['/api/emails/processed'],
+  });
+
+  // Email refresh mutation
+  const refreshEmailsMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/emails/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to refresh emails');
+      }
+      
+      return data;
+    },
+    onSuccess: () => {
+      refetchEmails();
+      toast({
+        title: "Emails refreshed!",
+        description: "Your email data has been updated with the latest information.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Refresh failed",
+        description: error.message || "Failed to refresh email data.",
+        variant: "destructive",
+      });
+    }
   });
 
   // Test call mutation
@@ -142,7 +217,10 @@ export default function MainDashboard() {
   const totalSenders = processedEmails?.totalSenders || 0;
   const callMeCount = processedEmails?.categoryStats?.['call-me'] || 0;
   const remindMeCount = processedEmails?.categoryStats?.['remind-me'] || 0;
-  const newsletterCount = processedEmails?.categoryStats?.['newsletter'] || 0;
+  const toolsBillingCount = processedEmails?.categoryStats?.['tools-billing'] || 0;
+  const eventsCount = processedEmails?.categoryStats?.['events-calendar'] || 0;
+  const updatesCount = processedEmails?.categoryStats?.['updates-news'] || 0;
+  const salesCount = processedEmails?.categoryStats?.['sales-promo'] || 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black relative overflow-hidden">
@@ -162,6 +240,15 @@ export default function MainDashboard() {
               <p className="text-orange-300/80 font-medium">Your AI email assistant is active</p>
             </div>
             <div className="flex items-center space-x-4">
+              <Button
+                variant="outline"
+                onClick={() => refreshEmailsMutation.mutate()}
+                disabled={refreshEmailsMutation.isPending}
+                className="bg-blue-600 border-blue-500 text-white hover:bg-blue-700 transition-all duration-200 hover:scale-105 active:scale-95"
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                {refreshEmailsMutation.isPending ? "Refreshing..." : "Refresh Emails"}
+              </Button>
               <Button
                 variant="outline"
                 onClick={handleBackToCategorization}
@@ -218,9 +305,9 @@ export default function MainDashboard() {
                 
                 <Card className="bg-zinc-900 border-zinc-800">
                   <CardContent className="p-4 text-center">
-                    <Mail className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-                    <p className="text-2xl font-bold text-white">{newsletterCount}</p>
-                    <p className="text-xs text-gray-400">Newsletters</p>
+                    <Settings className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-white">{toolsBillingCount}</p>
+                    <p className="text-xs text-gray-400">Tools & Billing</p>
                   </CardContent>
                 </Card>
               </div>
