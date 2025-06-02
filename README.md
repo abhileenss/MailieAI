@@ -1,18 +1,180 @@
-# PookAi - AI Email Concierge
+# PookAi - AI Voice Assistant for Email Management
 
-**Transform your inbox chaos into actionable voice summaries with AI-powered email management**
+PookAi is an intelligent voice-first email management platform for startup founders that connects to Gmail, categorizes emails by company using AI, and provides voice call summaries of important emails.
 
-*Save 2+ hours daily through intelligent categorization and personalized voice alerts*
+## 🚀 Quick Start with Docker
+
+### Prerequisites
+- Docker & Docker Compose
+- Gmail account
+- API keys (see Environment Setup)
+
+### Docker Deployment
+
+1. **Clone and Setup**
+```bash
+git clone <repository>
+cd pookai
+```
+
+2. **Environment Setup**
+Create a `.env` file:
+```env
+# Database
+DATABASE_URL=postgresql://pookai:your_password@postgres:5432/pookai
+POSTGRES_PASSWORD=your_secure_password
+
+# Google OAuth (Gmail Integration)
+GOOGLE_CLIENT_ID=your_google_oauth_client_id
+GOOGLE_CLIENT_SECRET=your_google_oauth_client_secret
+
+# AI Services
+OPENAI_API_KEY=your_openai_api_key
+
+# Voice Calls
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE_NUMBER=your_twilio_phone_number
+
+# Replit Auth
+REPL_ID=your_replit_id
+REPLIT_DOMAINS=your_domain
+```
+
+3. **Deploy with Docker**
+```bash
+# Build and start services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f pookai
+
+# Stop services
+docker-compose down
+```
+
+4. **Database Setup**
+```bash
+# Push database schema
+docker-compose exec pookai npm run db:push
+```
+
+### Manual Installation (Alternative)
+```bash
+npm install
+npm run db:push
+npm run dev
+```
+
+## 🎯 Current MVP Features
+
+### 1. Gmail Integration & Email Processing
+- OAuth authentication with Gmail
+- Fetches recent emails (last 30 days)
+- AI-powered categorization using OpenAI GPT
+- Company/brand-based email organization
+
+### 2. Smart Categorization System
+- **Call Me**: Urgent emails requiring immediate attention
+- **Remind Me**: Follow-ups and scheduled tasks
+- **Keep Quiet**: Low priority notifications
+- **Newsletter**: Marketing and promotional content
+- **Why Did I Signup**: Unwanted subscriptions
+- **Don't Tell Anyone**: Private/confidential emails
+
+### 3. Phone Verification & Voice Calls
+- SMS-based phone number verification via Twilio
+- Test call functionality with email summaries
+- Custom voice scripts for different email categories
+- Real-time call status tracking
+
+### 4. Interactive Dashboard
+- Visual email overview with statistics
+- Company-based email grouping
+- Category management interface
+- One-click email categorization updates
+
+## 🔄 User Workflow (Current MVP)
+
+1. **Authentication**: Login with Gmail account via OAuth
+2. **Email Discovery**: System fetches and analyzes recent emails
+3. **AI Categorization**: OpenAI categorizes emails by company and importance
+4. **Review Interface**: Users review companies and adjust categories
+5. **Phone Setup**: Verify phone number for voice notifications
+6. **Dashboard Access**: Monitor email landscape and test voice features
+
+## 🛠 Technology Stack
+
+- **Frontend**: React 18, TypeScript, TailwindCSS, ShadCN UI
+- **Backend**: Node.js, Express.js
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: Replit Auth with Google OAuth
+- **AI**: OpenAI GPT-4 for email categorization
+- **Voice**: Twilio Voice API
+- **Email**: Gmail API with real-time processing
+
+## 📱 Key Components
+
+### Email Processing Pipeline
+- Gmail API integration for real-time email fetching
+- AI-powered sender identification and categorization
+- Company domain analysis and grouping
+- Smart subject line and content analysis
+
+### Voice Call System
+- Twilio integration for outbound calls
+- Dynamic script generation based on email content
+- Call logging and status tracking
+- Test call functionality for user verification
+
+### Security & Privacy
+- OAuth 2.0 with Gmail for secure email access
+- No permanent storage of email content
+- Encrypted user sessions and data
+- GDPR-compliant data handling
+
+## 🔧 Configuration
+
+### Required API Keys
+1. **Google Cloud Console**: Gmail API + OAuth credentials
+2. **OpenAI**: API key for email categorization
+3. **Twilio**: Account SID, Auth Token, Phone Number
+4. **Replit**: Domain and authentication setup
+
+### Database Schema
+- Users: Authentication and profile data
+- Email Senders: Company/sender information
+- User Preferences: Category assignments per sender
+- Call Logs: Voice call history and status
+- User Tokens: OAuth token management
+
+## 🚀 Deployment
+
+### Production Deployment
+```bash
+# Build production image
+docker build -t pookai:latest .
+
+# Run with production environment
+docker-compose -f docker-compose.yml up -d
+```
+
+### Health Monitoring
+- Built-in health check endpoint: `/api/health`
+- Database connection monitoring
+- API service status checks
+
+## 📞 API Endpoints
+
+- `GET /api/auth/user` - Get current user
+- `GET /api/emails/processed` - Fetch categorized emails
+- `POST /api/phone/verify` - Verify phone number
+- `POST /api/calls/test` - Initiate test voice call
+- `PUT /api/categorization/bulk-update` - Update email categories
 
 ---
 
-## What is PookAi?
-
-PookAi is an intelligent email concierge designed for busy professionals who are drowning in email chaos. It automatically categorizes your emails into human-friendly buckets and delivers personalized voice summaries using celebrity voices, helping you focus on what truly matters.
-
-### Core Value Proposition
-- **Time Savings**: 2+ hours daily through smart email categorization
-- **Voice-First Communication**: Celebrity voices deliver personalized call summaries
+**Built for busy founders who need intelligent email management without the overwhelm.**
 - **Professional Focus**: Works for all professionals - managers, designers, developers, consultants
 - **Privacy First**: No data selling, no surveillance, complete user control
 
