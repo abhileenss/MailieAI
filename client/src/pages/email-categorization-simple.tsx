@@ -218,16 +218,16 @@ export default function EmailCategorizationSimple() {
   return (
     <div className="min-h-screen bg-black flex">
       {/* Left Panel - Company List */}
-      <div className="w-1/2 bg-gray-100 flex flex-col">
+      <div className="w-1/2 bg-black flex flex-col">
         {/* Search Header */}
-        <div className="p-4 bg-white border-b">
+        <div className="p-4 border-b border-zinc-800">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               placeholder="Search companies..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-gray-300"
+              className="pl-10 bg-zinc-900 border-zinc-700 text-white placeholder-gray-400 rounded-lg"
             />
           </div>
         </div>
@@ -244,22 +244,22 @@ export default function EmailCategorizationSimple() {
             return (
               <Card 
                 key={company} 
-                className={`cursor-pointer transition-all duration-200 ${
-                  isSelected ? 'ring-2 ring-blue-500 bg-blue-50' : 'hover:shadow-md'
+                className={`cursor-pointer transition-all duration-200 bg-zinc-900 border-zinc-800 hover:border-zinc-700 ${
+                  isSelected ? 'ring-2 ring-orange-400 border-orange-400' : ''
                 }`}
                 onClick={() => setSelectedCompany(company)}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center space-x-3">
-                      <Avatar className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500">
-                        <AvatarFallback className="text-white text-sm font-semibold">
+                      <Avatar className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600">
+                        <AvatarFallback className="text-black text-sm font-semibold">
                           {company.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <h3 className="font-semibold text-gray-800">{company}</h3>
-                        <div className="flex items-center space-x-2 text-sm text-gray-500">
+                        <h3 className="font-semibold text-white">{company}</h3>
+                        <div className="flex items-center space-x-2 text-sm text-gray-400">
                           <Mail className="w-3 h-3" />
                           <span>{totalEmails} emails</span>
                           {senders.length > 1 && (
@@ -272,22 +272,22 @@ export default function EmailCategorizationSimple() {
                       </div>
                     </div>
                     {categoryInfo && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge className="bg-orange-400 text-black text-xs">
                         {categoryInfo.title}
                       </Badge>
                     )}
                   </div>
                   
                   {/* Latest Email Preview */}
-                  <div className="mt-3 p-2 bg-gray-50 rounded text-sm">
+                  <div className="mt-3 p-3 bg-zinc-800 rounded-lg text-sm">
                     <div className="flex items-center space-x-2 mb-1">
                       <Clock className="w-3 h-3 text-gray-400" />
-                      <span className="text-xs text-gray-500">Latest email</span>
+                      <span className="text-xs text-gray-400">Latest email</span>
                     </div>
-                    <p className="text-gray-700 line-clamp-1">
+                    <p className="text-gray-300 line-clamp-2 mb-1">
                       {recentEmail.latestSubject}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-500">
                       {new Date(recentEmail.lastEmailDate).toLocaleDateString()}
                     </p>
                   </div>
@@ -299,15 +299,15 @@ export default function EmailCategorizationSimple() {
       </div>
 
       {/* Right Panel - Categorization */}
-      <div className="w-1/2 bg-white flex flex-col">
+      <div className="w-1/2 bg-black flex flex-col">
         {selectedCompany ? (
           <>
             {/* Header */}
-            <div className="p-6 border-b">
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            <div className="p-6 border-b border-zinc-800">
+              <h2 className="text-2xl font-bold text-white mb-2">
                 How should PookAi handle emails from {selectedCompany}?
               </h2>
-              <p className="text-gray-600">
+              <p className="text-gray-400">
                 {selectedCompanySenders.length} senders • {getTotalEmailsForCompany(selectedCompanySenders)} total emails
               </p>
             </div>
@@ -322,13 +322,13 @@ export default function EmailCategorizationSimple() {
                   return (
                     <Button
                       key={catKey}
-                      variant={isSelected ? "default" : "outline"}
-                      className={`h-auto p-6 justify-start text-left ${
+                      variant="ghost"
+                      className={`h-auto p-6 justify-start text-left rounded-2xl border-2 transition-all ${
                         isSelected 
                           ? catKey === 'call-me' 
-                            ? 'bg-red-500 hover:bg-red-600 text-white' 
-                            : 'bg-gray-700 hover:bg-gray-800 text-white'
-                          : 'hover:bg-gray-50'
+                            ? 'bg-orange-400 border-orange-400 text-black hover:bg-orange-500' 
+                            : 'bg-zinc-800 border-zinc-600 text-white hover:bg-zinc-700'
+                          : 'bg-zinc-900 border-zinc-800 text-gray-300 hover:bg-zinc-800 hover:border-zinc-700'
                       }`}
                       onClick={() => {
                         selectedCompanySenders.forEach(sender => {
@@ -339,15 +339,29 @@ export default function EmailCategorizationSimple() {
                     >
                       <div className="flex items-start space-x-4 w-full">
                         <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                          isSelected ? 'bg-white/20' : 'bg-gray-100'
+                          isSelected 
+                            ? catKey === 'call-me' 
+                              ? 'bg-black/20' 
+                              : 'bg-zinc-700'
+                            : 'bg-zinc-800'
                         }`}>
                           <IconComponent className={`w-6 h-6 ${
-                            isSelected ? 'text-white' : 'text-gray-600'
+                            isSelected 
+                              ? catKey === 'call-me' 
+                                ? 'text-black' 
+                                : 'text-white'
+                              : 'text-gray-400'
                           }`} />
                         </div>
                         <div className="flex-1">
                           <h3 className="font-semibold text-lg mb-1">{catInfo.title}</h3>
-                          <p className={`text-sm ${isSelected ? 'text-white/90' : 'text-gray-600'}`}>
+                          <p className={`text-sm ${
+                            isSelected 
+                              ? catKey === 'call-me' 
+                                ? 'text-black/80' 
+                                : 'text-gray-300'
+                              : 'text-gray-500'
+                          }`}>
                             {catInfo.description}
                           </p>
                         </div>
@@ -361,9 +375,9 @@ export default function EmailCategorizationSimple() {
         ) : (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center text-gray-500">
-              <Mail className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <h3 className="text-lg font-medium mb-2">Select a company</h3>
-              <p>Choose a company from the left to categorize their emails</p>
+              <Mail className="w-16 h-16 mx-auto mb-4 text-gray-600" />
+              <h3 className="text-lg font-medium mb-2 text-gray-400">Select a company</h3>
+              <p className="text-gray-500">Choose a company from the left to categorize their emails</p>
             </div>
           </div>
         )}

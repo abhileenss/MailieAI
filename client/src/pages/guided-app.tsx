@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import EmailCategorizationSimple from './email-categorization-simple';
-import CallConfig from './call-config';
+import PhoneSetup from './phone-setup';
 import GuidedFooter from '@/components/ui/guided-footer';
 import { 
   Mail, 
@@ -89,7 +89,7 @@ export default function GuidedApp() {
       case 'categorize':
         return <EmailCategorizationSimple />;
       case 'setup':
-        return <CallConfig />;
+        return <PhoneSetup />;
       case 'complete':
         return (
           <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 flex items-center justify-center">
