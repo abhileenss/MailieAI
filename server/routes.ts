@@ -938,6 +938,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Combined scan and process endpoint for the scanning page
+  app.post("/api/emails/scan-and-process", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      console.log(`Scan and process triggered for user: ${userId}`);
+      
+      // Check if user has Gmail credentials
+      const hasCredentials = await gmailService.setUserCredentials(userId);
+      if (!hasCredentials) {
+        return res.status(400).json({ 
+          message: 'Gmail not connected. Please connect your Gmail account first.',
+          needsAuth: true 
+        });
+      }
+      
+      // Get fresh emails from Gmail
+      const messages = await gmailService.getMessages(userId, 500);
+      console.log(`Retrieved ${messages.length} emails for processing`);
+      
+      // Get sender analytics by domain
+      const senders = await gmailService.getEmailSendersByDomain(userId);
+      console.log(`Found ${senders.length} unique email senders`);
+      
+      // Store/update senders in database
+      await gmailService.storeEmailSenders(userId, senders);
+      
+      // AI categorize emails using OpenAI
+      let categorizedCount = 0;
+      if (messages.length > 0) {
+        const categorizations = await categorizationService.categorizeEmails(messages);
+        console.log(`AI categorized ${categorizations.size} emails`);
+        
+        // Update sender categories based on AI analysis
+        for (const [messageId, categoryResult] of Array.from(categorizations.entries())) {
+          const message = messages.find(m => m.id === messageId);
+          if (message && categoryResult.suggestedCategory) {
+            const senderEmail = gmailService.extractEmail(message.from);
+            const senderId = `${userId}_${senderEmail}`;
+            
+            try {
+              await storage.updateEmailSenderCategory(senderId, categoryResult.suggestedCategory);
+              categorizedCount++;
+            } catch (error) {
+              console.log(`Could not update category for ${senderEmail}, continuing...`);
+            }
+          }
+        }
+      }
+      
+      res.json({ 
+        success: true,
+        message: 'Email scan and processing completed successfully',
+        totalEmails: messages.length,
+        totalSenders: senders.length,
+        categorizedSenders: categorizedCount,
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error: any) {
+      console.error('Error during scan and process:', error);
+      res.status(500).json({ 
+        message: 'Failed to scan and process emails',
+        error: error.message
+      });
+    }
+  });
+
   // Manual email scanning endpoint for real-time processing
   app.post("/api/emails/scan-now", isAuthenticated, async (req: any, res) => {
     try {
