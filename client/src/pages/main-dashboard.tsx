@@ -127,14 +127,21 @@ export default function MainDashboard() {
   const newsletterCount = processedEmails?.categoryStats?.['newsletter'] || 0;
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-orange-500 to-orange-400 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-20 w-64 h-64 bg-gradient-to-r from-orange-400 to-orange-300 rounded-full blur-2xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-orange-300 rounded-full blur-xl"></div>
+      </div>
+      
       {/* Header */}
-      <header className="bg-zinc-900 border-b border-zinc-800">
-        <div className="max-w-6xl mx-auto px-6 py-4">
+      <header className="bg-gradient-to-r from-zinc-900/80 to-zinc-800/60 backdrop-blur-md border-b border-zinc-700/50 relative z-10">
+        <div className="max-w-6xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-white">PookAi Dashboard</h1>
-              <p className="text-gray-400">Your AI email assistant is active</p>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">PookAi Dashboard</h1>
+              <p className="text-orange-300/80 font-medium">Your AI email assistant is active</p>
             </div>
             <div className="flex items-center space-x-4">
               <Button
@@ -159,35 +166,41 @@ export default function MainDashboard() {
       </header>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-6 py-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Stats Overview */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-8">
             <div>
-              <h2 className="text-xl font-semibold text-white mb-4">Email Overview</h2>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-6">Email Intelligence</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card className="bg-zinc-900 border-zinc-800">
-                  <CardContent className="p-4 text-center">
-                    <Mail className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-                    <p className="text-2xl font-bold text-white">{totalSenders}</p>
-                    <p className="text-xs text-gray-400">Total Senders</p>
+                <Card className="bg-gradient-to-br from-zinc-900/80 to-zinc-800/60 border-zinc-700/50 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300 group">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+                      <Mail className="w-6 h-6 text-white" />
+                    </div>
+                    <p className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">{totalSenders}</p>
+                    <p className="text-sm text-gray-400 font-medium">Total Senders</p>
                   </CardContent>
                 </Card>
                 
-                <Card className="bg-zinc-900 border-zinc-800">
-                  <CardContent className="p-4 text-center">
-                    <Phone className="w-8 h-8 text-red-400 mx-auto mb-2" />
-                    <p className="text-2xl font-bold text-white">{callMeCount}</p>
-                    <p className="text-xs text-gray-400">Call Me</p>
+                <Card className="bg-gradient-to-br from-zinc-900/80 to-zinc-800/60 border-zinc-700/50 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300 group">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-400 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+                      <Phone className="w-6 h-6 text-white" />
+                    </div>
+                    <p className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">{callMeCount}</p>
+                    <p className="text-sm text-gray-400 font-medium">Call Me</p>
                   </CardContent>
                 </Card>
                 
-                <Card className="bg-zinc-900 border-zinc-800">
-                  <CardContent className="p-4 text-center">
-                    <Settings className="w-8 h-8 text-orange-400 mx-auto mb-2" />
-                    <p className="text-2xl font-bold text-white">{remindMeCount}</p>
-                    <p className="text-xs text-gray-400">Remind Me</p>
+                <Card className="bg-gradient-to-br from-zinc-900/80 to-zinc-800/60 border-zinc-700/50 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300 group">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+                      <Settings className="w-6 h-6 text-black" />
+                    </div>
+                    <p className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">{remindMeCount}</p>
+                    <p className="text-sm text-gray-400 font-medium">Remind Me</p>
                   </CardContent>
                 </Card>
                 
