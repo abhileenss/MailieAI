@@ -55,7 +55,7 @@ export class GmailService {
   }
 
   // Generate OAuth URL for Gmail authorization
-  getAuthUrl(): string {
+  getAuthUrl(state?: string): string {
     if (!this.oauth2Client) {
       throw new Error('OAuth client not initialized');
     }
@@ -64,13 +64,13 @@ export class GmailService {
       'https://www.googleapis.com/auth/gmail.readonly'
     ];
     
-    // Generate secure state parameter for CSRF protection
-    const state = randomBytes(32).toString('hex');
+    // Use provided state or generate new one
+    const oauthState = state || randomBytes(32).toString('hex');
 
     return this.oauth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: scopes,
-      state: state,
+      state: oauthState,
       prompt: 'consent',
       include_granted_scopes: true
     });
@@ -79,11 +79,15 @@ export class GmailService {
   // Exchange authorization code for tokens
   async getAccessToken(code: string): Promise<any> {
     try {
+      if (!this.oauth2Client) {
+        throw new Error('OAuth client not initialized');
+      }
+      
       return new Promise((resolve, reject) => {
-        this.oauth2Client.getToken(code, (err, tokens) => {
+        this.oauth2Client!.getToken(code, (err, tokens) => {
           if (err) reject(err);
           else if (tokens) {
-            this.oauth2Client.setCredentials(tokens);
+            this.oauth2Client!.setCredentials(tokens);
             resolve(tokens);
           } else {
             reject(new Error('No tokens received'));

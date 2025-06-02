@@ -60,14 +60,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/gmail/auth", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const authUrl = gmailService.getAuthUrl();
       
-      // Extract state parameter from URL and associate with user
-      const url = new URL(authUrl);
-      const state = url.searchParams.get('state');
-      if (state) {
-        oauthStates.set(state, userId);
-      }
+      // Generate a unique state parameter and associate with user
+      const state = require('crypto').randomBytes(32).toString('hex');
+      oauthStates.set(state, userId);
+      
+      const authUrl = gmailService.getAuthUrl(state);
       
       res.json({ authUrl });
     } catch (error) {
