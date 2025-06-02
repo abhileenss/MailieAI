@@ -62,6 +62,7 @@ export default function MainDashboard() {
   // Test call mutation
   const testCallMutation = useMutation({
     mutationFn: async () => {
+      console.log('Initiating test call...');
       const response = await fetch('/api/calls/test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -69,22 +70,27 @@ export default function MainDashboard() {
         credentials: 'include'
       });
       
+      const data = await response.json();
+      console.log('Test call response:', data);
+      
       if (!response.ok) {
-        throw new Error('Failed to initiate test call');
+        throw new Error(data.message || 'Failed to initiate test call');
       }
       
-      return response.json();
+      return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('Test call success:', data);
       toast({
-        title: "Test call initiated!",
-        description: "You should receive a call shortly.",
+        title: "Call initiated successfully!",
+        description: `Calling ${user?.phone || 'your verified number'}. You should receive a call within 30 seconds.`,
       });
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error('Test call error:', error);
       toast({
-        title: "Test call failed",
-        description: "Please check your phone number or try again.",
+        title: "Call failed",
+        description: error.message || "Please check your phone number is verified and try again.",
         variant: "destructive",
       });
     }

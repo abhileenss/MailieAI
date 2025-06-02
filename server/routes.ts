@@ -1222,23 +1222,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Dashboard test call endpoint
   app.post('/api/calls/test', isAuthenticated, async (req, res) => {
     try {
-      console.log('Test call request received:', { 
-        user: req.user, 
-        session: req.session,
-        userClaims: req.user?.claims,
-        sessionUser: req.session?.user 
-      });
+      console.log('Test call request received for user:', req.user?.claims?.sub);
       
       const userId = req.user?.claims?.sub;
       const { script } = req.body;
       
       if (!userId) {
         console.log('Test call auth failed - no user ID found');
-        return res.status(401).json({ message: 'Unauthorized' });
+        return res.status(401).json({ message: 'Unauthorized - please log in again' });
+      }
+
+      // Check Twilio configuration
+      if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) {
+        console.log('Twilio not configured properly');
+        return res.status(500).json({ message: 'Voice service not configured. Please contact support.' });
       }
 
       // Get user's phone number from database
       const user = await storage.getUser(userId);
+      console.log('User found:', { id: user?.id, phone: user?.phone });
+      
       if (!user?.phone) {
         return res.status(400).json({ message: 'Phone number not verified. Please complete phone setup first.' });
       }
@@ -1279,6 +1282,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const response = new VoiceResponse();
       response.say({ voice: 'Polly.Joanna' }, finalScript);
 
+      console.log(`Initiating call to ${phoneNumber} from ${process.env.TWILIO_PHONE_NUMBER}`);
+      console.log('TwiML content:', response.toString());
+
       // Make the call
       const call = await client.calls.create({
         twiml: response.toString(),
@@ -1287,6 +1293,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         timeout: 30,
         record: false,
       });
+
+      console.log('Twilio call created:', { sid: call.sid, status: call.status, to: call.to });
 
       // Log the call
       await storage.createCallLog({
@@ -1301,8 +1309,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ 
         success: true, 
-        message: 'Test call initiated successfully',
-        callId: call.sid 
+        message: `Call initiated successfully to ${phoneNumber}`,
+        callId: call.sid,
+        status: call.status,
+        from: process.env.TWILIO_PHONE_NUMBER
       });
     } catch (error: any) {
       console.error('Test call error:', error);
