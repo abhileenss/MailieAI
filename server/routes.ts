@@ -39,6 +39,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Store OAuth states temporarily to associate with user sessions
+  const oauthStates = new Map<string, string>();
+
+  app.get("/api/gmail/auth", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const authUrl = gmailService.getAuthUrl();
+      
+      // Extract state parameter from URL and associate with user
+      const url = new URL(authUrl);
+      const state = url.searchParams.get('state');
+      if (state) {
+        oauthStates.set(state, userId);
+      }
+      
+      res.json({ authUrl });
+    } catch (error) {
+      console.error('Error generating Gmail auth URL:', error);
+      res.status(500).json({ message: 'Failed to generate authentication URL' });
+    }
+  });
+
   app.get("/api/auth/gmail/callback", async (req, res) => {
     try {
       const { code, error: oauthError } = req.query;
@@ -58,36 +80,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const tokens = await gmailService.getAccessToken(code as string);
       console.log('Gmail tokens received:', { hasAccessToken: !!tokens.access_token });
       
-      // Store tokens in database with authenticated user
-      const user = req.user as any;
-      if (user?.claims?.sub) {
-        await storage.upsertUserToken({
-          id: `gmail_${user.claims.sub}`,
-          userId: user.claims.sub,
-          provider: 'gmail',
-          accessToken: tokens.access_token,
-          refreshToken: tokens.refresh_token,
-          expiresAt: tokens.expiry_date ? new Date(tokens.expiry_date) : null,
-          scope: tokens.scope
-        });
-        console.log('Gmail tokens stored for user:', user.claims.sub);
+      // Get user ID from OAuth state
+      const { state } = req.query;
+      const userId = state ? oauthStates.get(state as string) : null;
+      
+      if (!userId) {
+        console.error('No user ID found for OAuth state');
+        return res.redirect('/scanning?error=invalid_state');
+      }
+      
+      // Store tokens in database
+      await storage.upsertUserToken({
+        id: `gmail_${userId}`,
+        userId: userId,
+        provider: 'gmail',
+        accessToken: tokens.access_token!,
+        refreshToken: tokens.refresh_token || undefined,
+        expiresAt: tokens.expiry_date ? new Date(tokens.expiry_date) : undefined,
+        scope: tokens.scope || undefined
+      });
+      
+      console.log('Gmail tokens stored for user:', userId);
+      
+      // Clean up OAuth state
+      if (state) {
+        oauthStates.delete(state as string);
       }
 
       // After storing tokens, automatically scan and process emails
-      if (user?.claims?.sub) {
+      if (userId) {
         try {
           console.log('Starting automatic email scan for newly authenticated user...');
           
           // Get fresh emails from Gmail
-          const messages = await gmailService.getMessages(user.claims.sub, 200);
+          const messages = await gmailService.getMessages(userId, 200);
           console.log(`Retrieved ${messages.length} emails for processing`);
           
           // Get sender analytics
-          const senders = await gmailService.getEmailSendersByDomain(user.claims.sub);
+          const senders = await gmailService.getEmailSendersByDomain(userId);
           console.log(`Found ${senders.length} unique email senders`);
           
           // Store senders in database
-          await gmailService.storeEmailSenders(user.claims.sub, senders);
+          await gmailService.storeEmailSenders(userId, senders);
           
           // AI categorize emails if OpenAI is available
           if (messages.length > 0) {
@@ -99,7 +133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const message = messages.find(m => m.id === messageId);
               if (message) {
                 const senderEmail = gmailService.extractEmail(message.from);
-                const senderId = `${user.claims.sub}_${senderEmail}`;
+                const senderId = `${userId}_${senderEmail}`;
                 
                 try {
                   await storage.updateEmailSenderCategory(senderId, categoryResult.suggestedCategory);
