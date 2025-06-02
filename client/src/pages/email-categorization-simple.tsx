@@ -90,6 +90,7 @@ export default function EmailCategorizationSimple() {
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
 
   // Fetch processed emails
   const { data: processedEmails, isLoading } = useQuery<ProcessedEmailsResponse>({
