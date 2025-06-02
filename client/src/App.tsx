@@ -9,7 +9,7 @@ import MainDashboard from "@/pages/main-dashboard";
 import GuidedApp from "@/pages/guided-app";
 import Scanning from "@/pages/scanning";
 import SetupPreferences from "@/pages/setup-preferences";
-import EmailCategorizationSimple from "@/pages/email-categorization-simple";
+
 import Privacy from "@/pages/privacy";
 import Security from "@/pages/security";
 import Support from "@/pages/support";
@@ -51,7 +51,6 @@ function Router() {
       {/* Protected routes with authentication check */}
       <Route path="/dashboard" component={MainDashboardRoute} />
       <Route path="/main-dashboard" component={MainDashboardRoute} />
-      <Route path="/categorize" component={EmailCategorizationRoute} />
       <Route path="/guided-app" component={GuidedAppRoute} />
       <Route path="/scanning" component={ScanningRoute} />
       <Route path="/call-config" component={SetupPreferencesRoute} />
@@ -124,26 +123,7 @@ function SetupPreferencesRoute() {
   return <SetupPreferences />;
 }
 
-function EmailCategorizationRoute() {
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mx-auto mb-4"></div>
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
-  
-  if (!isAuthenticated) {
-    return <PublicLanding />;
-  }
-  
-  return <EmailCategorizationSimple />;
-}
+
 
 function App() {
   return (

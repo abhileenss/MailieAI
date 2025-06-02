@@ -32,8 +32,7 @@ export function Navigation({ currentPage }: NavigationProps) {
   const navigationItems = [
     { label: "Dashboard", path: "/dashboard", icon: Mail },
     { label: "Scan Emails", path: "/scanning", icon: Settings },
-    { label: "Call Config", path: "/call-config", icon: Phone },
-    { label: "Categorize", path: "/categorize", icon: CheckCircle }
+    { label: "Call Config", path: "/call-config", icon: Phone }
   ];
 
   const footerLinks = [
