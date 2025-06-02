@@ -63,7 +63,7 @@ export default function PhoneSetup() {
       const response = await fetch('/api/phone/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber: phone, verificationCode: code }),
+        body: JSON.stringify({ phoneNumber: phone, code: code }),
         credentials: 'include'
       });
       

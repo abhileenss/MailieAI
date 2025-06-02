@@ -1112,6 +1112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/phone/verify", isAuthenticated, async (req: any, res) => {
     try {
       const { phoneNumber, code } = req.body;
+      console.log('Verification request:', { phoneNumber, code, body: req.body });
       
       if (!phoneNumber || !code) {
         return res.status(400).json({ message: 'Phone number and code are required' });
