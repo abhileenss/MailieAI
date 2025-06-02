@@ -157,6 +157,15 @@ export default function Support() {
               <Button 
                 size="sm" 
                 className={`bg-gradient-to-r ${option.color} hover:opacity-90 text-white border-0`}
+                onClick={() => {
+                  if (option.title === "Email Support") {
+                    openEmailForm('general');
+                  } else if (option.title === "Live Chat") {
+                    openEmailForm('technical');
+                  } else {
+                    openEmailForm('general');
+                  }
+                }}
               >
                 {option.action}
               </Button>
@@ -264,7 +273,7 @@ export default function Support() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 className="bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={() => window.location.href = 'mailto:support@pookai.com'}
+                onClick={() => openEmailForm('general')}
               >
                 <Mail className="w-4 h-4 mr-2" />
                 Email Support
@@ -272,7 +281,7 @@ export default function Support() {
               <Button 
                 variant="outline"
                 className="border-gray-600 hover:bg-gray-800 text-white"
-                onClick={() => window.location.href = 'mailto:founders@pookai.com'}
+                onClick={() => openEmailForm('founder-feedback')}
               >
                 <MessageCircle className="w-4 h-4 mr-2" />
                 Founder Feedback
@@ -296,6 +305,130 @@ export default function Support() {
             Back to Home
           </Button>
         </motion.div>
+
+        {/* Email Contact Form Modal */}
+        {showEmailForm && (
+          <motion.div 
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div 
+              className="bg-gray-900 border border-gray-700 rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold">Contact Support</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowEmailForm(false)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <form onSubmit={handleSubmitEmail} className="space-y-4">
+                <div>
+                  <Label htmlFor="supportType">Support Type</Label>
+                  <Select 
+                    value={formData.supportType} 
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, supportType: value as any }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select support type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="general">General Support</SelectItem>
+                      <SelectItem value="technical">Technical Issue</SelectItem>
+                      <SelectItem value="founder-feedback">Founder Feedback</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="userName">Your Name (Optional)</Label>
+                  <Input
+                    id="userName"
+                    type="text"
+                    value={formData.userName}
+                    onChange={(e) => setFormData(prev => ({ ...prev, userName: e.target.value }))}
+                    placeholder="Enter your name"
+                    className="bg-gray-800 border-gray-600"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="userEmail">Your Email (Optional)</Label>
+                  <Input
+                    id="userEmail"
+                    type="email"
+                    value={formData.userEmail}
+                    onChange={(e) => setFormData(prev => ({ ...prev, userEmail: e.target.value }))}
+                    placeholder="your.email@example.com"
+                    className="bg-gray-800 border-gray-600"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">
+                    Provide your email to receive a response
+                  </p>
+                </div>
+
+                <div>
+                  <Label htmlFor="subject">Subject *</Label>
+                  <Input
+                    id="subject"
+                    type="text"
+                    value={formData.subject}
+                    onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
+                    placeholder="Brief description of your request"
+                    className="bg-gray-800 border-gray-600"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="message">Message *</Label>
+                  <Textarea
+                    id="message"
+                    value={formData.message}
+                    onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                    placeholder="Please describe your question or issue in detail..."
+                    className="bg-gray-800 border-gray-600 min-h-[120px]"
+                    required
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowEmailForm(false)}
+                    className="flex-1 border-gray-600 hover:bg-gray-800"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={sendEmailMutation.isPending}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  >
+                    {sendEmailMutation.isPending ? 'Sending...' : 'Send Email'}
+                  </Button>
+                </div>
+              </form>
+
+              <div className="mt-4 p-3 bg-gray-800 rounded-lg">
+                <p className="text-xs text-gray-400">
+                  Your message will be sent to our support team at info.glitchowt@gmail.com
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
       </div>
     </div>
   );
