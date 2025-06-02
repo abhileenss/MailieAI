@@ -171,7 +171,7 @@ export default function MainDashboard() {
   };
 
   const handleBackToCategorization = () => {
-    setLocation('/guided-app');
+    setLocation('/categorize');
   };
 
   const handleTestCall = async () => {
