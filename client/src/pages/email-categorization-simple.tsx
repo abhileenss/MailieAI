@@ -215,46 +215,35 @@ export default function EmailCategorizationSimple() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <Mail className="w-16 h-16 animate-pulse text-purple-600 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">Loading your emails...</h2>
-          <p className="text-gray-600">Organizing your senders by company</p>
+          <Mail className="w-16 h-16 animate-pulse text-orange-400 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-white mb-2">Loading your emails...</h2>
+          <p className="text-gray-400">Organizing your senders by company</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-purple-100">
-        <div className="max-w-6xl mx-auto px-6 py-6">
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-2">
-              Organize Your Email Senders
-            </h1>
-            <p className="text-gray-600 text-lg">
-              Sort your {Object.keys(companySenders).length} companies into smart categories
-            </p>
-          </div>
-          
-          {/* Search */}
-          <div className="max-w-md mx-auto relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+    <div className="min-h-screen bg-black flex">
+      {/* Left Panel - Company List */}
+      <div className="w-1/2 bg-gray-100 flex flex-col">
+        {/* Search Header */}
+        <div className="p-4 bg-white border-b">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
               placeholder="Search companies..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-white/70 border-purple-200 focus:border-purple-400 rounded-xl"
+              className="pl-10 border-gray-300"
             />
           </div>
         </div>
-      </div>
 
-      {/* Company Grid */}
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Company List */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {Object.entries(filteredCompanies).map(([company, senders]) => {
             const totalEmails = getTotalEmailsForCompany(senders);
             const recentEmail = getMostRecentEmail(senders);
@@ -262,18 +251,18 @@ export default function EmailCategorizationSimple() {
             const categoryInfo = categories[mainCategory as keyof typeof categories];
             
             return (
-              <Card key={company} className="bg-white/70 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 neo-pop-card">
+              <Card key={company} className="bg-zinc-900 border border-zinc-800 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center space-x-3">
-                      <Avatar className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500">
-                        <AvatarFallback className="text-white font-semibold">
+                      <Avatar className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600">
+                        <AvatarFallback className="text-black font-semibold">
                           {company.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <h3 className="font-semibold text-gray-800 text-lg">{company}</h3>
-                        <div className="flex items-center space-x-2 text-sm text-gray-500">
+                        <h3 className="font-semibold text-white text-lg">{company}</h3>
+                        <div className="flex items-center space-x-2 text-sm text-gray-400">
                           <Mail className="w-4 h-4" />
                           <span>{totalEmails} emails</span>
                           {senders.length > 1 && (
@@ -286,7 +275,7 @@ export default function EmailCategorizationSimple() {
                       </div>
                     </div>
                     {categoryInfo && (
-                      <Badge className={categoryInfo.badgeColor}>
+                      <Badge className="bg-orange-400 text-black">
                         {categoryInfo.title}
                       </Badge>
                     )}
@@ -295,12 +284,12 @@ export default function EmailCategorizationSimple() {
                 
                 <CardContent className="pt-0">
                   {/* Latest Email Preview */}
-                  <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="mb-4 p-3 bg-zinc-800 rounded-lg">
                     <div className="flex items-center space-x-2 mb-1">
                       <Clock className="w-3 h-3 text-gray-400" />
-                      <span className="text-xs text-gray-500">Latest email</span>
+                      <span className="text-xs text-gray-400">Latest email</span>
                     </div>
-                    <p className="text-sm text-gray-700 line-clamp-2 mb-1">
+                    <p className="text-sm text-gray-300 line-clamp-2 mb-1">
                       {recentEmail.latestSubject}
                     </p>
                     <p className="text-xs text-gray-500">
@@ -310,7 +299,7 @@ export default function EmailCategorizationSimple() {
 
                   {/* Category Buttons */}
                   <div className="space-y-2">
-                    <p className="text-xs font-medium text-gray-600 mb-3">How should PookAi handle emails from {company}?</p>
+                    <p className="text-xs font-medium text-gray-400 mb-3">How should PookAi handle emails from {company}?</p>
                     <div className="grid grid-cols-2 gap-2">
                       {Object.entries(categories).map(([catKey, catInfo]) => {
                         const IconComponent = catInfo.icon;
@@ -321,11 +310,14 @@ export default function EmailCategorizationSimple() {
                             key={catKey}
                             size="sm"
                             variant={isSelected ? "default" : "outline"}
-                            className={`${catInfo.hoverColor} text-xs h-auto py-2 px-2 justify-start ${
-                              isSelected ? catInfo.color + ' text-white' : ''
+                            className={`text-xs h-auto py-2 px-2 justify-start ${
+                              isSelected 
+                                ? catKey === 'call-me' 
+                                  ? 'bg-orange-400 text-black hover:bg-orange-500' 
+                                  : 'bg-zinc-600 text-white hover:bg-zinc-500'
+                                : 'bg-zinc-800 text-gray-300 border-zinc-700 hover:bg-zinc-700 hover:text-white'
                             }`}
                             onClick={() => {
-                              // Update all senders from this company
                               senders.forEach(sender => {
                                 handleCategoryUpdate(sender, catKey);
                               });

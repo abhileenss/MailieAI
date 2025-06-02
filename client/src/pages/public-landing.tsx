@@ -1,232 +1,23 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { Brain, Phone, Lock, ArrowRight, Mail, Users, Building, Clock, Target, Zap, CheckCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-interface UserProfile {
-  role: string;
-  industry: string;
-  priorityTypes: string[];
-  communicationStyle: string;
-  voicePreference: string;
-  referralSource: string;
-}
-
-interface OnboardingOption {
-  value: string;
-  label: string;
-  icon: any;
-  description?: string;
-}
-
-interface OnboardingStep {
-  title: string;
-  subtitle: string;
-  multiSelect?: boolean;
-  options: OnboardingOption[];
-}
+import { Brain, Phone, Lock, ArrowRight, CheckCircle } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
 
 export default function PublicLanding() {
-  const [showOnboarding, setShowOnboarding] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [userProfile, setUserProfile] = useState<UserProfile>({
-    role: '',
-    industry: '',
-    priorityTypes: [],
-    communicationStyle: '',
-    voicePreference: '',
-    referralSource: ''
-  });
+  const { isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
 
-  const onboardingSteps: OnboardingStep[] = [
-    {
-      title: "What's your role?",
-      subtitle: "Help us understand your priorities",
-      options: [
-        { value: 'founder-ceo', label: 'Founder / CEO', icon: Building },
-        { value: 'executive', label: 'Executive / Manager', icon: Users },
-        { value: 'professional', label: 'Professional / Individual', icon: Brain },
-        { value: 'other', label: 'Other', icon: Target }
-      ]
-    },
-    {
-      title: "What needs your immediate attention?",
-      subtitle: "Select your top priorities",
-      multiSelect: true,
-      options: [
-        { value: 'investors', label: 'Investor Communications', icon: Target },
-        { value: 'customers', label: 'Customer Issues', icon: Users },
-        { value: 'team', label: 'Team Updates', icon: Users },
-        { value: 'billing', label: 'Payment & Billing', icon: Building },
-        { value: 'security', label: 'Security Alerts', icon: Lock },
-        { value: 'personal', label: 'Personal Important', icon: Mail }
-      ]
-    },
-    {
-      title: "How should we notify you?",
-      subtitle: "Choose your preferred style",
-      options: [
-        { value: 'daily', label: 'Daily morning summary call', icon: Phone, description: 'Perfect for busy schedules' },
-        { value: 'immediate', label: 'Immediate alerts for urgent items', icon: Zap, description: 'Never miss critical emails' },
-        { value: 'text-first', label: 'Text summary, call if urgent', icon: Mail, description: 'Best of both worlds' }
-      ]
+  // Redirect authenticated users directly to the app
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLocation('/guided-app');
     }
-  ];
-
-  const handleStepAnswer = (value: string) => {
-    const currentStepData = onboardingSteps[currentStep];
-    
-    if (currentStepData.multiSelect) {
-      const currentValues = userProfile.priorityTypes || [];
-      const updatedValues = currentValues.includes(value)
-        ? currentValues.filter((v: string) => v !== value)
-        : [...currentValues, value];
-      
-      setUserProfile(prev => ({
-        ...prev,
-        priorityTypes: updatedValues
-      }));
-    } else {
-      const fieldMap = ['role', 'priorityTypes', 'communicationStyle'];
-      const field = fieldMap[currentStep] as keyof UserProfile;
-      
-      setUserProfile(prev => ({
-        ...prev,
-        [field]: value
-      }));
-      
-      setTimeout(() => {
-        if (currentStep < onboardingSteps.length - 1) {
-          setCurrentStep(currentStep + 1);
-        } else {
-          handleCompleteOnboarding();
-        }
-      }, 500);
-    }
-  };
-
-  const handleCompleteOnboarding = () => {
-    localStorage.setItem('userProfile', JSON.stringify(userProfile));
-    window.location.href = "/api/login";
-  };
+  }, [isAuthenticated, setLocation]);
 
   const handleGetStarted = () => {
-    setShowOnboarding(true);
+    window.location.href = "/api/login";
   };
-
-  if (showOnboarding) {
-    const currentStepData = onboardingSteps[currentStep];
-    
-    return (
-      <div className="min-h-screen flex flex-col bg-background text-foreground">
-        <div className="p-6">
-          <h2 className="text-2xl font-bold">PookAi Setup</h2>
-        </div>
-        
-        <div className="flex-1 flex items-center justify-center px-6 py-12">
-          <div className="max-w-2xl mx-auto w-full">
-            {/* Progress Bar */}
-            <div className="mb-8">
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-sm text-muted-foreground">Step {currentStep + 1} of {onboardingSteps.length}</span>
-                <span className="text-sm text-muted-foreground">{Math.round(((currentStep + 1) / onboardingSteps.length) * 100)}%</span>
-              </div>
-              <div className="w-full bg-muted rounded-full h-2">
-                <div 
-                  className="bg-primary h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${((currentStep + 1) / onboardingSteps.length) * 100}%` }}
-                />
-              </div>
-            </div>
-
-            <motion.div
-              key={currentStep}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              <Card className="neopop-card p-8">
-                <CardHeader className="text-center pb-8">
-                  <CardTitle className="text-3xl font-bold mb-4">{currentStepData.title}</CardTitle>
-                  <p className="text-xl text-muted-foreground">{currentStepData.subtitle}</p>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {currentStepData.options.map((option) => {
-                      const Icon = option.icon;
-                      const isSelected = currentStepData.multiSelect 
-                        ? userProfile.priorityTypes.includes(option.value)
-                        : false;
-                      
-                      return (
-                        <motion.button
-                          key={option.value}
-                          onClick={() => handleStepAnswer(option.value)}
-                          className={`neopop-button p-6 rounded-xl text-left hover:scale-105 transition-all duration-200 ${
-                            isSelected ? 'neopop-button-primary' : 'neopop-button-secondary'
-                          }`}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <div className="flex items-center space-x-4">
-                            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                              isSelected ? 'bg-primary-foreground' : 'bg-primary'
-                            }`}>
-                              <Icon className={`w-6 h-6 ${
-                                isSelected ? 'text-primary' : 'text-primary-foreground'
-                              }`} />
-                            </div>
-                            <div>
-                              <div className="font-semibold text-lg">{option.label}</div>
-                              {option.description && (
-                                <div className="text-sm text-muted-foreground mt-1">
-                                  {option.description}
-                                </div>
-                              )}
-                              {isSelected && currentStepData.multiSelect && (
-                                <div className="flex items-center text-sm text-muted-foreground mt-1">
-                                  <CheckCircle className="w-4 h-4 mr-2" />
-                                  Selected
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </motion.button>
-                      );
-                    })}
-                  </div>
-                  
-                  {currentStepData.multiSelect && (
-                    <div className="mt-8 text-center">
-                      <Button
-                        onClick={() => {
-                          if (currentStep < onboardingSteps.length - 1) {
-                            setCurrentStep(currentStep + 1);
-                          } else {
-                            handleCompleteOnboarding();
-                          }
-                        }}
-                        disabled={userProfile.priorityTypes.length === 0}
-                        className="neopop-button neopop-button-primary px-8 py-3"
-                      >
-                        Continue
-                        <ArrowRight className="ml-2 w-5 h-5" />
-                      </Button>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        {userProfile.priorityTypes.length} selected
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-black via-zinc-900 to-black text-white relative overflow-hidden">
@@ -234,6 +25,7 @@ export default function PublicLanding() {
       <div className="absolute inset-0 bg-gradient-to-r from-orange-400/10 via-transparent to-orange-400/5 pointer-events-none"></div>
       <div className="absolute top-0 left-0 w-96 h-96 bg-orange-400/20 rounded-full blur-3xl -translate-x-48 -translate-y-48 pointer-events-none"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-orange-400/10 rounded-full blur-3xl translate-x-48 translate-y-48 pointer-events-none"></div>
+      
       {/* Navigation Header */}
       <nav className="flex justify-between items-center p-4 max-w-7xl mx-auto w-full relative z-10">
         <div className="flex items-center space-x-2">
