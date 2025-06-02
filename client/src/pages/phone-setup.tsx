@@ -18,6 +18,7 @@ export default function PhoneSetup() {
   const [voicePreference, setVoicePreference] = useState('rachel');
   const [callTiming, setCallTiming] = useState('morning');
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   // Send verification code
   const sendCodeMutation = useMutation({
@@ -119,7 +120,7 @@ export default function PhoneSetup() {
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4 sm:p-6">
-      <div className="max-w-md mx-auto w-full">
+      <div className="max-w-md mx-auto w-full space-y-6">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-orange-400 rounded-full flex items-center justify-center mx-auto mb-4">
             <Phone className="w-8 h-8 text-black" />
