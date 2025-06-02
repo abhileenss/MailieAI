@@ -1,26 +1,37 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
+import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 import { 
-  Mail, 
-  Phone, 
+  Home, 
   Settings, 
-  User, 
-  BarChart3, 
-  Calendar,
+  Phone, 
+  Mail, 
+  Users, 
+  Clock, 
+  Target, 
+  Zap,
+  Brain,
+  User,
+  Mic,
   Bell,
-  Search,
-  Filter,
-  MoreVertical,
-  ArrowRight,
-  Clock,
-  CheckCircle,
-  AlertTriangle
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+  Calendar,
+  Shield,
+  LogOut,
+  ChevronRight,
+  Volume2,
+  MessageSquare,
+  Smartphone
+} from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface EmailSender {
   id: string;
@@ -33,317 +44,590 @@ interface EmailSender {
   category: string;
 }
 
-interface ProcessedEmailsResponse {
-  success: boolean;
-  totalSenders: number;
-  categorizedSenders: {
-    'call-me': EmailSender[];
-    'remind-me': EmailSender[];
-    'keep-quiet': EmailSender[];
-    'newsletter': EmailSender[];
-    'why-did-i-signup': EmailSender[];
-    'dont-tell-anyone': EmailSender[];
-    'unassigned': EmailSender[];
-  };
-  categoryStats: Record<string, number>;
+interface UserPreference {
+  senderId: string;
+  category: string;
+  enableCalls: boolean;
+  enableSMS: boolean;
+  priority: 'high' | 'medium' | 'low' | 'none';
+  customNotes?: string;
 }
 
 export default function Dashboard() {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const { user, logout } = useAuth();
+  const [activeSection, setActiveSection] = useState('overview');
+  const [isMobile, setIsMobile] = useState(false);
+  const queryClient = useQueryClient();
 
-  // Fetch processed emails
-  const { data: emailData, isLoading } = useQuery<ProcessedEmailsResponse>({
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const { data: emailData } = useQuery({
     queryKey: ['/api/emails/processed'],
-    enabled: true
+    enabled: !!user
   });
 
-  const categoryInfo = {
-    'call-me': { 
-      label: 'Call Me', 
-      color: 'bg-red-500', 
-      icon: Phone, 
-      description: 'Urgent emails requiring immediate attention'
-    },
-    'remind-me': { 
-      label: 'Remind Me', 
-      color: 'bg-yellow-500', 
-      icon: Bell, 
-      description: 'Important reminders and follow-ups'
-    },
-    'newsletter': { 
-      label: 'Newsletters', 
-      color: 'bg-blue-500', 
-      icon: Mail, 
-      description: 'Newsletters and regular updates'
-    },
-    'why-did-i-signup': { 
-      label: 'Why Did I Sign Up?', 
-      color: 'bg-purple-500', 
-      icon: AlertTriangle, 
-      description: 'Subscriptions to review'
-    },
-    'dont-tell-anyone': { 
-      label: "Don't Tell Anyone", 
-      color: 'bg-gray-500', 
-      icon: User, 
-      description: 'Private communications'
-    },
-    'keep-quiet': { 
-      label: 'Keep Quiet', 
-      color: 'bg-green-500', 
-      icon: CheckCircle, 
-      description: 'Background monitoring'
-    }
-  };
+  const sidebarItems = [
+    { id: 'overview', label: 'Overview', icon: Home },
+    { id: 'emails', label: 'Email Management', icon: Mail },
+    { id: 'voice', label: 'Voice Settings', icon: Mic },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
+    { id: 'schedule', label: 'Call Schedule', icon: Calendar },
+    { id: 'preferences', label: 'Preferences', icon: Settings },
+    { id: 'account', label: 'Account', icon: User }
+  ];
 
-  const getAllSenders = () => {
-    if (!emailData?.categorizedSenders) return [];
-    
-    return Object.entries(emailData.categorizedSenders)
-      .flatMap(([category, senders]) => 
-        Array.isArray(senders) ? senders.map(sender => ({ ...sender, category })) : []
-      )
-      .filter(sender => 
-        selectedCategory === 'all' || sender.category === selectedCategory
-      )
-      .filter(sender =>
-        searchTerm === '' || 
-        sender.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sender.email.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-  };
+  const renderOverview = () => (
+    <div className="space-y-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
+          Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {(user as any)?.email?.split('@')[0]}
+        </h1>
+        <p className="text-xl text-gray-300 font-medium">
+          Your AI concierge has processed <span className="text-orange-400 font-bold">{(emailData as any)?.totalSenders || 0} senders</span> and is ready to help you stay organized.
+        </p>
+      </motion.div>
 
-  const getCategoryStats = () => {
-    if (!emailData?.categorizedSenders) return {};
-    
-    const stats: Record<string, number> = {};
-    Object.entries(emailData.categorizedSenders).forEach(([category, senders]) => {
-      if (Array.isArray(senders)) {
-        stats[category] = senders.length;
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        <Card className="group bg-zinc-900 border-zinc-800 rounded-xl p-6 hover:border-orange-400/40 transition-all duration-300">
+          <CardContent className="p-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-orange-400 text-sm font-semibold mb-2">Total Senders</p>
+                <p className="text-3xl font-black text-white">
+                  {(emailData as any)?.totalSenders || 0}
+                </p>
+              </div>
+              <div className="w-14 h-14 bg-orange-400 rounded-xl flex items-center justify-center shadow-lg">
+                <Mail className="w-7 h-7 text-black" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="group bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-green-300/20 rounded-2xl p-6 hover:border-green-300/40 hover:from-white/15 hover:to-white/8 transition-all duration-500 hover:scale-105">
+          <CardContent className="p-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-green-300 text-sm font-semibold mb-2">Call-Me Priority</p>
+                <p className="text-3xl font-black text-white">
+                  {(emailData as any)?.categorizedSenders?.['call-me']?.length || 0}
+                </p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-green-500/25 transition-shadow duration-300">
+                <Phone className="w-7 h-7 text-white" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="group bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-pink-300/20 rounded-2xl p-6 hover:border-pink-300/40 hover:from-white/15 hover:to-white/8 transition-all duration-500 hover:scale-105">
+          <CardContent className="p-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-pink-300 text-sm font-semibold mb-2">Remind-Me</p>
+                <p className="text-3xl font-black text-white">
+                  {(emailData as any)?.categorizedSenders?.['remind-me']?.length || 0}
+                </p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-pink-400 to-purple-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-pink-500/25 transition-shadow duration-300">
+                <Clock className="w-7 h-7 text-white" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="group bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-blue-300/20 rounded-2xl p-6 hover:border-blue-300/40 hover:from-white/15 hover:to-white/8 transition-all duration-500 hover:scale-105">
+          <CardContent className="p-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-blue-300 text-sm font-semibold mb-2">Newsletters</p>
+                <p className="text-3xl font-black text-white">
+                  {(emailData as any)?.categorizedSenders?.['newsletter']?.length || 0}
+                </p>
+              </div>
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-blue-500/25 transition-shadow duration-300">
+                <Users className="w-7 h-7 text-white" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+      >
+        <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-purple-300/20 rounded-3xl p-8 hover:border-purple-300/30 transition-all duration-500">
+          <CardHeader className="pb-6">
+            <CardTitle className="flex items-center gap-3 text-2xl font-bold text-white">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center">
+                <Zap className="w-6 h-6 text-white" />
+              </div>
+              Quick Actions
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <motion.button
+                onClick={() => setActiveSection('emails')}
+                className="group bg-gradient-to-br from-white/5 to-white/0 border border-purple-300/20 rounded-2xl p-6 hover:border-purple-300/40 hover:from-white/10 hover:to-white/5 transition-all duration-300"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center group-hover:shadow-lg group-hover:shadow-purple-500/25 transition-shadow duration-300">
+                    <Mail className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-white font-semibold">Manage Categories</span>
+                </div>
+              </motion.button>
+              
+              <motion.button
+                onClick={() => setActiveSection('voice')}
+                className="group bg-gradient-to-br from-white/5 to-white/0 border border-green-300/20 rounded-2xl p-6 hover:border-green-300/40 hover:from-white/10 hover:to-white/5 transition-all duration-300"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center group-hover:shadow-lg group-hover:shadow-green-500/25 transition-shadow duration-300">
+                    <Mic className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-white font-semibold">Voice Settings</span>
+                </div>
+              </motion.button>
+              
+              <motion.button
+                onClick={() => setActiveSection('schedule')}
+                className="group bg-gradient-to-br from-white/5 to-white/0 border border-blue-300/20 rounded-2xl p-6 hover:border-blue-300/40 hover:from-white/10 hover:to-white/5 transition-all duration-300"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center group-hover:shadow-lg group-hover:shadow-blue-500/25 transition-shadow duration-300">
+                    <Calendar className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="text-white font-semibold">Schedule Calls</span>
+                </div>
+              </motion.button>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>
+  );
+
+  const renderVoiceSettings = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Voice Settings</h2>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">
+          Customize your AI voice assistant for personalized call summaries.
+        </p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Volume2 className="w-5 h-5" />
+            Voice Selection
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div>
+            <label className="text-sm font-medium mb-3 block">Current Voice</label>
+            <Select defaultValue="morgan-freeman">
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="morgan-freeman">Morgan Freeman - Deep, authoritative voice</SelectItem>
+                <SelectItem value="naval-ravikant">Naval Ravikant - Calm, philosophical tone</SelectItem>
+                <SelectItem value="joe-rogan">Joe Rogan - Conversational, engaging style</SelectItem>
+                <SelectItem value="andrew-schulz">Andrew Schulz - Energetic, direct delivery</SelectItem>
+                <SelectItem value="amitabh-bachchan">Amitabh Bachchan - Distinguished, commanding presence</SelectItem>
+                <SelectItem value="priyanka-chopra">Priyanka Chopra - Professional, clear articulation</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="text-sm font-medium mb-3 block">Speaking Speed</label>
+              <Select defaultValue="normal">
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="slow">Slow</SelectItem>
+                  <SelectItem value="normal">Normal</SelectItem>
+                  <SelectItem value="fast">Fast</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-3 block">Voice Style</label>
+              <Select defaultValue="professional">
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="professional">Professional</SelectItem>
+                  <SelectItem value="casual">Casual</SelectItem>
+                  <SelectItem value="energetic">Energetic</SelectItem>
+                  <SelectItem value="calm">Calm</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium mb-3 block">Custom Instructions</label>
+            <Textarea 
+              placeholder="Add any specific instructions for how you'd like your AI assistant to communicate..."
+              className="min-h-[100px]"
+            />
+          </div>
+
+          <Button className="w-full md:w-auto">
+            <Mic className="w-4 h-4 mr-2" />
+            Test Voice
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderEmailManagement = () => {
+    const categories = {
+      'call-me': { 
+        name: 'Call Me For This', 
+        description: 'High priority emails that need immediate attention',
+        color: 'text-red-400',
+        bgColor: 'bg-red-400/10'
+      },
+      'remind-me': { 
+        name: 'Remind Me Later', 
+        description: 'Important but not urgent emails',
+        color: 'text-yellow-400',
+        bgColor: 'bg-yellow-400/10'
+      },
+      'keep-quiet': { 
+        name: 'Keep Quiet', 
+        description: 'Low priority emails, minimal notifications',
+        color: 'text-blue-400',
+        bgColor: 'bg-blue-400/10'
+      },
+      'newsletter': { 
+        name: 'Newsletters', 
+        description: 'Subscriptions and regular updates',
+        color: 'text-purple-400',
+        bgColor: 'bg-purple-400/10'
+      },
+      'why-did-i-signup': { 
+        name: 'Why Did I Sign Up?', 
+        description: 'Subscriptions you might want to unsubscribe from',
+        color: 'text-gray-400',
+        bgColor: 'bg-gray-400/10'
+      },
+      'dont-tell-anyone': { 
+        name: "Don't Tell Anyone", 
+        description: 'Personal or sensitive emails',
+        color: 'text-green-400',
+        bgColor: 'bg-green-400/10'
       }
-    });
-    return stats;
+    };
+
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-white">Email Sender Management</h2>
+          <p className="text-muted-foreground mt-2">
+            Review AI suggestions for your {(emailData as any)?.totalSenders || 0} email senders. You have final approval on all categorizations.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {Object.entries(categories).map(([categoryKey, categoryInfo]) => {
+            const senders = (emailData as any)?.categorizedSenders?.[categoryKey] || [];
+            
+            return (
+              <Card key={categoryKey} className="neopop-card bg-surface border-border">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className={`w-3 h-3 rounded-full ${categoryInfo.bgColor}`}></div>
+                    <Badge variant="secondary" className="text-xs">
+                      {senders.length}
+                    </Badge>
+                  </div>
+                  <CardTitle className={`text-lg ${categoryInfo.color}`}>
+                    {categoryInfo.name}
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground">
+                    {categoryInfo.description}
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 max-h-80 overflow-y-auto">
+                    {senders.slice(0, 8).map((sender: EmailSender) => (
+                      <motion.div 
+                        key={sender.id} 
+                        className="p-3 bg-surface-elevated rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm text-white truncate">{sender.name}</p>
+                            <p className="text-xs text-muted-foreground truncate">{sender.domain}</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {sender.emailCount} emails • {new Date(sender.lastEmailDate).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                              <Settings className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                    
+                    {senders.length > 8 && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="w-full text-muted-foreground hover:text-white"
+                      >
+                        View {senders.length - 8} more senders
+                      </Button>
+                    )}
+                    
+                    {senders.length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Mail className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">No senders in this category yet</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        <Card className="neopop-card bg-surface border-border">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <Target className="w-5 h-5" />
+              Bulk Actions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Button variant="outline" className="flex items-center gap-2">
+                <Zap className="w-4 h-4" />
+                Auto-categorize New Senders
+              </Button>
+              <Button variant="outline" className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Export All Categories
+              </Button>
+              <Button variant="outline" className="flex items-center gap-2">
+                <Brain className="w-4 h-4" />
+                Refresh AI Analysis
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   };
 
-  const senders = getAllSenders();
-  const categoryStats = getCategoryStats();
+  const renderNotifications = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Notification Settings</h2>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">
+          Control when and how you receive alerts about important emails.
+        </p>
+      </div>
 
-  if (isLoading) {
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bell className="w-5 h-5" />
+            Alert Preferences
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Voice Calls for Urgent Emails</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Receive immediate voice alerts for call-me category</p>
+            </div>
+            <Switch defaultChecked />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">SMS Notifications</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Text message alerts for high-priority emails</p>
+            </div>
+            <Switch defaultChecked />
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Daily Email Summary</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Morning voice summary of all categorized emails</p>
+            </div>
+            <Switch defaultChecked />
+          </div>
+
+          <div className="space-y-4">
+            <label className="text-sm font-medium">Phone Number for Voice Calls</label>
+            <Input 
+              type="tel" 
+              placeholder="+1 (555) 123-4567"
+              className="w-full"
+            />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  if (isMobile) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your dashboard...</p>
-        </div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+        <Card>
+          <CardContent className="p-6 text-center">
+            <Smartphone className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+            <h2 className="text-xl font-semibold mb-2">Desktop Setup Required</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Please use a desktop or laptop to configure your PookAi settings. 
+              Once set up, you can view a simplified dashboard on mobile.
+            </p>
+            <Button onClick={logout} variant="outline">
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-                <Mail className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">PookAi Dashboard</h1>
-                <p className="text-gray-600">AI Email Intelligence Platform</p>
-              </div>
+    <div className="flex h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Sidebar */}
+      <div className="w-64 bg-black/20 backdrop-blur-sm border-r border-white/10 flex flex-col">
+        <div className="p-6">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <Brain className="w-5 h-5 text-white" />
             </div>
-            
-            <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm">
-                <Settings className="w-4 h-4 mr-2" />
-                Settings
-              </Button>
-              <Button variant="outline" size="sm">
-                <User className="w-4 h-4 mr-2" />
-                Profile
-              </Button>
-            </div>
+            <h1 className="text-xl font-bold text-white">PookAi</h1>
           </div>
         </div>
-      </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-100">Total Senders</p>
-                  <p className="text-3xl font-bold">{emailData?.totalSenders || 0}</p>
-                </div>
-                <Mail className="w-10 h-10 text-blue-200" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-r from-red-500 to-red-600 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-red-100">Urgent Calls</p>
-                  <p className="text-3xl font-bold">{categoryStats['call-me'] || 0}</p>
-                </div>
-                <Phone className="w-10 h-10 text-red-200" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-yellow-100">Reminders</p>
-                  <p className="text-3xl font-bold">{categoryStats['remind-me'] || 0}</p>
-                </div>
-                <Bell className="w-10 h-10 text-yellow-200" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-green-100">Processed</p>
-                  <p className="text-3xl font-bold">{Object.values(categoryStats).reduce((a, b) => a + b, 0)}</p>
-                </div>
-                <BarChart3 className="w-10 h-10 text-green-200" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Category Filters */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Email Categories</span>
-              <Badge variant="secondary">{senders.length} senders</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-3 mb-6">
-              <Button
-                variant={selectedCategory === 'all' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setSelectedCategory('all')}
-                className="flex items-center space-x-2"
-              >
-                <span>All Categories</span>
-                <Badge variant="secondary">{Object.values(categoryStats).reduce((a, b) => a + b, 0)}</Badge>
-              </Button>
-              
-              {Object.entries(categoryInfo).map(([category, info]) => {
-                const Icon = info.icon;
-                const count = categoryStats[category] || 0;
-                
-                return (
-                  <Button
-                    key={category}
-                    variant={selectedCategory === category ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setSelectedCategory(category)}
-                    className="flex items-center space-x-2"
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{info.label}</span>
-                    <Badge variant="secondary">{count}</Badge>
-                  </Button>
-                );
-              })}
-            </div>
-
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-              <Input
-                placeholder="Search senders..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Email Senders List */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Email Senders</span>
-              <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm">
-                  <Filter className="w-4 h-4 mr-2" />
-                  Filter
-                </Button>
-                <Button variant="outline" size="sm">
-                  <MoreVertical className="w-4 h-4" />
-                </Button>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {senders.map((sender, index) => {
-                const categoryConfig = categoryInfo[sender.category as keyof typeof categoryInfo];
-                const Icon = categoryConfig?.icon || Mail;
-                
-                return (
-                  <motion.div
-                    key={sender.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div className={`w-10 h-10 ${categoryConfig?.color || 'bg-gray-500'} rounded-lg flex items-center justify-center`}>
-                        <Icon className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{sender.name || sender.email}</h3>
-                        <p className="text-sm text-gray-600">{sender.email}</p>
-                        <p className="text-xs text-gray-500">{sender.latestSubject}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-4">
-                      <div className="text-right">
-                        <p className="text-sm font-medium text-gray-900">{sender.emailCount} emails</p>
-                        <p className="text-xs text-gray-500">{new Date(sender.lastEmailDate).toLocaleDateString()}</p>
-                      </div>
-                      <Badge variant="outline" className="capitalize">
-                        {categoryConfig?.label || sender.category}
-                      </Badge>
-                      <Button variant="ghost" size="sm">
-                        <ArrowRight className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
+        <nav className="flex-1 px-4 space-y-2">
+          {sidebarItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeSection === item.id;
             
-            {senders.length === 0 && (
-              <div className="text-center py-12">
-                <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No senders found</h3>
-                <p className="text-gray-600">
-                  {searchTerm ? 'Try adjusting your search terms' : 'No email senders in this category'}
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            return (
+              <motion.button
+                key={item.id}
+                onClick={() => setActiveSection(item.id)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${
+                  isActive 
+                    ? 'bg-purple-500/20 text-purple-200 border border-purple-500/30' 
+                    : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                }`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Icon className="w-5 h-5" />
+                <span className="font-medium">{item.label}</span>
+                {isActive && <ChevronRight className="w-4 h-4 ml-auto" />}
+              </motion.button>
+            );
+          })}
+        </nav>
+
+        <div className="p-4 border-t border-white/10">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
+              <User className="w-4 h-4 text-gray-300" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-white">
+                {(user as any)?.email?.split('@')[0]}
+              </p>
+              <p className="text-xs text-gray-400">
+                {(user as any)?.email}
+              </p>
+            </div>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={logout}
+            className="w-full justify-start text-gray-300 hover:text-white hover:bg-white/10"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sign Out
+          </Button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-auto">
+        <div className="p-8">
+          {activeSection === 'overview' && renderOverview()}
+          {activeSection === 'emails' && renderEmailManagement()}
+          {activeSection === 'voice' && renderVoiceSettings()}
+          {activeSection === 'notifications' && renderNotifications()}
+          {activeSection === 'schedule' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white">Call Schedule</h2>
+              <p className="text-gray-300">Schedule management coming soon...</p>
+            </div>
+          )}
+          {activeSection === 'preferences' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white">Preferences</h2>
+              <p className="text-gray-300">Advanced preferences coming soon...</p>
+            </div>
+          )}
+          {activeSection === 'account' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white">Account Settings</h2>
+              <p className="text-gray-300">Account management coming soon...</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

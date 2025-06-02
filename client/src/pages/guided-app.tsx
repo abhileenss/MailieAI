@@ -3,7 +3,6 @@ import { useLocation } from 'wouter';
 import MainDashboard from './main-dashboard';
 import CallActionCenter from './call-action-center';
 import CallConfig from './call-config';
-import NotificationPreferences from './notification-preferences';
 import GuidedFooter from '@/components/ui/guided-footer';
 import { 
   Mail, 
@@ -23,18 +22,18 @@ const APP_STEPS = [
     active: true
   },
   {
-    id: 'preferences',
-    title: 'Calls',
-    description: 'Review urgent items',
-    icon: Phone,
-    completed: false,
-    active: false
-  },
-  {
     id: 'verify',
     title: 'Verify',
     description: 'Phone verification',
     icon: CheckCircle,
+    completed: false,
+    active: false
+  },
+  {
+    id: 'calls',
+    title: 'Calls',
+    description: 'Review urgent items',
+    icon: Phone,
     completed: false,
     active: false
   },
@@ -68,9 +67,6 @@ export default function GuidedApp() {
     const currentIndex = steps.findIndex(step => step.id === currentStep);
     if (currentIndex < steps.length - 1) {
       setCurrentStep(steps[currentIndex + 1].id);
-    } else if (currentStep === 'complete') {
-      // Navigate to main dashboard when flow is complete
-      setLocation('/dashboard');
     }
   };
 
@@ -104,41 +100,15 @@ export default function GuidedApp() {
     switch (currentStep) {
       case 'categorize':
         return <MainDashboard />;
-      case 'preferences':
-        return <NotificationPreferences />;
       case 'verify':
-        return <CallConfig />;
+        setLocation('/phone-verification');
+        return null;
+      case 'calls':
+        setLocation('/call-config');
+        return null;
       case 'complete':
-        return (
-          <div className="min-h-screen bg-black flex items-center justify-center">
-            <div className="text-center p-8">
-              <div className="bg-gradient-to-r from-orange-400 to-orange-600 p-8 rounded-xl shadow-2xl mb-8">
-                <CheckCircle className="w-20 h-20 text-black mx-auto mb-6" />
-                <h1 className="text-3xl font-bold text-black mb-4">PookAi is Ready!</h1>
-                <p className="text-black/90 text-lg">
-                  Your AI voice assistant is now configured and ready to manage your emails.
-                </p>
-              </div>
-              <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto">
-                <div className="text-center p-4 bg-zinc-900 rounded-xl border border-zinc-800">
-                  <Mail className="w-8 h-8 text-orange-400 mx-auto mb-2" />
-                  <p className="font-medium text-white">102 Senders</p>
-                  <p className="text-xs text-gray-400">Categorized</p>
-                </div>
-                <div className="text-center p-4 bg-zinc-900 rounded-xl border border-zinc-800">
-                  <Phone className="w-8 h-8 text-orange-400 mx-auto mb-2" />
-                  <p className="font-medium text-white">Voice Ready</p>
-                  <p className="text-xs text-gray-400">Phone Verified</p>
-                </div>
-                <div className="text-center p-4 bg-zinc-900 rounded-xl border border-zinc-800">
-                  <BarChart3 className="w-8 h-8 text-orange-400 mx-auto mb-2" />
-                  <p className="font-medium text-white">AI Active</p>
-                  <p className="text-xs text-gray-400">Monitoring</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
+        setLocation('/dashboard');
+        return null;
       default:
         return <MainDashboard />;
     }
