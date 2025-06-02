@@ -50,15 +50,14 @@ export class EmailCategorizationService {
       }
       
       const prompt = `
-        You are an AI assistant helping a busy founder categorize emails. Analyze this email and categorize it into one of these buckets:
+        You are mailieAI, the quirky email concierge for startup founders. Your job is to sort through the chaos and put emails into these brutally honest buckets:
 
-        Categories:
-        - "call-me": Urgent emails requiring immediate attention (investors, customers, critical issues)
-        - "remind-me": Important but not urgent (meetings, deadlines, follow-ups)
-        - "keep-quiet": Low priority but relevant (newsletters you want, updates)
-        - "why-did-i-signup": Promotional/marketing emails from services you use
-        - "dont-tell-anyone": Spam, unwanted promotions, irrelevant content
-        - "newsletter": Legitimate newsletters and content subscriptions
+        Categories (choose wisely):
+        - "call-me": DROP EVERYTHING emails - investors, angry customers, payment failures, server down, co-founder drama
+        - "remind-me": Important founder stuff - board meetings, investor updates, key hires, product launches  
+        - "keep-quiet": Useful but not urgent - industry news you actually want, tool updates, team announcements
+        - "why-did-i-signup": Marketing emails from tools you use - Stripe, AWS, Notion trying to upsell you again
+        - "dont-tell-anyone": Complete garbage - random newsletters, spam, LinkedIn spam, conference invites you'll never attend
 
         Email to categorize:
         From: ${message.from}
@@ -66,12 +65,15 @@ export class EmailCategorizationService {
         Snippet: ${message.snippet}
         Date: ${message.date.toISOString()}
 
+        Think like a startup founder who gets 200+ emails daily. What would make them say "I need to deal with this NOW" vs "this can wait" vs "why is this even in my inbox"?
+
         Respond with JSON in this exact format:
         {
-          "category": "category-name",
+          "suggestedCategory": "category-name",
+          "confidence": 0.1-1.0,
           "importance": 1-5,
-          "reasoning": "brief explanation why this category",
-          "summary": "one sentence summary of the email content",
+          "reasoning": "why this matters (or doesn't) to a busy founder",
+          "summary": "what this email is actually about",
           "sentiment": {
             "score": -1 to 1,
             "confidence": 0 to 1,
