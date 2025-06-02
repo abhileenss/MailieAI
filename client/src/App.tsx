@@ -28,6 +28,7 @@ function Router() {
       
       {/* Protected routes with authentication check */}
       <Route path="/dashboard" component={AuthenticatedRoute} />
+      <Route path="/guided-app" component={AuthenticatedRoute} />
       <Route path="/scanning" component={AuthenticatedRoute} />
       
       <Route component={NotFound} />
