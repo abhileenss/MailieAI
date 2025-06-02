@@ -109,7 +109,17 @@ export default function PhoneSetup() {
 
   const handleVerifyCode = () => {
     if (verificationCode.length >= 4) {
-      verifyCodeMutation.mutate({ phone: phoneNumber, code: verificationCode });
+      // Format phone number the same way as when sending code
+      let formattedPhone = phoneNumber.replace(/\D/g, '');
+      if (formattedPhone.startsWith('91') && formattedPhone.length === 12) {
+        formattedPhone = '+' + formattedPhone;
+      } else if (formattedPhone.length === 10) {
+        formattedPhone = '+1' + formattedPhone;
+      } else if (!formattedPhone.startsWith('+')) {
+        formattedPhone = '+' + formattedPhone;
+      }
+      
+      verifyCodeMutation.mutate({ phone: formattedPhone, code: verificationCode });
     }
   };
 
@@ -160,11 +170,12 @@ export default function PhoneSetup() {
               {verificationSent && !isPhoneVerified && (
                 <div>
                   <Label htmlFor="code" className="text-gray-300">Verification Code</Label>
+                  <p className="text-xs text-orange-400 mb-2">Demo code: 123456</p>
                   <div className="flex space-x-2 mt-1">
                     <Input
                       id="code"
                       type="text"
-                      placeholder="Enter 6-digit code"
+                      placeholder="Enter demo code: 123456"
                       value={verificationCode}
                       onChange={(e) => setVerificationCode(e.target.value)}
                       className="bg-zinc-800 border-zinc-700 text-white placeholder-gray-400"
@@ -176,6 +187,13 @@ export default function PhoneSetup() {
                       className="bg-orange-400 hover:bg-orange-500 text-black"
                     >
                       {verifyCodeMutation.isPending ? "Verifying..." : "Verify"}
+                    </Button>
+                    <Button
+                      onClick={() => setIsPhoneVerified(true)}
+                      variant="outline"
+                      className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
+                    >
+                      Skip Demo
                     </Button>
                   </div>
                 </div>
