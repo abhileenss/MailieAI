@@ -305,15 +305,7 @@ export default function MainDashboard() {
                 <p className="text-gray-400 text-sm">
                   Test your voice setup and hear how PookAi will sound during actual calls.
                 </p>
-                <Button
-                  onClick={() => {
-                    console.log('DEBUG: Simple button clicked');
-                    alert('Button click working!');
-                  }}
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold mb-2 transition-all duration-200 transform hover:scale-105 active:scale-95"
-                >
-                  🔧 Debug: Test Click
-                </Button>
+
                 <Button
                   onClick={(e) => {
                     e.preventDefault();
