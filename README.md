@@ -1,402 +1,178 @@
-# mailieAI - Intelligent Email Management Platform
+# Mailie - AI-Powered Email Intelligence Platform
 
-> Built in 72 hours for #100xbuildathon - The AI-powered email concierge that startup founders actually need.
+An intelligent communication management platform that transforms email workflows through AI-powered smart categorization, personalized communication strategies, and real-time Gmail integration.
 
-## 🚀 Vision & Problem Statement
+## Features
 
-**The Problem: Inbox Chaos is Killing Your Startup**
+- **Real Gmail Integration** - Secure OAuth2 authentication with Gmail API
+- **AI-Powered Categorization** - OpenAI GPT-4 analysis of email content and sentiment
+- **Interactive Dashboard** - Modern React UI with real-time email processing
+- **Smart Categories** - Call-me, Remind-me, Keep-quiet, Why-did-I-signup, Don't-tell-anyone
+- **Voice Settings** - Personalized communication preferences
+- **PostgreSQL Database** - Comprehensive data persistence and analytics
 
-Picture this: It's 2 AM. You're finally done coding, product planning, or whatever founder chaos consumed your day. You check email "one last time" and see 247 unread messages. Your heart sinks.
+## Technology Stack
 
-**Buried in there somewhere are:**
-- 🔥 A payment failure that's bleeding money
-- 💸 An investor trying to reach you about funding
-- 😡 An angry customer whose issue could tank your reputation
-- 📅 A board meeting you completely forgot about
-
-**But also drowning the important stuff:**
-- 📰 14 newsletters you subscribed to in a moment of "learning"
-- 🛍️ Promotional emails from every SaaS tool you've ever touched
-- 🤖 Automated notifications from services you forgot existed
-- 📧 LinkedIn messages from people trying to "connect"
-
-## 💡 Our Solution
-
-mailieAI acts as your brutally honest email concierge, using AI to sort through the chaos with 5 quirky but effective categories:
-
-1. **"Call Me For This"** - DROP EVERYTHING emails (investors, angry customers, payment failures)
-2. **"Remind Me For This"** - Important founder stuff (board meetings, key hires, product launches)  
-3. **"Keep But Don't Care"** - Useful but not urgent (industry news, tool updates)
-4. **"Why Did I Sign Up For This?"** - Marketing emails from tools you use
-5. **"Don't Tell Anyone"** - Complete garbage (spam, LinkedIn spam, conference invites you'll never attend)
-
-## 🎯 Use Cases
-
-### For Startup Founders
-- **Email Triage**: Automatically categorize 200+ daily emails into actionable buckets
-- **Voice Summaries**: Get called with urgent email summaries while on the go
-- **Investor Relations**: Never miss critical investor communications again
-- **Customer Support**: Instantly identify angry customer emails that need immediate attention
-
-### For Busy Executives
-- **Executive Briefing**: Daily voice calls with email highlights
-- **Priority Management**: Focus on what actually matters to your business
-- **Team Communication**: Ensure important internal emails don't get lost
-
-### For Product Teams
-- **Bug Reports**: Quickly identify critical product issues from user emails
-- **Feature Requests**: Track and categorize user feedback automatically
-- **Partnership Opportunities**: Spot important business development emails
-
-## 🛠️ Built With
-
-**Powered by Eleven Labs Voice Technology**
-- Advanced voice synthesis for natural-sounding call summaries
-- Conversational AI for interactive email briefings
-
-**Core Technology Stack**
-- **AI**: OpenAI GPT-4 for intelligent email categorization
-- **Voice**: Twilio + Eleven Labs for voice calls and SMS
-- **Frontend**: React 18, TypeScript, TailwindCSS, ShadCN UI
+- **Frontend**: React 18, TypeScript, ShadCN UI, Framer Motion, TanStack Query
 - **Backend**: Node.js, Express, TypeScript
 - **Database**: PostgreSQL with Drizzle ORM
-- **Email**: Gmail API integration with OAuth 2.0
+- **Authentication**: Replit Auth + Gmail OAuth2
+- **AI**: OpenAI GPT-4 for email analysis
+- **APIs**: Gmail API, Google OAuth2
 
-## 🌟 Key Features
+## Quick Start with Docker
 
-### AI-Powered Email Intelligence
-- **Smart Categorization**: GPT-4 analyzes email content, sender patterns, and context
-- **Founder-Focused Logic**: Prioritizes investor emails, customer complaints, and revenue-critical messages
-- **Newsletter Detection**: Automatically identifies and summarizes newsletters
-- **Sentiment Analysis**: Detects urgent, angry, or time-sensitive communications
-
-### Voice-First Experience
-- **Conversational Summaries**: Natural voice calls powered by Eleven Labs
-- **Custom Voice Scripts**: Personalized briefings based on your email patterns
-- **Hands-Free Operation**: Get updates while driving, working out, or in meetings
-- **Smart Scheduling**: Configurable call times for daily digests
-
-### Real-Time Dashboard
-- **Live Email Processing**: See categorization happen in real-time
-- **Visual Analytics**: Email volume trends and category breakdowns
-- **Quick Actions**: Bulk categorization and preference updates
-- **Mobile-Responsive**: Full functionality on all devices
-
-### Enterprise Security
-- **OAuth 2.0 Integration**: Secure Gmail access without storing passwords
-- **Encrypted Storage**: All email data encrypted at rest
-- **Privacy-First**: No email content stored permanently
-- **GDPR Compliant**: Full data deletion capabilities
-
-## 📈 Business Value
-
-### Time Savings
-- **90% Reduction** in email triage time
-- **Zero Missed** critical communications
-- **Automated** newsletter summarization
-- **Instant** priority identification
-
-### Revenue Protection
-- Never miss payment failures or billing issues
-- Catch customer complaints before they escalate
-- Identify partnership opportunities automatically
-- Track investor communications seamlessly
-
-### Productivity Gains
-- Focus on high-impact emails only
-- Eliminate decision fatigue from email overload
-- Stay informed without constant inbox checking
-- Delegate email monitoring to AI
-
-## 🏆 #100xbuildathon Achievement
-
-Built in just 72 hours for the #100xbuildathon by 100xEngineers, powered by Eleven Labs voice technology. This project demonstrates rapid AI application development and showcases the potential of voice-first email management.
-
-## Prerequisites
-
+### Prerequisites
 - Docker and Docker Compose
-- Gmail API credentials
+- Google Cloud Console project with Gmail API enabled
 - OpenAI API key
-- Twilio account with phone number
-- PostgreSQL database
 
-## Environment Variables
-
-Create a `.env` file in the root directory:
-
-```env
-# Database
-DATABASE_URL=postgresql://username:password@localhost:5432/mailieai
-
-# OpenAI
-OPENAI_API_KEY=your_openai_api_key
-
-# Gmail API
+### Environment Variables
+Create a `.env` file:
+```bash
+DATABASE_URL=postgresql://postgres:postgres@postgres:5432/mailie
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
-
-# Twilio
-TWILIO_ACCOUNT_SID=your_twilio_account_sid
-TWILIO_AUTH_TOKEN=your_twilio_auth_token
-TWILIO_PHONE_NUMBER=your_twilio_phone_number
-
-# Session
-SESSION_SECRET=your_session_secret_key
-
-# Application
-NODE_ENV=production
-PORT=5000
+OPENAI_API_KEY=your_openai_api_key
+POSTGRES_PASSWORD=your_postgres_password
+SESSION_SECRET=your_session_secret
 ```
 
-## Docker Deployment
-
-### Option 1: Using Docker Compose (Recommended)
-
-1. **Clone and setup**:
+### Run with Docker Compose
 ```bash
-git clone <repository-url>
-cd mailieai
-cp .env.example .env
-# Edit .env with your actual credentials
-```
+# Clone and navigate to project
+git clone <your-repo>
+cd mailie
 
-2. **Build and run**:
-```bash
+# Start all services
 docker-compose up -d
+
+# View logs
+docker-compose logs -f app
+
+# Stop services
+docker-compose down
 ```
 
-3. **Access the application**:
-- Application: http://localhost:5000
-- The app will automatically run database migrations on startup
+The application will be available at http://localhost:5000
 
-### Option 2: Manual Docker Build
-
-1. **Build the image**:
+### Manual Docker Build
 ```bash
-docker build -t mailieai .
+# Build image
+docker build -t mailie .
+
+# Run with environment variables
+docker run -p 5000:5000 \
+  -e DATABASE_URL=your_db_url \
+  -e GOOGLE_CLIENT_ID=your_client_id \
+  -e GOOGLE_CLIENT_SECRET=your_client_secret \
+  -e OPENAI_API_KEY=your_openai_key \
+  mailie
 ```
 
-2. **Run with PostgreSQL**:
-```bash
-# Start PostgreSQL
-docker run -d \
-  --name mailieai-postgres \
-  -e POSTGRES_DB=mailieai \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=password \
-  -p 5432:5432 \
-  postgres:15
+## Google OAuth Setup
 
-# Run the application
-docker run -d \
-  --name mailieai-app \
-  --link mailieai-postgres:postgres \
-  -p 5000:5000 \
-  --env-file .env \
-  mailieai
-```
+1. **Google Cloud Console** → Create new project
+2. **Enable Gmail API** → APIs & Services → Library
+3. **OAuth Consent Screen** → Configure app details
+4. **Credentials** → Create OAuth 2.0 Client ID
+
+### Required OAuth URLs
+**Authorized JavaScript Origins:**
+- `http://localhost:5000` (development)
+- `https://your-domain.com` (production)
+
+**Authorized Redirect URIs:**
+- `http://localhost:5000/api/auth/gmail/callback` (development)
+- `https://your-domain.com/api/auth/gmail/callback` (production)
 
 ## Development Setup
 
-1. **Install dependencies**:
+### Prerequisites
+- Node.js 20+
+- PostgreSQL database
+- Environment variables configured
+
+### Local Development
 ```bash
+# Install dependencies
 npm install
-```
 
-2. **Set up database**:
-```bash
+# Set up database
 npm run db:push
-```
 
-3. **Start development server**:
-```bash
+# Start development server
 npm run dev
 ```
 
-## Production Deployment
-
-### Linux Server Deployment
-
-1. **Install Docker and Docker Compose**:
+### Production Build
 ```bash
-# Ubuntu/Debian
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+# Build application
+npm run build
+
+# Start production server
+npm start
 ```
-
-2. **Deploy the application**:
-```bash
-# Clone repository
-git clone <repository-url>
-cd mailieai
-
-# Set up environment
-cp .env.example .env
-nano .env  # Edit with your credentials
-
-# Deploy
-docker-compose up -d
-
-# Check logs
-docker-compose logs -f
-```
-
-3. **Set up reverse proxy (Nginx)**:
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-    
-    location / {
-        proxy_pass http://localhost:5000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-```
-
-## API Setup Requirements
-
-### Gmail API Setup
-1. Go to Google Cloud Console
-2. Create a new project or select existing
-3. Enable Gmail API
-4. Create OAuth 2.0 credentials
-5. Add authorized redirect URIs: `http://localhost:5000/api/callback`
-
-### OpenAI API Setup
-1. Sign up at OpenAI
-2. Generate API key
-3. Add billing information (required for GPT-4)
-
-### Twilio Setup
-1. Create Twilio account
-2. Purchase a phone number
-3. Get Account SID and Auth Token
-4. Configure webhook URLs if needed
 
 ## Database Schema
 
-The application uses PostgreSQL with the following main tables:
-- `users` - User accounts and authentication
-- `email_senders` - Email senders and their categories
-- `user_preferences` - User configuration settings
-- `call_logs` - Voice call history
-- `user_tokens` - OAuth tokens storage
+The application uses a comprehensive PostgreSQL schema with:
+- User management and authentication
+- Gmail OAuth token storage
+- Email messages and metadata
+- AI categorization results
+- User preferences and voice settings
+- Email processing batches and analytics
 
-## Health Checks
+## API Endpoints
 
-The application includes health check endpoints:
-- `GET /health` - Basic health check
-- `GET /api/health` - API health with database connectivity
+### Authentication
+- `GET /api/auth/user` - Get current user
+- `GET /api/login` - Replit OAuth login
+- `GET /api/callback` - OAuth callback
 
-## Monitoring
+### Gmail Integration
+- `GET /api/gmail/auth` - Initiate Gmail OAuth
+- `GET /api/gmail/status` - Check Gmail connection
+- `GET /api/auth/gmail/callback` - Gmail OAuth callback
 
-Monitor your deployment with:
-```bash
-# View application logs
-docker-compose logs -f mailieai-app
+### Email Processing
+- `POST /api/emails/scan-and-process` - Scan and categorize emails
+- `GET /api/emails/processed` - Get processed email senders
+- `PATCH /api/emails/sender/:id/category` - Update sender category
 
-# View database logs
-docker-compose logs -f mailieai-postgres
+## Deployment Notes
 
-# Check container status
-docker-compose ps
-```
+### Google OAuth Production
+- Change OAuth consent screen from "Testing" to "Production"
+- Submit for Google verification (required for Gmail access)
+- Add privacy policy and terms of service URLs
 
-## Troubleshooting
+### Environment Configuration
+- Use secure session secrets in production
+- Configure proper PostgreSQL connection strings
+- Set up SSL certificates for HTTPS
 
-### Common Issues
+### Rate Limiting
+- OpenAI API has token limits (30,000 tokens/minute for GPT-4)
+- Implement batching for large email volumes
+- Consider caching for frequently accessed data
 
-1. **Database connection issues**:
-   - Verify DATABASE_URL in .env
-   - Ensure PostgreSQL is running
-   - Check network connectivity between containers
+## Security Features
 
-2. **Gmail API errors**:
-   - Verify Google OAuth credentials
-   - Check redirect URI configuration
-   - Ensure Gmail API is enabled
+- OAuth2 authentication flow with CSRF protection
+- Session-based state management
+- Secure token storage in PostgreSQL
+- Environment variable configuration
+- Input validation and sanitization
 
-3. **Twilio call failures**:
-   - Verify account balance
-   - Check phone number format (+1234567890)
-   - Ensure TwiML webhooks are accessible
+## Performance
 
-4. **OpenAI rate limits**:
-   - Check API usage in OpenAI dashboard
-   - Verify billing setup
-   - Monitor rate limiting
-
-## Security Considerations
-
-- Always use HTTPS in production
-- Keep API keys secure and rotate regularly
-- Use strong session secrets
-- Regularly update dependencies
-- Monitor access logs
+- Processes 200+ emails efficiently
+- Real-time AI categorization
+- Optimized database queries with proper indexing
+- Responsive UI with loading states
 
 ## License
 
-MIT License - see LICENSE file for details
-
-## 🎖️ Hackathon Recognition
-
-**#100xbuildathon Winner Submission**
-- Built by: 100xEngineers Community
-- Powered by: Eleven Labs Voice Technology
-- Duration: 72 hours of intense development
-- Innovation: Voice-first email management for founders
-- Technology Showcase: AI + Voice + Real-time Processing
-
-This project represents the cutting edge of what's possible when combining AI, voice technology, and practical startup needs in a rapid development cycle.
-
-## 🚀 Getting Started
-
-### Quick Demo
-1. Sign up with your Gmail account
-2. Let mailieAI scan your recent emails
-3. See AI categorization in action
-4. Test voice call functionality
-5. Configure your preferences
-
-### Production Deployment
-Ready to deploy? Follow our comprehensive Docker setup below.
-
-## 🛡️ Enterprise Features
-
-### Scalability
-- **Multi-user Support**: Team-wide email management
-- **API Rate Limiting**: Built-in protection against overuse
-- **Horizontal Scaling**: Docker-based architecture
-- **Database Optimization**: Efficient PostgreSQL queries
-
-### Compliance & Security
-- **SOC 2 Ready**: Enterprise security standards
-- **HIPAA Compatible**: Healthcare data protection
-- **EU GDPR**: Full compliance with data regulations
-- **Data Retention**: Configurable storage policies
-
-### Integration Capabilities
-- **Webhook Support**: Real-time notifications
-- **REST API**: Full programmatic access
-- **Slack Integration**: Team notifications
-- **Calendar Sync**: Meeting preparation summaries
-
-## Support
-
-For issues and questions:
-1. Check the troubleshooting section
-2. Review application logs
-3. Verify API credentials and quotas
-4. Ensure all required environment variables are set
-
-**Hackathon Support**: For #100xbuildathon participants, join our Discord community for real-time assistance.
+MIT License - Built for hackathon evaluation in 72 hours.

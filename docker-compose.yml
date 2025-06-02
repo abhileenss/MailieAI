@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  pookai:
+  app:
     build: .
     ports:
       - "5000:5000"
@@ -11,11 +11,7 @@ services:
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
-      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
-      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
-      - REPL_ID=${REPL_ID}
-      - REPLIT_DOMAINS=${REPLIT_DOMAINS}
+      - SESSION_SECRET=${SESSION_SECRET:-default-session-secret-change-in-production}
     depends_on:
       - postgres
     restart: unless-stopped
@@ -23,9 +19,9 @@ services:
   postgres:
     image: postgres:15-alpine
     environment:
-      - POSTGRES_DB=pookai
-      - POSTGRES_USER=pookai
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=mailie
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
