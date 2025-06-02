@@ -1245,8 +1245,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const phoneNumber = user.phone;
       
-      // Use provided script or default
-      const callScript = script || "Hey! PookAi here - your new AI email sidekick. Quick test call to make sure everything's connected. Ready to tackle your inbox together? Sweet! Setup complete.";
+      // Use provided script or generate from actual email data
+      let finalScript = script;
+      
+      if (!script) {
+        // Get recent email data for context
+        const emailSenders = await storage.getEmailSenders(userId);
+        const recentImportant = emailSenders
+          .filter(sender => sender.category === 'call-me')
+          .slice(0, 2);
+        
+        if (recentImportant.length > 0) {
+          const emailContext = recentImportant
+            .map(sender => `${sender.name}: ${sender.latestSubject}`)
+            .join('. ');
+          finalScript = `Hey! PookAi here. Quick update: ${emailContext}. These look important. Thanks for using PookAi!`;
+        } else {
+          finalScript = "Hey! PookAi here. Your inbox is looking good - no urgent items right now. Thanks for using PookAi!";
+        }
+      }
       
       // Direct Twilio call for test
       if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) {
@@ -1257,11 +1274,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const twilio = twilioLib.default;
       const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
       
-      // Create TwiML with custom script
+      // Create TwiML with dynamic script
       const VoiceResponse = twilio.twiml.VoiceResponse;
       const response = new VoiceResponse();
-      response.say({ voice: 'Polly.Joanna' }, callScript);
-      response.say({ voice: 'Polly.Joanna' }, 'This concludes your PookAi test call. Goodbye!');
+      response.say({ voice: 'Polly.Joanna' }, finalScript);
 
       // Make the call
       const call = await client.calls.create({
@@ -1274,12 +1290,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Log the call
       await storage.createCallLog({
+        id: `call_${userId}_${Date.now()}`,
         userId,
         phoneNumber,
         callType: 'test-call',
         status: 'initiated',
-        emailData: JSON.stringify({ script: callScript }),
-        callId: call.sid
+        script: finalScript,
+        callSid: call.sid
       });
 
       res.json({ 
