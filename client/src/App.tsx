@@ -55,6 +55,7 @@ function Router() {
       <Route path="/categorize" component={EmailCategorizationRoute} />
       <Route path="/guided-app" component={GuidedAppRoute} />
       <Route path="/scanning" component={ScanningRoute} />
+      <Route path="/call-config" component={MainDashboardRoute} />
       
       <Route component={NotFound} />
     </Switch>
