@@ -39,8 +39,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Store OAuth states temporarily to associate with user sessions
-  const oauthStates = new Map<string, string>();
+  // OAuth states are now stored in user sessions to persist across restarts
 
   app.get("/api/gmail/status", isAuthenticated, async (req: any, res) => {
     try {
@@ -61,9 +60,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       
-      // Generate a unique state parameter and associate with user
+      // Generate a unique state parameter and store in session
       const state = require('crypto').randomBytes(32).toString('hex');
-      oauthStates.set(state, userId);
+      (req.session as any).gmailOAuthState = state;
+      (req.session as any).gmailOAuthUserId = userId;
       
       const authUrl = gmailService.getAuthUrl(state);
       
@@ -93,12 +93,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const tokens = await gmailService.getAccessToken(code as string);
       console.log('Gmail tokens received:', { hasAccessToken: !!tokens.access_token });
       
-      // Get user ID from OAuth state
+      // Get user ID from session
       const { state } = req.query;
-      const userId = state ? oauthStates.get(state as string) : null;
+      const sessionState = (req.session as any).gmailOAuthState;
+      const userId = (req.session as any).gmailOAuthUserId;
       
-      if (!userId) {
-        console.error('No user ID found for OAuth state');
+      if (!userId || !sessionState || state !== sessionState) {
+        console.error('Invalid OAuth state or no user ID found');
         return res.redirect('/scanning?error=invalid_state');
       }
       
@@ -115,10 +116,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log('Gmail tokens stored for user:', userId);
       
-      // Clean up OAuth state
-      if (state) {
-        oauthStates.delete(state as string);
-      }
+      // Clean up OAuth state from session
+      // Clean up OAuth state from session
+      (req.session as any).gmailOAuthState = undefined;
+      (req.session as any).gmailOAuthUserId = undefined;
 
       // After storing tokens, automatically scan and process emails
       if (userId) {
