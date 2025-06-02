@@ -1080,16 +1080,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         timestamp: Date.now() + 10 * 60 * 1000 
       });
 
-      // For demo purposes, use a fixed code for easier testing
-      const demoCode = "123456";
-      verificationCodes.set(phoneNumber, { 
-        code: demoCode, 
-        timestamp: Date.now() + 10 * 60 * 1000 
-      });
-
       if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) {
-        console.log(`Demo mode: Verification code for ${phoneNumber} is: ${demoCode}`);
-        return res.json({ success: true, message: 'Verification code sent', demoCode: demoCode });
+        console.log(`No Twilio credentials: Verification code for ${phoneNumber} is: ${code}`);
+        return res.json({ success: true, message: 'Verification code sent (no SMS service configured)' });
       }
 
       try {
@@ -1099,16 +1092,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Send SMS
         await client.messages.create({
-          body: `Your PookAi verification code is: ${demoCode}`,
+          body: `Your PookAi verification code is: ${code}`,
           from: process.env.TWILIO_PHONE_NUMBER,
           to: phoneNumber
         });
 
         res.json({ success: true, message: 'Verification code sent' });
       } catch (twilioError: any) {
-        console.log(`Twilio failed, using demo mode: ${twilioError.message}`);
-        console.log(`Demo verification code for ${phoneNumber}: ${demoCode}`);
-        res.json({ success: true, message: 'Verification code sent (demo mode)', demoCode: demoCode });
+        console.log(`Twilio error: ${twilioError.message}`);
+        console.log(`Verification code for ${phoneNumber}: ${code}`);
+        res.json({ success: true, message: 'Verification code sent' });
       }
     } catch (error: any) {
       console.error('Error sending verification code:', error);
