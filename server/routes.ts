@@ -175,7 +175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { category } = req.body;
 
       // Validate category
-      const validCategories = ['call-me', 'remind-me', 'tools-billing', 'events-calendar', 'updates-news', 'sales-promo', 'why-did-i-signup', 'keep-quiet'];
+      const validCategories = ['call-me', 'remind-me', 'keep-quiet', 'why-did-i-signup', 'dont-tell-anyone'];
       if (!validCategories.includes(category)) {
         return res.status(400).json({ error: "Invalid category" });
       }

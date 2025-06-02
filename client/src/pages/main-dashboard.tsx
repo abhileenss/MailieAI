@@ -57,29 +57,11 @@ const categories = {
     bgColor: 'bg-orange-500/20 border-orange-500',
     description: 'Important emails to follow up on'
   },
-  'tools-billing': { 
-    title: 'Tools & Billing', 
-    color: 'bg-blue-500 text-white',
-    bgColor: 'bg-blue-500/20 border-blue-500',
-    description: 'Software tools, subscriptions, and billing'
-  },
-  'events-calendar': { 
-    title: 'Events & Calendar', 
+  'keep-quiet': { 
+    title: 'Keep But Don\'t Care', 
     color: 'bg-green-500 text-white',
     bgColor: 'bg-green-500/20 border-green-500',
-    description: 'Meeting invites and event notifications'
-  },
-  'updates-news': { 
-    title: 'Updates & News', 
-    color: 'bg-purple-500 text-white',
-    bgColor: 'bg-purple-500/20 border-purple-500',
-    description: 'Product updates and industry news'
-  },
-  'sales-promo': { 
-    title: 'Sales & Promos', 
-    color: 'bg-yellow-500 text-black',
-    bgColor: 'bg-yellow-500/20 border-yellow-500',
-    description: 'Promotional emails and sales pitches'
+    description: 'Archive but don\'t notify'
   },
   'why-did-i-signup': { 
     title: 'Why Did I Sign Up?', 
@@ -87,11 +69,11 @@ const categories = {
     bgColor: 'bg-gray-500/20 border-gray-500',
     description: 'Unwanted subscriptions to review'
   },
-  'keep-quiet': { 
-    title: 'Keep But Don\'t Care', 
-    color: 'bg-zinc-600 text-white',
-    bgColor: 'bg-zinc-600/20 border-zinc-600',
-    description: 'Archive but don\'t notify'
+  'dont-tell-anyone': { 
+    title: "Don't Tell Anyone", 
+    color: 'bg-purple-500 text-white',
+    bgColor: 'bg-purple-500/20 border-purple-500',
+    description: 'Personal emails in work inbox'
   }
 };
 
@@ -226,12 +208,9 @@ export default function MainDashboard() {
     switch (categoryKey) {
       case 'call-me': return Phone;
       case 'remind-me': return Clock;
-      case 'tools-billing': return CreditCard;
-      case 'events-calendar': return Calendar;
-      case 'updates-news': return Newspaper;
-      case 'sales-promo': return Tag;
-      case 'why-did-i-signup': return HelpCircle;
       case 'keep-quiet': return Archive;
+      case 'why-did-i-signup': return HelpCircle;
+      case 'dont-tell-anyone': return User;
       default: return Mail;
     }
   };
@@ -239,10 +218,9 @@ export default function MainDashboard() {
   const totalSenders = processedEmails?.totalSenders || 0;
   const callMeCount = processedEmails?.categoryStats?.['call-me'] || 0;
   const remindMeCount = processedEmails?.categoryStats?.['remind-me'] || 0;
-  const toolsBillingCount = processedEmails?.categoryStats?.['tools-billing'] || 0;
-  const eventsCount = processedEmails?.categoryStats?.['events-calendar'] || 0;
-  const updatesCount = processedEmails?.categoryStats?.['updates-news'] || 0;
-  const salesCount = processedEmails?.categoryStats?.['sales-promo'] || 0;
+  const keepQuietCount = processedEmails?.categoryStats?.['keep-quiet'] || 0;
+  const whySignupCount = processedEmails?.categoryStats?.['why-did-i-signup'] || 0;
+  const dontTellCount = processedEmails?.categoryStats?.['dont-tell-anyone'] || 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black relative overflow-hidden">
@@ -327,9 +305,9 @@ export default function MainDashboard() {
                 
                 <Card className="bg-zinc-900 border-zinc-800">
                   <CardContent className="p-4 text-center">
-                    <Settings className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-                    <p className="text-2xl font-bold text-white">{toolsBillingCount}</p>
-                    <p className="text-xs text-gray-400">Tools & Billing</p>
+                    <Archive className="w-8 h-8 text-green-400 mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-white">{keepQuietCount}</p>
+                    <p className="text-xs text-gray-400">Keep Quiet</p>
                   </CardContent>
                 </Card>
               </div>

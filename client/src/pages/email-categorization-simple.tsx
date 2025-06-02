@@ -57,53 +57,29 @@ const categories = {
     badgeColor: 'bg-orange-500 text-white',
     borderColor: 'border-orange-500'
   },
-  'tools-billing': {
-    title: 'Tools & Billing',
-    description: 'Software tools, subscriptions, and billing',
-    icon: CreditCard,
-    color: 'bg-blue-500',
-    badgeColor: 'bg-blue-500 text-white',
-    borderColor: 'border-blue-500'
-  },
-  'events-calendar': {
-    title: 'Events & Calendar',
-    description: 'Meeting invites and event notifications',
-    icon: Calendar,
+  'keep-quiet': {
+    title: 'Keep But Don\'t Care',
+    description: 'Archive but don\'t notify',
+    icon: Archive,
     color: 'bg-green-500',
     badgeColor: 'bg-green-500 text-white',
     borderColor: 'border-green-500'
   },
-  'updates-news': {
-    title: 'Updates & News',
-    description: 'Product updates and industry news',
-    icon: Newspaper,
-    color: 'bg-purple-500',
-    badgeColor: 'bg-purple-500 text-white',
-    borderColor: 'border-purple-500'
-  },
-  'sales-promo': {
-    title: 'Sales & Promos',
-    description: 'Promotional emails and sales pitches',
-    icon: Tag,
-    color: 'bg-yellow-500',
-    badgeColor: 'bg-yellow-500 text-black',
-    borderColor: 'border-yellow-500'
-  },
   'why-did-i-signup': {
-    title: 'Why Did I Sign Up?',
+    title: 'Why Did I Sign Up For This?',
     description: 'Unwanted subscriptions to review',
     icon: HelpCircle,
     color: 'bg-gray-500',
     badgeColor: 'bg-gray-500 text-white',
     borderColor: 'border-gray-500'
   },
-  'keep-quiet': {
-    title: 'Keep But Don\'t Care',
-    description: 'Archive but don\'t notify',
-    icon: Archive,
-    color: 'bg-zinc-600',
-    badgeColor: 'bg-zinc-600 text-white',
-    borderColor: 'border-zinc-600'
+  'dont-tell-anyone': {
+    title: "Don't Tell Anyone",
+    description: 'Personal emails in work inbox',
+    icon: User,
+    color: 'bg-purple-500',
+    badgeColor: 'bg-purple-500 text-white',
+    borderColor: 'border-purple-500'
   }
 };
 
@@ -309,6 +285,11 @@ export default function EmailCategorizationSimple() {
                         {categoryInfo.title}
                       </Badge>
                     )}
+                    {!categoryInfo && (
+                      <Badge className="bg-gray-600 text-white text-xs">
+                        Uncategorized
+                      </Badge>
+                    )}
                   </div>
                   
                   {/* Latest Email Preview */}
@@ -402,7 +383,7 @@ export default function EmailCategorizationSimple() {
             <div className="text-center text-gray-500">
               <Mail className="w-16 h-16 mx-auto mb-4 text-gray-600" />
               <h3 className="text-lg font-medium mb-2 text-gray-400">Select a company</h3>
-              <p className="text-gray-500">Choose a company from the left to categorize their emails</p>
+              <p className="text-gray-500">Choose a company from the left to set how PookAi should handle all emails from that company</p>
             </div>
           </div>
         )}
