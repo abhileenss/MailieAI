@@ -18,6 +18,7 @@ import {
   Clock,
   CreditCard,
   Calendar,
+  ArrowLeft,
   Newspaper,
   Tag,
   HelpCircle
@@ -226,9 +227,9 @@ export default function EmailCategorizationSimple() {
   const selectedCompanySenders = selectedCompany ? filteredCompanies[selectedCompany] || [] : [];
 
   return (
-    <div className="min-h-screen bg-black flex">
+    <div className="min-h-screen bg-black flex flex-col lg:flex-row">
       {/* Left Panel - Company List */}
-      <div className="w-1/2 bg-black flex flex-col">
+      <div className="w-full lg:w-1/2 bg-black flex flex-col min-h-screen lg:min-h-0">
         {/* Search Header */}
         <div className="p-4 border-b border-zinc-800">
           <div className="relative">
@@ -314,7 +315,7 @@ export default function EmailCategorizationSimple() {
       </div>
 
       {/* Right Panel - Categorization */}
-      <div className="w-1/2 bg-black flex flex-col">
+      <div className="w-full lg:w-1/2 bg-black flex flex-col min-h-screen lg:min-h-0">
         {selectedCompany ? (
           <>
             {/* Header */}
@@ -325,6 +326,18 @@ export default function EmailCategorizationSimple() {
               <p className="text-gray-400">
                 {selectedCompanySenders.length} senders • {getTotalEmailsForCompany(selectedCompanySenders)} total emails
               </p>
+            </div>
+
+            {/* Back button for mobile */}
+            <div className="lg:hidden p-4 border-b border-zinc-800">
+              <Button
+                variant="ghost"
+                onClick={() => setSelectedCompany('')}
+                className="text-gray-400 hover:text-white"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to companies
+              </Button>
             </div>
 
             {/* Category Options */}
