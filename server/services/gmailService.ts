@@ -30,14 +30,14 @@ export class GmailService {
   private gmail: any;
 
   constructor() {
-    if (!process.env.GMAIL_CLIENT_ID || !process.env.GMAIL_CLIENT_SECRET) {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
       console.warn('Gmail API credentials not configured. Email features will be unavailable.');
       return;
     }
 
     this.oauth2Client = new google.auth.OAuth2(
-      process.env.GMAIL_CLIENT_ID,
-      process.env.GMAIL_CLIENT_SECRET,
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
       `https://${process.env.REPLIT_DOMAINS?.split(',')[0]}/api/auth/gmail/callback`
     );
     
