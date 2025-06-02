@@ -14,7 +14,12 @@ import {
   Archive, 
   Trash2, 
   User,
-  Clock
+  Clock,
+  CreditCard,
+  Calendar,
+  Newspaper,
+  Tag,
+  HelpCircle
 } from "lucide-react";
 
 interface EmailSender {

@@ -16,7 +16,14 @@ import {
   User,
   LogOut,
   ArrowLeft,
-  TestTube
+  TestTube,
+  Clock,
+  CreditCard,
+  Calendar,
+  Newspaper,
+  Tag,
+  Archive,
+  HelpCircle
 } from "lucide-react";
 
 interface EmailSender {
