@@ -1034,35 +1034,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.claims.sub;
       console.log(`Generating digest script for user: ${userId}`);
       
-      // Get recent emails from Gmail
-      const messages = await gmailService.getMessages(userId, 50);
-      console.log(`Retrieved ${messages.length} recent messages for digest`);
+      // Get categorized email senders from database (already processed)
+      const emailSenders = await storage.getEmailSenders(userId);
       
-      // Get AI categorizations for these messages
-      const categorizations = await categorizationService.categorizeEmails(messages);
+      // Filter for important senders (call-me category)
+      const importantSenders = emailSenders.filter(sender => 
+        sender.category === 'call-me' && sender.emailCount > 0
+      );
       
-      // Filter for important emails (call-me category and high importance)
-      const importantEmails = new Map();
-      for (const [messageId, category] of categorizations) {
-        if (category.category === 'call-me' || category.importance >= 4) {
-          importantEmails.set(messageId, category);
+      console.log(`Found ${importantSenders.length} important email senders for digest`);
+      
+      // Create a concise digest script from important senders
+      let script = "Hey! mailieAI here with your quick update: ";
+      
+      if (importantSenders.length === 0) {
+        script = "Hey! mailieAI here. No urgent emails need your attention right now. You're all caught up!";
+      } else {
+        const topSenders = importantSenders.slice(0, 3); // Limit to top 3 for brevity
+        const senderSummaries = topSenders.map(sender => {
+          const name = sender.name || sender.email.split('@')[0];
+          return `${name}: ${sender.latestSubject}`;
+        });
+        
+        script += senderSummaries.join('. ') + '. ';
+        
+        if (importantSenders.length > 3) {
+          script += `Plus ${importantSenders.length - 3} more important emails. `;
         }
+        
+        script += "Thanks for using mailieAI!";
       }
-      
-      console.log(`Found ${importantEmails.size} important emails for digest`);
-      
-      // Generate concise digest script
-      const script = await categorizationService.generateCallScript(importantEmails, {
-        callType: 'daily-digest',
-        maxLength: 200, // Keep it short and concise
-        focusOnUrgent: true
-      });
       
       res.json({
         success: true,
         script: script,
-        emailsAnalyzed: messages.length,
-        importantEmailsFound: importantEmails.size,
+        emailsAnalyzed: emailSenders.length,
+        importantEmailsFound: importantSenders.length,
         timestamp: new Date().toISOString()
       });
       

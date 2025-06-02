@@ -401,10 +401,11 @@ export default function MainDashboard() {
                       variant="ghost"
                       size="sm"
                       onClick={generateDigestScript}
+                      disabled={generateDigestMutation.isPending}
                       className="text-orange-400 hover:text-orange-300"
                       title="Generate fresh digest from recent emails"
                     >
-                      <RefreshCw className="w-4 h-4" />
+                      <RefreshCw className={`w-4 h-4 ${generateDigestMutation.isPending ? 'animate-spin' : ''}`} />
                     </Button>
                     <Button
                       variant="ghost"
