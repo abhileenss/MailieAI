@@ -960,7 +960,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Find the latest email timestamp from our database
       const latestEmailDate = currentSenders.length > 0 
-        ? new Date(Math.max(...currentSenders.map(s => s.latestMessageDate.getTime())))
+        ? new Date(Math.max(...currentSenders
+            .filter(s => s.latestMessageDate)
+            .map(s => s.latestMessageDate.getTime())))
         : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // 7 days ago if no emails
       
       console.log(`Looking for emails newer than: ${latestEmailDate.toISOString()}`);

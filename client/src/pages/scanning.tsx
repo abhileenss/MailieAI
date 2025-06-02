@@ -60,7 +60,7 @@ export default function Scanning() {
       // Calculate new emails found
       const previousTotal = existingEmails?.totalSenders || 0;
       const currentTotal = data.totalSenders || 0;
-      const newEmailsFound = Math.max(0, currentTotal - previousTotal);
+      const newEmailsFound = data.newEmailsCount || Math.max(0, currentTotal - previousTotal);
       
       setScanProgress(prev => ({ 
         ...prev, 
