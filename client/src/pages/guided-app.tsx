@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import EmailCategorizationSimple from './email-categorization-simple';
+import SetupPreferences from './setup-preferences';
 import PhoneSetup from './phone-setup';
 import GuidedFooter from '@/components/ui/guided-footer';
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,8 @@ import {
   Mail, 
   Phone, 
   CheckCircle,
-  Sparkles
+  Sparkles,
+  Settings
 } from "lucide-react";
 
 const APP_STEPS = [
@@ -38,10 +40,31 @@ const APP_STEPS = [
   }
 ];
 
+interface UserPreferences {
+  newsletters: { action: 'call' | 'digest' | 'ignore'; callTiming?: number };
+  promotional: { action: 'call' | 'digest' | 'ignore'; callTiming?: number };
+  events: { action: 'call' | 'digest' | 'ignore'; callTiming?: number };
+  tools: { action: 'call' | 'digest' | 'ignore'; callTiming?: number };
+  morningCall: { enabled: boolean; time: string; timezone: string };
+  eventReminders: { enabled: boolean; defaultTiming: number; workshopTiming: number; meetingTiming: number };
+  voiceId: string;
+  callSpeed: number;
+}
+
 export default function GuidedApp() {
   const [currentStep, setCurrentStep] = useState('categorize');
   const [steps, setSteps] = useState(APP_STEPS);
   const [, setLocation] = useLocation();
+  const [preferences, setPreferences] = useState<UserPreferences>({
+    newsletters: { action: 'digest' },
+    promotional: { action: 'ignore' },
+    events: { action: 'call', callTiming: 15 },
+    tools: { action: 'digest' },
+    morningCall: { enabled: true, time: '08:00', timezone: 'America/Los_Angeles' },
+    eventReminders: { enabled: true, defaultTiming: 15, workshopTiming: 30, meetingTiming: 10 },
+    voiceId: 'rachel',
+    callSpeed: 1.0
+  });
 
   // Update step completion status
   useEffect(() => {
@@ -57,13 +80,7 @@ export default function GuidedApp() {
   const handleNext = () => {
     const currentIndex = steps.findIndex(step => step.id === currentStep);
     if (currentIndex < steps.length - 1) {
-      const nextStep = steps[currentIndex + 1].id;
-      if (nextStep === 'setup') {
-        // Redirect to the comprehensive setup page
-        setLocation('/setup');
-      } else {
-        setCurrentStep(nextStep);
-      }
+      setCurrentStep(steps[currentIndex + 1].id);
     }
   };
 
@@ -95,7 +112,9 @@ export default function GuidedApp() {
     switch (currentStep) {
       case 'categorize':
         return <EmailCategorizationSimple />;
-      case 'setup':
+      case 'preferences':
+        return <SetupPreferences />;
+      case 'phone':
         return <PhoneSetup />;
       case 'complete':
         return (

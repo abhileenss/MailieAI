@@ -23,49 +23,21 @@ import {
 } from "lucide-react";
 
 interface UserPreferences {
-  // Email type preferences
-  newsletters: {
-    action: 'call' | 'digest' | 'ignore';
-    callTiming?: number; // minutes before
-  };
-  promotional: {
-    action: 'call' | 'digest' | 'ignore';
-    callTiming?: number;
-  };
-  events: {
-    action: 'call' | 'digest' | 'ignore';
-    callTiming?: number; // minutes before event
-  };
-  tools: {
-    action: 'call' | 'digest' | 'ignore';
-    callTiming?: number;
-  };
-  spam: {
-    action: 'call' | 'digest' | 'ignore';
-    callTiming?: number;
-  };
-  
-  // Call preferences
-  morningCall: {
-    enabled: boolean;
-    time: string; // "08:00"
-    timezone: string;
-  };
-  
-  // Event reminders
-  eventReminders: {
-    enabled: boolean;
-    defaultTiming: number; // minutes before
-    workshopTiming: number;
-    meetingTiming: number;
-  };
-  
-  // Voice preferences
+  newsletters: { action: 'call' | 'digest' | 'ignore'; callTiming?: number };
+  promotional: { action: 'call' | 'digest' | 'ignore'; callTiming?: number };
+  events: { action: 'call' | 'digest' | 'ignore'; callTiming?: number };
+  tools: { action: 'call' | 'digest' | 'ignore'; callTiming?: number };
+  morningCall: { enabled: boolean; time: string; timezone: string };
+  eventReminders: { enabled: boolean; defaultTiming: number; workshopTiming: number; meetingTiming: number };
   voiceId: string;
-  callSpeed: number; // 0.8 to 1.2
+  callSpeed: number;
 }
 
-export default function SetupPreferences() {
+interface SetupPreferencesProps {
+  onComplete?: () => void;
+}
+
+export default function SetupPreferences({ onComplete }: SetupPreferencesProps = {}) {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -111,9 +83,12 @@ export default function SetupPreferences() {
     onSuccess: () => {
       toast({
         title: "Preferences saved!",
-        description: "Your PookAi setup is complete.",
+        description: "Proceeding to phone verification.",
       });
-      setLocation('/dashboard');
+      // If this is being used in guided flow, don't redirect
+      if (window.location.pathname === '/setup') {
+        setLocation('/dashboard');
+      }
     },
     onError: (error: any) => {
       toast({
@@ -126,6 +101,9 @@ export default function SetupPreferences() {
 
   const handleSave = () => {
     savePreferencesMutation.mutate(preferences);
+    if (onComplete) {
+      onComplete();
+    }
   };
 
   const updatePreference = (category: keyof UserPreferences, field: string, value: any) => {
