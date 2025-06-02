@@ -9,8 +9,6 @@ import PublicLanding from "@/pages/public-landing";
 import Dashboard from "@/pages/dashboard";
 import GuidedApp from "@/pages/guided-app";
 import EmailScanning from "@/pages/email-scanning";
-import PhoneVerification from "@/pages/phone-verification";
-import CallConfig from "@/pages/call-config";
 import Privacy from "@/pages/privacy";
 import Security from "@/pages/security";
 import Support from "@/pages/support";
@@ -31,8 +29,6 @@ function Router() {
       {/* Protected routes with authentication check */}
       <Route path="/dashboard" component={AuthenticatedRoute} />
       <Route path="/scanning" component={AuthenticatedRoute} />
-      <Route path="/phone-verification" component={AuthenticatedRoute} />
-      <Route path="/call-config" component={AuthenticatedRoute} />
       
       <Route component={NotFound} />
     </Switch>
@@ -57,22 +53,7 @@ function AuthenticatedRoute() {
     return <PublicLanding />;
   }
   
-  // Route to specific pages based on path
-  const path = window.location.pathname;
-  
-  switch (path) {
-    case '/phone-verification':
-      return <PhoneVerification />;
-    case '/call-config':
-      return <CallConfig />;
-    case '/dashboard':
-      return <Dashboard />;
-    case '/scanning':
-      return <EmailScanning />;
-    default:
-      // Always show the guided onboarding flow for all users
-      return <GuidedApp />;
-  }
+  return <GuidedApp />;
 }
 
 function App() {

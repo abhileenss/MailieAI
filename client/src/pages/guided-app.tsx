@@ -22,18 +22,18 @@ const APP_STEPS = [
     active: true
   },
   {
-    id: 'verify',
-    title: 'Verify',
-    description: 'Phone verification',
-    icon: CheckCircle,
-    completed: false,
-    active: false
-  },
-  {
     id: 'calls',
     title: 'Calls',
     description: 'Review urgent items',
     icon: Phone,
+    completed: false,
+    active: false
+  },
+  {
+    id: 'verify',
+    title: 'Verify',
+    description: 'Phone verification',
+    icon: CheckCircle,
     completed: false,
     active: false
   },
@@ -100,15 +100,41 @@ export default function GuidedApp() {
     switch (currentStep) {
       case 'categorize':
         return <MainDashboard />;
-      case 'verify':
-        setLocation('/phone-verification');
-        return null;
       case 'calls':
-        setLocation('/call-config');
-        return null;
+        return <CallActionCenter />;
+      case 'verify':
+        return <CallConfig />;
       case 'complete':
-        setLocation('/dashboard');
-        return null;
+        return (
+          <div className="min-h-screen bg-background flex items-center justify-center">
+            <div className="text-center p-8">
+              <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 p-8 rounded-3xl shadow-2xl neo-pop-shadow mb-8">
+                <CheckCircle className="w-20 h-20 text-white mx-auto mb-6" />
+                <h1 className="text-3xl font-bold text-white mb-4">PookAi is Ready!</h1>
+                <p className="text-white/90 text-lg">
+                  Your AI voice assistant is now configured and ready to manage your emails.
+                </p>
+              </div>
+              <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto">
+                <div className="text-center p-4 bg-card rounded-2xl neo-pop-card">
+                  <Mail className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                  <p className="font-medium">102 Senders</p>
+                  <p className="text-xs text-muted-foreground">Categorized</p>
+                </div>
+                <div className="text-center p-4 bg-card rounded-2xl neo-pop-card">
+                  <Phone className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                  <p className="font-medium">Voice Ready</p>
+                  <p className="text-xs text-muted-foreground">Phone Verified</p>
+                </div>
+                <div className="text-center p-4 bg-card rounded-2xl neo-pop-card">
+                  <BarChart3 className="w-8 h-8 text-purple-500 mx-auto mb-2" />
+                  <p className="font-medium">AI Active</p>
+                  <p className="text-xs text-muted-foreground">Monitoring</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
       default:
         return <MainDashboard />;
     }
