@@ -1222,11 +1222,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Dashboard test call endpoint
   app.post('/api/calls/test', isAuthenticated, async (req, res) => {
     try {
+      console.log('Test call request received:', { 
+        user: req.user, 
+        session: req.session,
+        userClaims: req.user?.claims,
+        sessionUser: req.session?.user 
+      });
+      
       const userId = req.user?.claims?.sub;
       const { script } = req.body;
       
       if (!userId) {
-        console.log('Test call auth failed - no user ID found:', { user: req.user, session: req.session });
+        console.log('Test call auth failed - no user ID found');
         return res.status(401).json({ message: 'Unauthorized' });
       }
 
