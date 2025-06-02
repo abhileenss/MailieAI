@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function PhoneSetup() {
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [formattedPhone, setFormattedPhone] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
@@ -90,35 +91,27 @@ export default function PhoneSetup() {
 
   const handleSendCode = () => {
     // Format phone number for Twilio (ensure it starts with +)
-    let formattedPhone = phoneNumber.replace(/\D/g, ''); // Remove non-digits
-    if (formattedPhone.startsWith('91') && formattedPhone.length === 12) {
+    let formatted = phoneNumber.replace(/\D/g, ''); // Remove non-digits
+    if (formatted.startsWith('91') && formatted.length === 12) {
       // Indian number starting with 91
-      formattedPhone = '+' + formattedPhone;
-    } else if (formattedPhone.length === 10) {
+      formatted = '+' + formatted;
+    } else if (formatted.length === 10) {
       // US number
-      formattedPhone = '+1' + formattedPhone;
-    } else if (!formattedPhone.startsWith('+')) {
+      formatted = '+1' + formatted;
+    } else if (!formatted.startsWith('+')) {
       // Add + if not present
-      formattedPhone = '+' + formattedPhone;
+      formatted = '+' + formatted;
     }
     
-    if (formattedPhone.length >= 12) {
-      sendCodeMutation.mutate(formattedPhone);
+    if (formatted.length >= 12) {
+      setFormattedPhone(formatted); // Store the formatted phone
+      sendCodeMutation.mutate(formatted);
     }
   };
 
   const handleVerifyCode = () => {
     if (verificationCode.length >= 4) {
-      // Format phone number the same way as when sending code
-      let formattedPhone = phoneNumber.replace(/\D/g, '');
-      if (formattedPhone.startsWith('91') && formattedPhone.length === 12) {
-        formattedPhone = '+' + formattedPhone;
-      } else if (formattedPhone.length === 10) {
-        formattedPhone = '+1' + formattedPhone;
-      } else if (!formattedPhone.startsWith('+')) {
-        formattedPhone = '+' + formattedPhone;
-      }
-      
+      // Use the same formatted phone number that was used for sending
       verifyCodeMutation.mutate({ phone: formattedPhone, code: verificationCode });
     }
   };
@@ -170,12 +163,11 @@ export default function PhoneSetup() {
               {verificationSent && !isPhoneVerified && (
                 <div>
                   <Label htmlFor="code" className="text-gray-300">Verification Code</Label>
-                  <p className="text-xs text-orange-400 mb-2">Demo code: 123456</p>
                   <div className="flex space-x-2 mt-1">
                     <Input
                       id="code"
                       type="text"
-                      placeholder="Enter demo code: 123456"
+                      placeholder="Enter 6-digit code"
                       value={verificationCode}
                       onChange={(e) => setVerificationCode(e.target.value)}
                       className="bg-zinc-800 border-zinc-700 text-white placeholder-gray-400"
@@ -187,13 +179,6 @@ export default function PhoneSetup() {
                       className="bg-orange-400 hover:bg-orange-500 text-black"
                     >
                       {verifyCodeMutation.isPending ? "Verifying..." : "Verify"}
-                    </Button>
-                    <Button
-                      onClick={() => setIsPhoneVerified(true)}
-                      variant="outline"
-                      className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
-                    >
-                      Skip Demo
                     </Button>
                   </div>
                 </div>
