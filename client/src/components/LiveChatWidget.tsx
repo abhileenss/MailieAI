@@ -128,7 +128,7 @@ export default function LiveChatWidget() {
           >
             <Button
               onClick={() => setIsOpen(true)}
-              className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all duration-300"
+              className="h-14 w-14 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <MessageCircle className="h-6 w-6 text-white" />
             </Button>
@@ -151,7 +151,7 @@ export default function LiveChatWidget() {
             className="fixed bottom-6 right-6 z-50 w-80 bg-gray-900 border border-gray-700 rounded-lg shadow-2xl overflow-hidden"
           >
             {/* Chat Header */}
-            <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-4 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-orange-500 to-amber-500 p-4 flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 <span className="text-white font-medium">Mailie Support</span>
@@ -189,7 +189,7 @@ export default function LiveChatWidget() {
                       <div
                         className={`max-w-[80%] p-3 rounded-lg ${
                           message.type === 'user'
-                            ? 'bg-blue-500 text-white'
+                            ? 'bg-orange-500 text-white'
                             : 'bg-gray-700 text-gray-100'
                         }`}
                       >
@@ -275,7 +275,7 @@ export default function LiveChatWidget() {
                     <Button
                       onClick={handleSendMessage}
                       disabled={!formData.message.trim() || sendEmailMutation.isPending}
-                      className="bg-blue-500 hover:bg-blue-600 px-3"
+                      className="bg-orange-500 hover:bg-orange-600 px-3"
                     >
                       {sendEmailMutation.isPending ? (
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
