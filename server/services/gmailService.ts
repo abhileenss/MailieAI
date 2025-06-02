@@ -114,16 +114,20 @@ export class GmailService {
   // Fetch user's email messages
   async getMessages(userId: string, maxResults: number = 50): Promise<EmailMessage[]> {
     try {
+      console.log(`Fetching messages for user ${userId} with maxResults: ${maxResults}`);
       const hasCredentials = await this.setUserCredentials(userId);
       if (!hasCredentials) {
         throw new Error('No valid Gmail credentials found for user');
       }
 
+      console.log('Making Gmail API request...');
       const response = await this.gmail.users.messages.list({
         userId: 'me',
         maxResults,
         q: 'in:inbox'
       });
+      
+      console.log(`Gmail API response: ${response.data.messages?.length || 0} messages found`);
 
       const messages: EmailMessage[] = [];
       
