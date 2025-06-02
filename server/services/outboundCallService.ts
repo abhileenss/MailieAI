@@ -130,7 +130,7 @@ export class OutboundCallService {
     const senderCount = emailData.senders?.length || 0;
     const category = emailData.category || 'important';
     
-    return `Hello! This is your PookAi assistant calling with an email reminder.
+    return `Hello! This is your mailieAI assistant calling with an email reminder.
 
 You have ${senderCount} emails in your ${category.replace('-', ' ')} category that need your attention.
 
@@ -142,14 +142,14 @@ These emails were categorized as ${category.replace('-', ' ')}, which means they
 
 Would you like me to read the full details, or shall I send you a summary via text? 
 
-Thank you for using PookAi. Have a productive day!`;
+Thank you for using mailieAI. Have a productive day!`;
   }
 
   private generateDigestScript(emailData: any): string {
     const totalEmails = emailData.totalEmails || 0;
     const categories = emailData.categories || {};
     
-    return `Good ${this.getTimeOfDay()}! This is your daily PookAi email digest.
+    return `Good ${this.getTimeOfDay()}! This is your daily mailieAI email digest.
 
 You received ${totalEmails} emails today across ${Object.keys(categories).length} categories.
 

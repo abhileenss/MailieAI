@@ -1276,9 +1276,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const emailContext = recentImportant
             .map(sender => `${sender.name}: ${sender.latestSubject}`)
             .join('. ');
-          finalScript = `Hey! PookAi here. Quick update: ${emailContext}. These look important. Thanks for using PookAi!`;
+          finalScript = `Hey! mailieAI here. Quick update: ${emailContext}. These look important. Thanks for using mailieAI!`;
         } else {
-          finalScript = "Hey! PookAi here. Your inbox is looking good - no urgent items right now. Thanks for using PookAi!";
+          finalScript = "Hey! mailieAI here. Your inbox is looking good - no urgent items right now. Thanks for using mailieAI!";
         }
       }
       

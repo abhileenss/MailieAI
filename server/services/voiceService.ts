@@ -87,9 +87,9 @@ export class VoiceService {
       case 'digest':
         return `${greeting} Here's your daily email digest. You received ${emailCount} emails today. The highlights include investor updates and customer inquiries. Press 1 to hear more details.`;
       case 'test':
-        return `${greeting} This is a test call to verify your PookAi voice service is working correctly. You have ${emailCount} emails in your queue. The system is functioning properly!`;
+        return `${greeting} This is a test call to verify your mailieAI voice service is working correctly. You have ${emailCount} emails in your queue. The system is functioning properly!`;
       default:
-        return `${greeting} You have ${emailCount} new emails to review. Thank you for using PookAi!`;
+        return `${greeting} You have ${emailCount} new emails to review. Thank you for using mailieAI!`;
     }
   }
 
@@ -111,7 +111,7 @@ export class VoiceService {
     
     response.say({
       voice: 'Polly.Joanna'
-    }, 'Thank you for using PookAi. Goodbye!');
+    }, 'Thank you for using mailieAI. Goodbye!');
 
     return response.toString();
   }

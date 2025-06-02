@@ -355,7 +355,7 @@ export default function MainDashboard() {
                       value={callScript}
                       onChange={(e) => setCallScript(e.target.value)}
                       className="bg-zinc-800 border-zinc-700 text-white min-h-[120px]"
-                      placeholder="Enter what PookAi should say during calls..."
+                      placeholder="Enter what mailieAI should say during calls..."
                     />
                     <div className="flex space-x-2">
                       <Button

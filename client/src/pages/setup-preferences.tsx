@@ -143,7 +143,7 @@ export default function SetupPreferences({ onComplete }: SetupPreferencesProps =
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-2">
-            Perfect Your PookAi Experience
+            Perfect Your mailieAI Experience
           </h1>
           <p className="text-gray-400">
             Set up your email preferences and call timing to get exactly what you need, when you need it.

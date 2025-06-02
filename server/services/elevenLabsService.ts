@@ -160,21 +160,21 @@ Be concise, friendly, and professional. Ask if the user wants details about spec
   private generateVoiceScript(callType: string, emailData: any): string {
     switch (callType) {
       case 'daily-digest':
-        return `Hello! This is your PookAi assistant. You have ${emailData.emailCount} new emails in your priority categories. Would you like me to summarize them for you?`;
+        return `Hello! This is your mailieAI assistant. You have ${emailData.emailCount} new emails in your priority categories. Would you like me to summarize them for you?`;
       
       case 'urgent-alert':
-        return `Hello! This is PookAi with an urgent email alert. You have ${emailData.urgentCount} high-priority emails that need your immediate attention.`;
+        return `Hello! This is mailieAI with an urgent email alert. You have ${emailData.urgentCount} high-priority emails that need your immediate attention.`;
       
       case 'category-alert':
         const { domain, category, senderCount, totalEmails, senders } = emailData;
         const topSenders = senders.slice(0, 3).map(s => s.name).join(', ');
-        return `Hello! This is PookAi. You have ${totalEmails} new emails from ${senderCount} senders at ${domain} in your ${category} category. Top senders include: ${topSenders}. Would you like me to provide more details?`;
+        return `Hello! This is mailieAI. You have ${totalEmails} new emails from ${senderCount} senders at ${domain} in your ${category} category. Top senders include: ${topSenders}. Would you like me to provide more details?`;
       
       case 'test':
-        return `Hello! This is a test call from PookAi. Your email management system is working correctly. You have ${emailData.emailCount} emails being monitored.`;
+        return `Hello! This is a test call from mailieAI. Your email management system is working correctly. You have ${emailData.emailCount} emails being monitored.`;
       
       default:
-        return `Hello! This is PookAi. You have ${emailData.emailCount || 0} emails to review.`;
+        return `Hello! This is mailieAI. You have ${emailData.emailCount || 0} emails to review.`;
     }
   }
 
