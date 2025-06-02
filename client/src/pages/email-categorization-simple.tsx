@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 import { 
   Search, 
   Mail, 
@@ -384,6 +385,14 @@ export default function EmailCategorizationSimple() {
               <Mail className="w-16 h-16 mx-auto mb-4 text-gray-600" />
               <h3 className="text-lg font-medium mb-2 text-gray-400">Select a company</h3>
               <p className="text-gray-500">Choose a company from the left to set how PookAi should handle all emails from that company</p>
+              <div className="mt-6">
+                <Button
+                  onClick={() => setLocation('/setup')}
+                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                >
+                  Continue to Setup →
+                </Button>
+              </div>
             </div>
           </div>
         )}

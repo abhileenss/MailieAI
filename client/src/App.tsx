@@ -49,6 +49,7 @@ function Router() {
       {/* Protected routes with authentication check */}
       <Route path="/dashboard" component={MainDashboardRoute} />
       <Route path="/main-dashboard" component={MainDashboardRoute} />
+      <Route path="/setup" component={SetupPreferencesRoute} />
       <Route path="/guided-app" component={GuidedAppRoute} />
       <Route path="/scanning" component={ScanningRoute} />
       
@@ -97,6 +98,27 @@ function ScanningRoute() {
   }
   
   return <Scanning />;
+}
+
+function SetupPreferencesRoute() {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mx-auto mb-4"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (!isAuthenticated) {
+    return <PublicLanding />;
+  }
+  
+  return <SetupPreferences />;
 }
 
 function App() {
