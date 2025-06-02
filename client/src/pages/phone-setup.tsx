@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Phone, Check, AlertCircle } from "lucide-react";
+import { Phone, Check, AlertCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 export default function PhoneSetup() {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -117,7 +118,7 @@ export default function PhoneSetup() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-6">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4 sm:p-6">
       <div className="max-w-md mx-auto w-full">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-orange-400 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -232,13 +233,24 @@ export default function PhoneSetup() {
           </Card>
 
           {/* Setup Status */}
-          <div className="text-center">
+          <div className="text-center space-y-4">
             <div className="flex items-center justify-center space-x-4 text-sm">
               <div className={`flex items-center space-x-2 ${isPhoneVerified ? 'text-green-400' : 'text-yellow-400'}`}>
                 {isPhoneVerified ? <Check className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
                 <span>Phone {isPhoneVerified ? 'verified' : 'verification required'}</span>
               </div>
             </div>
+            
+            {/* Continue Button */}
+            {isPhoneVerified && (
+              <Button 
+                onClick={() => setLocation('/dashboard')}
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+              >
+                Continue to Dashboard
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            )}
           </div>
         </div>
       </div>
