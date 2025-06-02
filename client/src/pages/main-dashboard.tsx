@@ -306,7 +306,12 @@ export default function MainDashboard() {
                   Test your voice setup and hear how PookAi will sound during actual calls.
                 </p>
                 <Button
-                  onClick={handleTestCall}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('=== BUTTON CLICKED ===');
+                    handleTestCall();
+                  }}
                   disabled={testCallMutation.isPending}
                   className="w-full bg-orange-400 hover:bg-orange-500 text-black font-semibold"
                 >
