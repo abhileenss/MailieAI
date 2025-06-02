@@ -38,7 +38,7 @@ export class EmailService {
       const supportEmail = {
         to: 'info.glitchowt@gmail.com',
         from: {
-          email: 'noreply@glitchowt.com',
+          email: 'info.glitchowt@gmail.com',
           name: 'Mailie Support System'
         },
         replyTo: data.userEmail || 'info.glitchowt@gmail.com',
@@ -50,8 +50,9 @@ export class EmailService {
       await sgMail.send(supportEmail);
       console.log(`Support email sent successfully for: ${data.subject}`);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to send support email:', error);
+      console.error('SendGrid error details:', error.response?.body);
       return false;
     }
   }
