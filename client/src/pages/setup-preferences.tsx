@@ -9,6 +9,7 @@ import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
+import { Navigation } from "@/components/navigation";
 import { 
   Phone, 
   Mail, 

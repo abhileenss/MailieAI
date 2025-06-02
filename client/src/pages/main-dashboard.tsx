@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocation } from "wouter";
+import { Navigation } from "@/components/navigation";
 import { 
   Phone, 
   Settings, 
@@ -224,6 +225,9 @@ export default function MainDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black relative overflow-hidden">
+      {/* Navigation */}
+      <Navigation currentPage="/dashboard" />
+      
       {/* Background Elements */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-orange-500 to-orange-400 rounded-full blur-3xl"></div>

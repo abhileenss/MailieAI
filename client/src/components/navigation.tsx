@@ -34,7 +34,7 @@ export function Navigation({ currentPage }: NavigationProps) {
     { label: "Dashboard", path: "/dashboard", icon: Mail },
     { label: "Scan", path: "/scanning", icon: Settings },
     { label: "Configure", path: "/call-config", icon: Phone },
-    { label: "Setup", path: "/final-setup", icon: CheckCircle }
+    { label: "Setup", path: "/setup", icon: CheckCircle }
   ];
 
   const footerLinks = [
