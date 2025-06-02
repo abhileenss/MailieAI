@@ -28,16 +28,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Gmail OAuth Integration Routes
-  app.get("/api/gmail/auth", isAuthenticated, async (req: any, res) => {
-    try {
-      const authUrl = gmailService.getAuthUrl();
-      res.json({ authUrl });
-    } catch (error) {
-      console.error('Error generating Gmail auth URL:', error);
-      res.status(500).json({ message: 'Failed to generate authentication URL' });
-    }
-  });
+  // Gmail OAuth Integration Routes (removed duplicate - using the improved version below)
 
   // OAuth states are now stored in user sessions to persist across restarts
 
@@ -74,7 +65,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const authUrl = gmailService.getAuthUrl(state);
       
-      res.json({ authUrl });
+      // Force session save before sending response
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ message: 'Session save failed' });
+        }
+        console.log('Session saved successfully with OAuth data');
+        res.json({ authUrl });
+      });
     } catch (error) {
       console.error('Error generating Gmail auth URL:', error);
       res.status(500).json({ message: 'Failed to generate authentication URL' });
