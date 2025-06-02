@@ -7,12 +7,55 @@ import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
 import PublicLanding from "@/pages/public-landing";
 import Dashboard from "@/pages/dashboard";
+import MainDashboard from "@/pages/main-dashboard";
 import GuidedApp from "@/pages/guided-app";
 import EmailScanning from "@/pages/email-scanning";
 import Privacy from "@/pages/privacy";
 import Security from "@/pages/security";
 import Support from "@/pages/support";
 import NotFound from "@/pages/not-found";
+
+function DashboardRoute() {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mx-auto mb-4"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (!isAuthenticated) {
+    return <PublicLanding />;
+  }
+  
+  return <Dashboard />;
+}
+
+function MainDashboardRoute() {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mx-auto mb-4"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (!isAuthenticated) {
+    return <PublicLanding />;
+  }
+  
+  return <MainDashboard />;
+}
 
 function Router() {
   return (
@@ -27,7 +70,8 @@ function Router() {
       <Route path="/" component={PublicLanding} />
       
       {/* Protected routes with authentication check */}
-      <Route path="/dashboard" component={AuthenticatedRoute} />
+      <Route path="/dashboard" component={DashboardRoute} />
+      <Route path="/main-dashboard" component={MainDashboardRoute} />
       <Route path="/guided-app" component={AuthenticatedRoute} />
       <Route path="/scanning" component={AuthenticatedRoute} />
       
@@ -41,9 +85,9 @@ function AuthenticatedRoute() {
   
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mx-auto mb-4"></div>
           <p>Loading...</p>
         </div>
       </div>
