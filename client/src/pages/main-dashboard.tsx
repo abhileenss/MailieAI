@@ -23,6 +23,7 @@ import {
   Calendar,
   Newspaper,
   Tag,
+  RefreshCw,
   Archive,
   HelpCircle
 } from "lucide-react";
@@ -172,6 +173,43 @@ export default function MainDashboard() {
 
   const handleBackToCategorization = () => {
     setLocation('/guided-app');
+  };
+
+  // Generate digest script mutation
+  const generateDigestMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/emails/generate-digest-script', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to generate digest script');
+      }
+      
+      return data;
+    },
+    onSuccess: (data) => {
+      setCallScript(data.script);
+      toast({
+        title: "Digest script generated!",
+        description: "Generated fresh script from your recent important emails.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to generate script",
+        description: error.message || "Could not generate digest script from recent emails.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const generateDigestScript = () => {
+    generateDigestMutation.mutate();
   };
 
   const handleTestCall = async () => {
@@ -358,17 +396,28 @@ export default function MainDashboard() {
               <CardHeader>
                 <CardTitle className="text-white flex items-center justify-between">
                   <span>Call Script</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      console.log('Edit button clicked, current state:', isEditingScript);
-                      setIsEditingScript(!isEditingScript);
-                    }}
-                    className="text-orange-400 hover:text-orange-300"
-                  >
-                    <Edit3 className="w-4 h-4" />
-                  </Button>
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={generateDigestScript}
+                      className="text-orange-400 hover:text-orange-300"
+                      title="Generate fresh digest from recent emails"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        console.log('Edit button clicked, current state:', isEditingScript);
+                        setIsEditingScript(!isEditingScript);
+                      }}
+                      className="text-orange-400 hover:text-orange-300"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">

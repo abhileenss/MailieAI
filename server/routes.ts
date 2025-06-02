@@ -959,10 +959,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`Found ${currentSenders.length} senders in database`);
       
       // Find the latest email timestamp from our database
-      const latestEmailDate = currentSenders.length > 0 
-        ? new Date(Math.max(...currentSenders
-            .filter(s => s.latestMessageDate)
-            .map(s => s.latestMessageDate.getTime())))
+      const sendersWithDates = currentSenders.filter(s => s.latestMessageDate && !isNaN(new Date(s.latestMessageDate).getTime()));
+      const latestEmailDate = sendersWithDates.length > 0 
+        ? new Date(Math.max(...sendersWithDates.map(s => new Date(s.latestMessageDate).getTime())))
         : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // 7 days ago if no emails
       
       console.log(`Looking for emails newer than: ${latestEmailDate.toISOString()}`);
@@ -1024,6 +1023,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Error during scan and process:', error);
       res.status(500).json({ 
         message: 'Failed to scan and process emails',
+        error: error.message
+      });
+    }
+  });
+
+  // Generate digest script from recent important emails
+  app.post("/api/emails/generate-digest-script", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      console.log(`Generating digest script for user: ${userId}`);
+      
+      // Get recent emails from Gmail
+      const messages = await gmailService.getMessages(userId, 50);
+      console.log(`Retrieved ${messages.length} recent messages for digest`);
+      
+      // Get AI categorizations for these messages
+      const categorizations = await categorizationService.categorizeEmails(messages);
+      
+      // Filter for important emails (call-me category and high importance)
+      const importantEmails = new Map();
+      for (const [messageId, category] of categorizations) {
+        if (category.category === 'call-me' || category.importance >= 4) {
+          importantEmails.set(messageId, category);
+        }
+      }
+      
+      console.log(`Found ${importantEmails.size} important emails for digest`);
+      
+      // Generate concise digest script
+      const script = await categorizationService.generateCallScript(importantEmails, {
+        callType: 'daily-digest',
+        maxLength: 200, // Keep it short and concise
+        focusOnUrgent: true
+      });
+      
+      res.json({
+        success: true,
+        script: script,
+        emailsAnalyzed: messages.length,
+        importantEmailsFound: importantEmails.size,
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error: any) {
+      console.error('Error generating digest script:', error);
+      res.status(500).json({
+        message: 'Failed to generate digest script',
         error: error.message
       });
     }
