@@ -51,11 +51,10 @@ function Router() {
       {/* Protected routes with authentication check */}
       <Route path="/dashboard" component={MainDashboardRoute} />
       <Route path="/main-dashboard" component={MainDashboardRoute} />
-      <Route path="/setup" component={SetupPreferencesRoute} />
       <Route path="/categorize" component={EmailCategorizationRoute} />
       <Route path="/guided-app" component={GuidedAppRoute} />
       <Route path="/scanning" component={ScanningRoute} />
-      <Route path="/call-config" component={MainDashboardRoute} />
+      <Route path="/call-config" component={SetupPreferencesRoute} />
       
       <Route component={NotFound} />
     </Switch>

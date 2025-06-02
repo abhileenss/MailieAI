@@ -139,9 +139,13 @@ export default function SetupPreferences({ onComplete }: SetupPreferencesProps =
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black p-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black">
+      {/* Navigation */}
+      <Navigation currentPage="/call-config" />
+      
+      <div className="p-6">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-2">
             Perfect Your mailieAI Experience
@@ -384,8 +388,7 @@ export default function SetupPreferences({ onComplete }: SetupPreferencesProps =
             </CardContent>
           </Card>
         </div>
-
-
+        </div>
       </div>
     </div>
   );

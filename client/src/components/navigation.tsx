@@ -30,11 +30,10 @@ export function Navigation({ currentPage }: NavigationProps) {
   }, []);
 
   const navigationItems = [
-    { label: "Home", path: "/", icon: Home },
     { label: "Dashboard", path: "/dashboard", icon: Mail },
-    { label: "Scan", path: "/scanning", icon: Settings },
-    { label: "Configure", path: "/call-config", icon: Phone },
-    { label: "Setup", path: "/setup", icon: CheckCircle }
+    { label: "Scan Emails", path: "/scanning", icon: Settings },
+    { label: "Call Config", path: "/call-config", icon: Phone },
+    { label: "Categorize", path: "/categorize", icon: CheckCircle }
   ];
 
   const footerLinks = [
