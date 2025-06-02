@@ -1219,12 +1219,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Simple test endpoint to verify authentication
+  app.post('/api/test-auth', isAuthenticated, async (req, res) => {
+    res.json({ 
+      success: true, 
+      message: 'Authentication working',
+      userId: req.user?.claims?.sub,
+      userEmail: req.user?.claims?.email
+    });
+  });
+
   // Dashboard test call endpoint
   app.post('/api/calls/test', isAuthenticated, async (req, res) => {
     try {
-      console.log('Test call request - Authentication check passed');
-      console.log('User object:', JSON.stringify(req.user, null, 2));
-      console.log('Session:', JSON.stringify(req.session, null, 2));
+      console.log('=== TEST CALL REQUEST RECEIVED ===');
+      console.log('User ID:', req.user?.claims?.sub);
+      console.log('User Email:', req.user?.claims?.email);
       
       const userId = req.user?.claims?.sub;
       const { script } = req.body;

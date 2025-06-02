@@ -104,7 +104,8 @@ export default function MainDashboard() {
     setLocation('/guided-app');
   };
 
-  const handleTestCall = () => {
+  const handleTestCall = async () => {
+    console.log('Test call button clicked');
     testCallMutation.mutate();
   };
 
