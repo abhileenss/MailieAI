@@ -26,6 +26,7 @@ export interface IStorage {
   // Email sender operations
   getEmailSenders(userId: string): Promise<EmailSender[]>;
   createEmailSender(sender: InsertEmailSender): Promise<EmailSender>;
+  upsertEmailSender(sender: InsertEmailSender): Promise<EmailSender>;
   updateEmailSenderCategory(id: string, category: string): Promise<void>;
   
   // User preferences operations
@@ -71,6 +72,24 @@ export class DatabaseStorage implements IStorage {
   async createEmailSender(sender: InsertEmailSender): Promise<EmailSender> {
     const [newSender] = await db.insert(emailSenders).values(sender).returning();
     return newSender;
+  }
+
+  async upsertEmailSender(sender: InsertEmailSender): Promise<EmailSender> {
+    const [upsertedSender] = await db
+      .insert(emailSenders)
+      .values(sender)
+      .onConflictDoUpdate({
+        target: emailSenders.id,
+        set: {
+          name: sender.name,
+          emailCount: sender.emailCount,
+          latestSubject: sender.latestSubject,
+          lastEmailDate: sender.lastEmailDate,
+          updatedAt: new Date()
+        }
+      })
+      .returning();
+    return upsertedSender;
   }
 
   async updateEmailSenderCategory(id: string, category: string): Promise<void> {

@@ -243,7 +243,7 @@ export class GmailService {
   async storeEmailSenders(userId: string, senders: EmailSender[]): Promise<void> {
     try {
       for (const sender of senders) {
-        await storage.createEmailSender({
+        await storage.upsertEmailSender({
           id: `${userId}_${sender.email}`,
           userId,
           email: sender.email,
