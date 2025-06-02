@@ -593,15 +593,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const categoryResult = await categorizationService.categorizeEmail(emailForAnalysis);
           
           // Update database with AI category
-          await storage.updateEmailSenderCategory(sender.id, categoryResult.category);
+          await storage.updateEmailSenderCategory(sender.id, categoryResult.suggestedCategory);
           categorizedCount++;
           
           // Update statistics
-          if (categoryStats.hasOwnProperty(categoryResult.category)) {
-            categoryStats[categoryResult.category as keyof typeof categoryStats]++;
+          if (categoryStats.hasOwnProperty(categoryResult.suggestedCategory)) {
+            categoryStats[categoryResult.suggestedCategory as keyof typeof categoryStats]++;
           }
           
-          console.log(`Categorized ${sender.name}: ${categoryResult.category} (importance: ${categoryResult.importance})`);
+          console.log(`Categorized ${sender.name}: ${categoryResult.suggestedCategory} (importance: ${categoryResult.importance})`);
           
         } catch (error) {
           console.log(`Skipped categorizing ${sender.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -701,7 +701,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const senderId = `${userId}_${senderEmail}`;
           
           try {
-            await storage.updateEmailSenderCategory(senderId, categoryResult.category);
+            await storage.updateEmailSenderCategory(senderId, categoryResult.suggestedCategory);
             categoriesUpdated++;
           } catch (error) {
             console.log(`Skipped category update for ${senderId}`);
