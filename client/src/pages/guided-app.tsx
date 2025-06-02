@@ -57,7 +57,13 @@ export default function GuidedApp() {
   const handleNext = () => {
     const currentIndex = steps.findIndex(step => step.id === currentStep);
     if (currentIndex < steps.length - 1) {
-      setCurrentStep(steps[currentIndex + 1].id);
+      const nextStep = steps[currentIndex + 1].id;
+      if (nextStep === 'setup') {
+        // Redirect to the comprehensive setup page
+        setLocation('/setup');
+      } else {
+        setCurrentStep(nextStep);
+      }
     }
   };
 
