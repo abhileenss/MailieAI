@@ -14,6 +14,7 @@ import Privacy from "@/pages/privacy";
 import Security from "@/pages/security";
 import Support from "@/pages/support";
 import NotFound from "@/pages/not-found";
+import LiveChatWidget from "@/components/LiveChatWidget";
 
 function MainDashboardRoute() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -154,6 +155,7 @@ function App() {
         <div className="dark">
           <Toaster />
           <Router />
+          <LiveChatWidget />
         </div>
       </TooltipProvider>
     </QueryClientProvider>
