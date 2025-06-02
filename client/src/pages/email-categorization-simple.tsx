@@ -227,24 +227,22 @@ export default function EmailCategorizationSimple() {
   const selectedCompanySenders = selectedCompany ? filteredCompanies[selectedCompany] || [] : [];
 
   return (
-    <div className="min-h-screen bg-black flex flex-col lg:flex-row">
-      {/* Left Panel - Company List */}
-      <div className="w-full lg:w-1/2 bg-black flex flex-col min-h-screen lg:min-h-0">
-        {/* Search Header */}
-        <div className="p-4 border-b border-zinc-800">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Search companies..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-zinc-900 border-zinc-700 text-white placeholder-gray-400 rounded-lg"
-            />
-          </div>
+    <div className="min-h-screen bg-black">
+      {/* Search Header */}
+      <div className="p-4 border-b border-zinc-800">
+        <div className="relative max-w-4xl mx-auto">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <Input
+            placeholder="Search companies..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-zinc-900 border-zinc-700 text-white placeholder-gray-400 rounded-lg"
+          />
         </div>
+      </div>
 
-        {/* Company List */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      {/* Company List */}
+      <div className="max-w-4xl mx-auto p-4 space-y-3">
           {Object.entries(filteredCompanies).map(([company, senders]) => {
             const totalEmails = getTotalEmailsForCompany(senders);
             const recentEmail = getMostRecentEmail(senders);
@@ -308,107 +306,67 @@ export default function EmailCategorizationSimple() {
                     </p>
                   </div>
                 </CardContent>
+                
+                {/* Inline Categorization Panel - appears when company is selected */}
+                {isSelected && (
+                  <div className="border-t border-zinc-800 bg-zinc-950 p-4">
+                    <h3 className="text-lg font-semibold text-white mb-4">
+                      How should mailieAI handle emails from {company}?
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {Object.entries(categories).map(([catKey, catInfo]) => {
+                        const IconComponent = catInfo.icon;
+                        const isSelectedCategory = selectedCompanySenders.some(s => s.category === catKey);
+                        
+                        return (
+                          <Button
+                            key={catKey}
+                            variant="ghost"
+                            className={`h-auto p-4 justify-start text-left rounded-xl border-2 transition-all ${
+                              isSelectedCategory 
+                                ? `${catInfo.color} ${catInfo.borderColor} text-white hover:opacity-90` 
+                                : 'bg-zinc-900 border-zinc-800 text-gray-300 hover:bg-zinc-800 hover:border-zinc-700'
+                            }`}
+                            onClick={() => {
+                              selectedCompanySenders.forEach(sender => {
+                                handleCategoryUpdate(sender, catKey);
+                              });
+                            }}
+                            disabled={updateCategoryMutation.isPending}
+                          >
+                            <div className="flex items-center space-x-3 w-full">
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                                isSelectedCategory 
+                                  ? 'bg-black/20' 
+                                  : 'bg-zinc-800'
+                              }`}>
+                                <IconComponent className={`w-4 h-4 ${
+                                  isSelectedCategory 
+                                    ? catKey === 'sales-promo' ? 'text-black' : 'text-white'
+                                    : 'text-gray-400'
+                                }`} />
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-sm mb-1">{catInfo.title}</h4>
+                                <p className={`text-xs ${
+                                  isSelectedCategory 
+                                    ? catKey === 'sales-promo' ? 'text-black/80' : 'text-gray-300'
+                                    : 'text-gray-500'
+                                }`}>
+                                  {catInfo.description}
+                                </p>
+                              </div>
+                            </div>
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </Card>
             );
           })}
         </div>
-      </div>
-
-      {/* Right Panel - Categorization */}
-      <div className="w-full lg:w-1/2 bg-black flex flex-col min-h-screen lg:min-h-0">
-        {selectedCompany ? (
-          <>
-            {/* Header */}
-            <div className="p-6 border-b border-zinc-800">
-              <h2 className="text-2xl font-bold text-white mb-2">
-                How should PookAi handle emails from {selectedCompany}?
-              </h2>
-              <p className="text-gray-400">
-                {selectedCompanySenders.length} senders • {getTotalEmailsForCompany(selectedCompanySenders)} total emails
-              </p>
-            </div>
-
-            {/* Back button for mobile */}
-            <div className="lg:hidden p-4 border-b border-zinc-800">
-              <Button
-                variant="ghost"
-                onClick={() => setSelectedCompany('')}
-                className="text-gray-400 hover:text-white"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to companies
-              </Button>
-            </div>
-
-            {/* Category Options */}
-            <div className="flex-1 p-6">
-              <div className="grid grid-cols-1 gap-4">
-                {Object.entries(categories).map(([catKey, catInfo]) => {
-                  const IconComponent = catInfo.icon;
-                  const isSelected = selectedCompanySenders.some(s => s.category === catKey);
-                  
-                  return (
-                    <Button
-                      key={catKey}
-                      variant="ghost"
-                      className={`h-auto p-6 justify-start text-left rounded-2xl border-2 transition-all ${
-                        isSelected 
-                          ? `${catInfo.color} ${catInfo.borderColor} text-white hover:opacity-90` 
-                          : 'bg-zinc-900 border-zinc-800 text-gray-300 hover:bg-zinc-800 hover:border-zinc-700'
-                      }`}
-                      onClick={() => {
-                        selectedCompanySenders.forEach(sender => {
-                          handleCategoryUpdate(sender, catKey);
-                        });
-                      }}
-                      disabled={updateCategoryMutation.isPending}
-                    >
-                      <div className="flex items-start space-x-4 w-full">
-                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                          isSelected 
-                            ? 'bg-black/20' 
-                            : 'bg-zinc-800'
-                        }`}>
-                          <IconComponent className={`w-6 h-6 ${
-                            isSelected 
-                              ? catKey === 'sales-promo' ? 'text-black' : 'text-white'
-                              : 'text-gray-400'
-                          }`} />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-lg mb-1">{catInfo.title}</h3>
-                          <p className={`text-sm ${
-                            isSelected 
-                              ? catKey === 'sales-promo' ? 'text-black/80' : 'text-gray-300'
-                              : 'text-gray-500'
-                          }`}>
-                            {catInfo.description}
-                          </p>
-                        </div>
-                      </div>
-                    </Button>
-                  );
-                })}
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center text-gray-500">
-              <Mail className="w-16 h-16 mx-auto mb-4 text-gray-600" />
-              <h3 className="text-lg font-medium mb-2 text-gray-400">Select a company</h3>
-              <p className="text-gray-500">Choose a company from the left to set how PookAi should handle all emails from that company</p>
-              <div className="mt-6">
-                <Button
-                  onClick={() => setLocation('/setup')}
-                  className="bg-orange-500 hover:bg-orange-600 text-white"
-                >
-                  Continue to Setup →
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
