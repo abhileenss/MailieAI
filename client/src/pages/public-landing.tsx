@@ -229,11 +229,15 @@ export default function PublicLanding() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-black text-white">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-black via-zinc-900 to-black text-white relative overflow-hidden">
+      {/* Background gradient elements */}
+      <div className="absolute inset-0 bg-gradient-to-r from-orange-400/10 via-transparent to-orange-400/5 pointer-events-none"></div>
+      <div className="absolute top-0 left-0 w-96 h-96 bg-orange-400/20 rounded-full blur-3xl -translate-x-48 -translate-y-48 pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-orange-400/10 rounded-full blur-3xl translate-x-48 translate-y-48 pointer-events-none"></div>
       {/* Navigation Header */}
-      <nav className="flex justify-between items-center p-4 max-w-7xl mx-auto w-full">
+      <nav className="flex justify-between items-center p-4 max-w-7xl mx-auto w-full relative z-10">
         <div className="flex items-center space-x-2">
-          <div className="w-6 h-6 bg-orange-400 rounded-lg flex items-center justify-center">
+          <div className="w-6 h-6 bg-orange-400 rounded-lg flex items-center justify-center shadow-lg shadow-orange-400/25">
             <Brain className="w-4 h-4 text-black" />
           </div>
           <span className="text-lg font-bold">PookAi</span>
@@ -246,8 +250,10 @@ export default function PublicLanding() {
       </nav>
 
       {/* Hero Section */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="max-w-7xl mx-auto">
+      <div className="flex-1 flex items-center justify-center px-6 py-12 relative z-10">
+        <div className="max-w-7xl mx-auto relative">
+          {/* Additional gradient elements for hero */}
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gradient-radial from-orange-400/20 via-orange-400/5 to-transparent rounded-full blur-3xl pointer-events-none"></div>
           
           {/* Main Hero */}
           <motion.div
@@ -321,32 +327,35 @@ export default function PublicLanding() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <div className="group bg-zinc-900 border border-zinc-800 rounded-lg p-10 text-center hover:border-orange-400/40 transition-all duration-500 hover:scale-105">
-              <div className="w-16 h-16 bg-orange-400 rounded-lg mx-auto mb-8 flex items-center justify-center shadow-lg">
+            <div className="group bg-gradient-to-br from-zinc-900/90 via-zinc-800/50 to-zinc-900/90 backdrop-blur-sm border border-zinc-700 rounded-xl p-10 text-center hover:border-orange-400/40 hover:shadow-xl hover:shadow-orange-400/10 transition-all duration-500 hover:scale-105 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-400/5 via-transparent to-orange-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-500 rounded-xl mx-auto mb-8 flex items-center justify-center shadow-xl shadow-orange-400/25 relative z-10">
                 <Brain className="text-black w-8 h-8" />
               </div>
-              <h3 className="text-2xl font-bold mb-6 text-white">Smart Categories</h3>
-              <p className="text-lg text-gray-300 leading-relaxed">
+              <h3 className="text-2xl font-bold mb-6 text-white relative z-10">Smart Categories</h3>
+              <p className="text-lg text-gray-300 leading-relaxed relative z-10">
                 "Call Me For This", "Why Did I Sign Up?", "Don't Tell Anyone" - categories that actually make sense for your workflow
               </p>
             </div>
             
-            <div className="group bg-zinc-900 border border-zinc-800 rounded-lg p-10 text-center hover:border-orange-400/40 transition-all duration-500 hover:scale-105">
-              <div className="w-16 h-16 bg-orange-400 rounded-lg mx-auto mb-8 flex items-center justify-center shadow-lg">
+            <div className="group bg-gradient-to-br from-zinc-900/90 via-zinc-800/50 to-zinc-900/90 backdrop-blur-sm border border-zinc-700 rounded-xl p-10 text-center hover:border-orange-400/40 hover:shadow-xl hover:shadow-orange-400/10 transition-all duration-500 hover:scale-105 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-400/5 via-transparent to-orange-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-500 rounded-xl mx-auto mb-8 flex items-center justify-center shadow-xl shadow-orange-400/25 relative z-10">
                 <Phone className="text-black w-8 h-8" />
               </div>
-              <h3 className="text-2xl font-bold mb-6 text-white">Voice Intelligence</h3>
-              <p className="text-lg text-gray-300 leading-relaxed">
+              <h3 className="text-2xl font-bold mb-6 text-white relative z-10">Voice Intelligence</h3>
+              <p className="text-lg text-gray-300 leading-relaxed relative z-10">
                 "Hey, 3 investor emails need responses and your payment processor is down" - delivered naturally by voice
               </p>
             </div>
             
-            <div className="group bg-zinc-900 border border-zinc-800 rounded-lg p-10 text-center hover:border-orange-400/40 transition-all duration-500 hover:scale-105">
-              <div className="w-16 h-16 bg-orange-400 rounded-lg mx-auto mb-8 flex items-center justify-center shadow-lg">
+            <div className="group bg-gradient-to-br from-zinc-900/90 via-zinc-800/50 to-zinc-900/90 backdrop-blur-sm border border-zinc-700 rounded-xl p-10 text-center hover:border-orange-400/40 hover:shadow-xl hover:shadow-orange-400/10 transition-all duration-500 hover:scale-105 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-400/5 via-transparent to-orange-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-500 rounded-xl mx-auto mb-8 flex items-center justify-center shadow-xl shadow-orange-400/25 relative z-10">
                 <Lock className="text-black w-8 h-8" />
               </div>
-              <h3 className="text-2xl font-bold mb-6 text-white">Enterprise Privacy</h3>
-              <p className="text-lg text-gray-300 leading-relaxed">
+              <h3 className="text-2xl font-bold mb-6 text-white relative z-10">Enterprise Privacy</h3>
+              <p className="text-lg text-gray-300 leading-relaxed relative z-10">
                 Zero data selling, zero surveillance. Your email content stays completely private and secure
               </p>
             </div>
