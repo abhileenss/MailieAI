@@ -65,6 +65,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       (req.session as any).gmailOAuthState = state;
       (req.session as any).gmailOAuthUserId = userId;
       
+      console.log('OAuth auth debug:', {
+        state: state,
+        userId: userId,
+        sessionId: req.sessionID,
+        sessionSaved: 'pending'
+      });
+      
       const authUrl = gmailService.getAuthUrl(state);
       
       res.json({ authUrl });
@@ -98,8 +105,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sessionState = (req.session as any).gmailOAuthState;
       const userId = (req.session as any).gmailOAuthUserId;
       
+      console.log('OAuth callback debug:', {
+        queryState: state,
+        sessionState: sessionState,
+        userId: userId,
+        sessionId: req.sessionID,
+        sessionKeys: Object.keys(req.session)
+      });
+      
       if (!userId || !sessionState || state !== sessionState) {
-        console.error('Invalid OAuth state or no user ID found');
+        console.error('Invalid OAuth state or no user ID found - debug info:', {
+          hasUserId: !!userId,
+          hasSessionState: !!sessionState,
+          statesMatch: state === sessionState,
+          queryState: state,
+          sessionState: sessionState
+        });
         return res.redirect('/scanning?error=invalid_state');
       }
       
