@@ -35,10 +35,10 @@ export class GmailService {
       return;
     }
 
-    // Use the deployed domain for OAuth callback
+    // Use appropriate domain for OAuth callback
     const redirectUri = process.env.NODE_ENV === 'production' 
       ? 'https://mailie-glitchowt.replit.app/api/auth/gmail/callback'
-      : 'https://mailie-glitchowt.replit.app/api/auth/gmail/callback'; // Use deployed domain even in dev for OAuth consistency
+      : `https://${process.env.REPLIT_DOMAINS?.split(',')[0]}/api/auth/gmail/callback`;
     
     this.oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
