@@ -165,7 +165,7 @@ export default function MainDashboard() {
               <Button
                 variant="outline"
                 onClick={handleBackToCategorization}
-                className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
+                className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700 transition-all duration-200 hover:scale-105 active:scale-95"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Edit Categories
@@ -173,7 +173,7 @@ export default function MainDashboard() {
               <Button
                 variant="outline"
                 onClick={handleLogout}
-                className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
+                className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700 transition-all duration-200 hover:scale-105 active:scale-95"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
@@ -306,6 +306,15 @@ export default function MainDashboard() {
                   Test your voice setup and hear how PookAi will sound during actual calls.
                 </p>
                 <Button
+                  onClick={() => {
+                    console.log('DEBUG: Simple button clicked');
+                    alert('Button click working!');
+                  }}
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold mb-2 transition-all duration-200 transform hover:scale-105 active:scale-95"
+                >
+                  🔧 Debug: Test Click
+                </Button>
+                <Button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -313,7 +322,7 @@ export default function MainDashboard() {
                     handleTestCall();
                   }}
                   disabled={testCallMutation.isPending}
-                  className="w-full bg-orange-400 hover:bg-orange-500 text-black font-semibold"
+                  className="w-full bg-orange-400 hover:bg-orange-500 text-black font-semibold transition-all duration-200 transform hover:scale-105 active:scale-95 hover:shadow-lg hover:shadow-orange-400/25"
                 >
                   {testCallMutation.isPending ? (
                     "Initiating call..."
