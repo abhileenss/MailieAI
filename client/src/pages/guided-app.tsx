@@ -93,19 +93,46 @@ export default function GuidedApp() {
         return <PhoneSetup />;
       case 'complete':
         return (
-          <div className="min-h-screen bg-black flex items-center justify-center">
-            <div className="text-center p-8">
-              <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-8 rounded-3xl shadow-2xl mb-8">
-                <Sparkles className="w-20 h-20 text-black mx-auto mb-6" />
-                <h1 className="text-3xl font-bold text-black mb-4">PookAi is Ready!</h1>
-                <p className="text-black/90 text-lg mb-6">
-                  Your AI voice assistant is now configured and ready to manage your emails.
+          <div className="min-h-screen bg-black flex items-center justify-center p-6">
+            <div className="max-w-2xl w-full text-center">
+              <div className="bg-zinc-900 border border-zinc-800 p-12 rounded-2xl shadow-xl">
+                <Sparkles className="w-16 h-16 text-orange-400 mx-auto mb-6" />
+                <h1 className="text-4xl font-bold text-white mb-6">Setup Complete!</h1>
+                <p className="text-gray-300 text-lg mb-8 leading-relaxed">
+                  Your PookAi voice assistant is now configured and ready to manage your emails intelligently.
                 </p>
+                
+                {/* Configuration Summary */}
+                <div className="bg-zinc-800 rounded-xl p-6 mb-8 text-left">
+                  <h3 className="text-white font-semibold mb-4 flex items-center">
+                    <span className="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                    Configuration Summary
+                  </h3>
+                  <div className="space-y-3 text-sm text-gray-300">
+                    <div className="flex justify-between">
+                      <span>Email Processing:</span>
+                      <span className="text-green-400">✓ Active</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>AI Categorization:</span>
+                      <span className="text-green-400">✓ Configured</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Phone Verification:</span>
+                      <span className="text-green-400">✓ Verified</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Voice Calls:</span>
+                      <span className="text-green-400">✓ Ready</span>
+                    </div>
+                  </div>
+                </div>
+                
                 <Button
                   onClick={() => setLocation('/main-dashboard')}
-                  className="bg-black text-orange-400 hover:bg-zinc-800 font-semibold px-8 py-3"
+                  className="bg-orange-400 hover:bg-orange-500 text-black font-semibold px-8 py-3 text-lg"
                 >
-                  Go to Dashboard
+                  Launch Dashboard
                 </Button>
               </div>
             </div>
