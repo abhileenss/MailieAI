@@ -42,6 +42,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Store OAuth states temporarily to associate with user sessions
   const oauthStates = new Map<string, string>();
 
+  app.get("/api/gmail/status", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const hasGmailAccess = await gmailService.setUserCredentials(userId);
+      
+      res.json({ 
+        connected: hasGmailAccess,
+        userId: userId
+      });
+    } catch (error) {
+      console.error('Error checking Gmail status:', error);
+      res.json({ connected: false });
+    }
+  });
+
   app.get("/api/gmail/auth", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;

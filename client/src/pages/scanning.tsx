@@ -33,6 +33,12 @@ export default function Scanning() {
     enabled: !scanInProgress
   });
 
+  // Check Gmail connection status
+  const { data: gmailStatus } = useQuery({
+    queryKey: ['/api/gmail/status'],
+    enabled: !scanInProgress
+  });
+
   const scanEmailsMutation = useMutation({
     mutationFn: async () => {
       const response = await fetch('/api/emails/scan-and-process', {
@@ -56,6 +62,19 @@ export default function Scanning() {
       setScanInProgress(false);
     }
   });
+
+  const connectGmail = async () => {
+    try {
+      const response = await fetch('/api/gmail/auth');
+      const data = await response.json();
+      
+      if (data.authUrl) {
+        window.location.href = data.authUrl;
+      }
+    } catch (error) {
+      console.error('Error connecting to Gmail:', error);
+    }
+  };
 
   const startEmailScan = async () => {
     setScanInProgress(true);
@@ -129,7 +148,27 @@ export default function Scanning() {
               transition={{ delay: 0.2 }}
               className="max-w-2xl mx-auto"
             >
-              {existingEmails?.success && existingEmails.totalSenders > 0 ? (
+              {/* Gmail Connection Check */}
+              {gmailStatus && !gmailStatus.connected ? (
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-6 mb-6">
+                  <div className="text-center">
+                    <Mail className="w-12 h-12 mx-auto mb-4 text-blue-500" />
+                    <h3 className="text-lg font-semibold mb-2">Connect Your Gmail Account</h3>
+                    <p className="text-muted-foreground mb-6">
+                      To analyze your emails, we need permission to access your Gmail account securely.
+                    </p>
+                    
+                    <Button
+                      onClick={connectGmail}
+                      size="lg"
+                      className="w-full"
+                    >
+                      <Mail className="w-5 h-5 mr-2" />
+                      Connect Gmail Account
+                    </Button>
+                  </div>
+                </div>
+              ) : gmailStatus?.connected && existingEmails && 'success' in existingEmails && existingEmails.success && 'totalSenders' in existingEmails && existingEmails.totalSenders > 0 ? (
                 <div className="bg-accent/50 border border-border rounded-lg p-6 mb-6">
                   <div className="flex items-center justify-between mb-4">
                     <div>
