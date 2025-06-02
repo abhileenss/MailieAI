@@ -1222,14 +1222,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Dashboard test call endpoint
   app.post('/api/calls/test', isAuthenticated, async (req, res) => {
     try {
-      console.log('Test call request received for user:', req.user?.claims?.sub);
+      console.log('Test call request - Authentication check passed');
+      console.log('User object:', JSON.stringify(req.user, null, 2));
+      console.log('Session:', JSON.stringify(req.session, null, 2));
       
       const userId = req.user?.claims?.sub;
       const { script } = req.body;
       
+      console.log('Extracted user ID:', userId);
+      
       if (!userId) {
-        console.log('Test call auth failed - no user ID found');
-        return res.status(401).json({ message: 'Unauthorized - please log in again' });
+        console.log('Test call auth failed - no user ID found in claims');
+        return res.status(401).json({ message: 'User ID not found in session' });
       }
 
       // Check Twilio configuration
