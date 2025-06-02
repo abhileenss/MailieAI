@@ -1032,46 +1032,127 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/emails/generate-digest-script", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      console.log(`Generating digest script for user: ${userId}`);
+      console.log(`Generating fresh digest script for user: ${userId}`);
       
-      // Get categorized email senders from database (already processed)
-      const emailSenders = await storage.getEmailSenders(userId);
+      // First, re-scan emails from Gmail to get latest data
+      console.log('Re-scanning emails from Gmail for fresh data...');
       
-      // Filter for important senders (call-me category)
-      const importantSenders = emailSenders.filter(sender => 
-        sender.category === 'call-me' && sender.emailCount > 0
-      );
-      
-      console.log(`Found ${importantSenders.length} important email senders for digest`);
-      
-      // Create a concise digest script from important senders
-      let script = "Hey! mailieAI here with your quick update: ";
-      
-      if (importantSenders.length === 0) {
-        script = "Hey! mailieAI here. No urgent emails need your attention right now. You're all caught up!";
-      } else {
-        const topSenders = importantSenders.slice(0, 3); // Limit to top 3 for brevity
-        const senderSummaries = topSenders.map(sender => {
-          const name = sender.name || sender.email.split('@')[0];
-          return `${name}: ${sender.latestSubject}`;
+      try {
+        const recentMessages = await gmailService.getMessages(userId, 30);
+        console.log(`Retrieved ${recentMessages.length} recent messages`);
+        
+        // Filter for important emails: those with call-me keywords or meeting-related content
+        const importantMessages = recentMessages.filter(msg => {
+          const subject = msg.subject?.toLowerCase() || '';
+          const body = msg.body?.toLowerCase() || '';
+          const snippet = msg.snippet?.toLowerCase() || '';
+          
+          // Keywords that indicate importance or meetings
+          const importantKeywords = [
+            'urgent', 'asap', 'important', 'critical', 'deadline',
+            'meeting', 'call', 'zoom', 'conference', 'appointment',
+            'schedule', 'calendar', 'invite', 'rsvp',
+            'project', 'proposal', 'contract', 'agreement',
+            'interview', 'follow up', 'action required'
+          ];
+          
+          return importantKeywords.some(keyword => 
+            subject.includes(keyword) || snippet.includes(keyword)
+          );
         });
         
-        script += senderSummaries.join('. ') + '. ';
+        console.log(`Found ${importantMessages.length} important messages from recent scan`);
         
-        if (importantSenders.length > 3) {
-          script += `Plus ${importantSenders.length - 3} more important emails. `;
+        // Take only the most recent 15 important emails
+        const topImportantMessages = importantMessages.slice(0, 15);
+        
+        // Create digest script from these important emails
+        let script = "Hey! mailieAI here with your fresh update: ";
+        
+        if (topImportantMessages.length === 0) {
+          script = "Hey! mailieAI here. No urgent emails or meetings need your attention right now. You're all caught up!";
+        } else {
+          const emailSummaries = topImportantMessages.slice(0, 3).map(msg => {
+            const senderName = gmailService.extractEmail(msg.from).split('@')[0];
+            const subject = msg.subject || 'No subject';
+            return `${senderName}: ${subject}`;
+          });
+          
+          script += emailSummaries.join('. ') + '. ';
+          
+          if (topImportantMessages.length > 3) {
+            script += `Plus ${topImportantMessages.length - 3} more important items. `;
+          }
+          
+          // Count meetings specifically
+          const meetingEmails = topImportantMessages.filter(msg => {
+            const subject = msg.subject?.toLowerCase() || '';
+            const snippet = msg.snippet?.toLowerCase() || '';
+            return ['meeting', 'call', 'zoom', 'conference', 'appointment', 'schedule'].some(keyword =>
+              subject.includes(keyword) || snippet.includes(keyword)
+            );
+          });
+          
+          if (meetingEmails.length > 0) {
+            script += `Including ${meetingEmails.length} meeting${meetingEmails.length === 1 ? '' : 's'}. `;
+          }
+          
+          script += "Thanks for using mailieAI!";
         }
         
-        script += "Thanks for using mailieAI!";
+        res.json({
+          success: true,
+          script: script,
+          emailsAnalyzed: recentMessages.length,
+          importantEmailsFound: topImportantMessages.length,
+          meetingsFound: topImportantMessages.filter(msg => {
+            const subject = msg.subject?.toLowerCase() || '';
+            const snippet = msg.snippet?.toLowerCase() || '';
+            return ['meeting', 'call', 'zoom', 'conference', 'appointment', 'schedule'].some(keyword =>
+              subject.includes(keyword) || snippet.includes(keyword)
+            );
+          }).length,
+          timestamp: new Date().toISOString()
+        });
+        
+      } catch (gmailError) {
+        console.log('Gmail scan failed, falling back to existing data:', gmailError.message);
+        
+        // Fallback to existing categorized data
+        const emailSenders = await storage.getEmailSenders(userId);
+        const importantSenders = emailSenders.filter(sender => 
+          sender.category === 'call-me' && sender.emailCount > 0
+        ).slice(0, 15);
+        
+        let script = "Hey! mailieAI here with your update: ";
+        
+        if (importantSenders.length === 0) {
+          script = "Hey! mailieAI here. No urgent emails need your attention right now. You're all caught up!";
+        } else {
+          const topSenders = importantSenders.slice(0, 3);
+          const senderSummaries = topSenders.map(sender => {
+            const name = sender.name || sender.email.split('@')[0];
+            return `${name}: ${sender.latestSubject}`;
+          });
+          
+          script += senderSummaries.join('. ') + '. ';
+          
+          if (importantSenders.length > 3) {
+            script += `Plus ${importantSenders.length - 3} more important emails. `;
+          }
+          
+          script += "Thanks for using mailieAI!";
+        }
+        
+        res.json({
+          success: true,
+          script: script,
+          emailsAnalyzed: emailSenders.length,
+          importantEmailsFound: importantSenders.length,
+          fallbackUsed: true,
+          timestamp: new Date().toISOString()
+        });
       }
-      
-      res.json({
-        success: true,
-        script: script,
-        emailsAnalyzed: emailSenders.length,
-        importantEmailsFound: importantSenders.length,
-        timestamp: new Date().toISOString()
-      });
       
     } catch (error: any) {
       console.error('Error generating digest script:', error);

@@ -396,29 +396,17 @@ export default function MainDashboard() {
               <CardHeader>
                 <CardTitle className="text-white flex items-center justify-between">
                   <span>Call Script</span>
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={generateDigestScript}
-                      disabled={generateDigestMutation.isPending}
-                      className="text-orange-400 hover:text-orange-300"
-                      title="Generate fresh digest from recent emails"
-                    >
-                      <RefreshCw className={`w-4 h-4 ${generateDigestMutation.isPending ? 'animate-spin' : ''}`} />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        console.log('Edit button clicked, current state:', isEditingScript);
-                        setIsEditingScript(!isEditingScript);
-                      }}
-                      className="text-orange-400 hover:text-orange-300"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      console.log('Edit button clicked, current state:', isEditingScript);
+                      setIsEditingScript(!isEditingScript);
+                    }}
+                    className="text-orange-400 hover:text-orange-300"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                  </Button>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -451,6 +439,23 @@ export default function MainDashboard() {
                     <p className="text-gray-300 text-sm leading-relaxed bg-zinc-800 p-3 rounded-lg">
                       {callScript}
                     </p>
+                    <Button
+                      onClick={generateDigestScript}
+                      disabled={generateDigestMutation.isPending}
+                      className="w-full bg-orange-400 hover:bg-orange-500 text-black font-semibold"
+                    >
+                      {generateDigestMutation.isPending ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                          Generating fresh digest...
+                        </>
+                      ) : (
+                        <>
+                          <RefreshCw className="w-4 h-4 mr-2" />
+                          Generate Fresh Digest
+                        </>
+                      )}
+                    </Button>
                   </div>
                 )}
               </CardContent>
