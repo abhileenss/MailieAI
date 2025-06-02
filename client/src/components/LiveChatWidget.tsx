@@ -96,8 +96,14 @@ export default function LiveChatWidget() {
       timestamp: new Date()
     }]);
     
+    // Ensure subject is set if empty
+    const dataToSend = {
+      ...formData,
+      subject: formData.subject || formData.message.slice(0, 50) + (formData.message.length > 50 ? '...' : '')
+    };
+    
     // Send email
-    sendEmailMutation.mutate(formData);
+    sendEmailMutation.mutate(dataToSend);
   };
 
   const handleQuickMessage = (message: string, type: 'general' | 'technical' | 'founder-feedback') => {

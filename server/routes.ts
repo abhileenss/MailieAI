@@ -1410,9 +1410,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Support email endpoint
   app.post("/api/support/email", async (req, res) => {
     try {
+      console.log("Support email request body:", req.body);
       const { userEmail, userName, subject, message, supportType } = req.body;
       
+      console.log("Validation check:", { subject, message, supportType });
+      
       if (!subject || !message || !supportType) {
+        console.log("Validation failed:", { 
+          hasSubject: !!subject, 
+          hasMessage: !!message, 
+          hasSupportType: !!supportType 
+        });
         return res.status(400).json({ error: "Subject, message, and support type are required" });
       }
 
