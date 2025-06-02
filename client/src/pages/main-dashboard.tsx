@@ -1,30 +1,22 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { apiRequest } from "@/lib/queryClient";
-import { Link } from "wouter";
+import { useLocation } from "wouter";
 import { 
-  Search, 
-  Mail, 
   Phone, 
-  Brain, 
-  Archive, 
-  Trash2, 
+  Settings, 
+  Mail, 
+  Play,
+  Edit3,
   User,
-  Settings,
-  Bell,
-  MessageSquare,
-  Filter,
-  ChevronDown,
-  LayoutDashboard,
-  LogOut
+  LogOut,
+  ArrowLeft,
+  TestTube
 } from "lucide-react";
 
 interface EmailSender {
@@ -46,536 +38,300 @@ interface ProcessedEmailsResponse {
 }
 
 const categories = {
-  'call-me': {
-    title: 'Call Me For This',
-    description: 'Urgent items requiring immediate attention',
-    icon: Phone,
-    color: 'bg-red-500',
-    textColor: 'text-red-500',
-    buttonColor: 'hover:bg-red-50 hover:border-red-200'
-  },
-  'remind-me': {
-    title: 'Remind Me For This',
-    description: 'Important but not urgent items',
-    icon: Brain,
-    color: 'bg-yellow-500',
-    textColor: 'text-yellow-500',
-    buttonColor: 'hover:bg-yellow-50 hover:border-yellow-200'
-  },
-  'newsletter': {
-    title: 'Newsletter',
-    description: 'Industry insights and informational content',
-    icon: Mail,
-    color: 'bg-blue-500',
-    textColor: 'text-blue-500',
-    buttonColor: 'hover:bg-blue-50 hover:border-blue-200'
-  },
-  'why-did-i-signup': {
-    title: 'Why Did I Sign Up For This?',
-    description: 'Promotional and marketing emails',
-    icon: Trash2,
-    color: 'bg-gray-500',
-    textColor: 'text-gray-500',
-    buttonColor: 'hover:bg-gray-50 hover:border-gray-200'
-  },
-  'keep-quiet': {
-    title: 'Keep But Don\'t Care',
-    description: 'Reference materials and confirmations',
-    icon: Archive,
-    color: 'bg-green-500',
-    textColor: 'text-green-500',
-    buttonColor: 'hover:bg-green-50 hover:border-green-200'
-  },
-  'dont-tell-anyone': {
-    title: "Don't Tell Anyone",
-    description: 'Personal emails in work inbox',
-    icon: User,
-    color: 'bg-purple-500',
-    textColor: 'text-purple-500',
-    buttonColor: 'hover:bg-purple-50 hover:border-purple-200'
-  }
-};
-
-// Smart content filters based on email patterns
-const contentFilters = {
-  'billing': {
-    title: 'Billing & Payments',
-    keywords: ['invoice', 'payment', 'bill', 'receipt', 'subscription', 'charge', 'amount', 'due'],
-    domains: ['billing', 'payments', 'finance']
-  },
-  'security': {
-    title: 'Security & Alerts',
-    keywords: ['security', 'login', 'alert', 'verification', 'otp', 'password', 'suspicious'],
-    domains: ['security', 'alerts', 'noreply']
-  },
-  'newsletters': {
-    title: 'Newsletters & Updates',
-    keywords: ['newsletter', 'update', 'digest', 'weekly', 'monthly', 'insights', 'trends'],
-    domains: ['newsletter', 'email', 'mail']
-  },
-  'banking': {
-    title: 'Banking & Finance',
-    keywords: ['bank', 'account', 'transaction', 'balance', 'credit', 'debit', 'statement'],
-    domains: ['bank', 'icici', 'hdfc', 'sbi', 'kotak']
-  },
-  'ecommerce': {
-    title: 'E-commerce & Shopping',
-    keywords: ['order', 'delivery', 'shipped', 'cart', 'purchase', 'product', 'offer', 'sale'],
-    domains: ['amazon', 'flipkart', 'myntra', 'bigbasket']
-  },
-  'social': {
-    title: 'Social Media',
-    keywords: ['notification', 'mentioned', 'tagged', 'friend', 'connection', 'post'],
-    domains: ['instagram', 'facebook', 'linkedin', 'twitter']
-  },
-  'tools': {
-    title: 'Tools & Platforms',
-    keywords: ['api', 'github', 'deployment', 'build', 'commit', 'merge', 'issue'],
-    domains: ['github', 'vercel', 'replit', 'notion']
-  },
-  'jobs': {
-    title: 'Job & Career',
-    keywords: ['job', 'career', 'opportunity', 'hiring', 'interview', 'application'],
-    domains: ['linkedin', 'naukri', 'indeed']
-  }
+  'call-me': { title: 'Call Me For This', color: 'bg-red-500 text-white' },
+  'remind-me': { title: 'Remind Me For This', color: 'bg-orange-500 text-white' },
+  'newsletter': { title: 'Newsletter', color: 'bg-blue-500 text-white' },
+  'why-did-i-signup': { title: 'Why Did I Sign Up?', color: 'bg-gray-500 text-white' },
+  'keep-quiet': { title: 'Keep But Don\'t Care', color: 'bg-green-500 text-white' },
+  'dont-tell-anyone': { title: "Don't Tell Anyone", color: 'bg-purple-500 text-white' }
 };
 
 export default function MainDashboard() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedSender, setSelectedSender] = useState<EmailSender | null>(null);
-  const [filterCategory, setFilterCategory] = useState<string>('all');
-  const [contentFilter, setContentFilter] = useState<string>('all');
-  const [booleanSearch, setBooleanSearch] = useState('');
+  const [, setLocation] = useLocation();
+  const [isEditingScript, setIsEditingScript] = useState(false);
+  const [callScript, setCallScript] = useState("Hi! This is PookAi, your AI email assistant. I have some important updates from your inbox today. You have 3 urgent emails that need your attention and 7 newsletter updates. Would you like me to go through them?");
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user } = useAuth() || {};
 
   // Fetch processed emails
   const { data: processedEmails, isLoading } = useQuery<ProcessedEmailsResponse>({
     queryKey: ['/api/emails/processed'],
   });
 
-  // Group senders by company/domain
-  const companySenders = useMemo(() => {
-    if (!processedEmails) return {};
-    
-    const allSenders = Object.values(processedEmails.categorizedSenders).flat();
-    const companies: Record<string, EmailSender[]> = {};
-    
-    allSenders.forEach(sender => {
-      const companyName = getCompanyName(sender.domain, sender.name);
-      if (!companies[companyName]) {
-        companies[companyName] = [];
-      }
-      companies[companyName].push(sender);
-    });
-    
-    return companies;
-  }, [processedEmails]);
-
-  // Smart content matching function
-  const matchesContentFilter = (senders: EmailSender[], filter: string): boolean => {
-    if (filter === 'all') return true;
-    
-    const filterConfig = contentFilters[filter as keyof typeof contentFilters];
-    if (!filterConfig) return true;
-    
-    return senders.some(sender => {
-      // Check domain patterns
-      const domainMatch = filterConfig.domains.some(domain => 
-        sender.domain.toLowerCase().includes(domain.toLowerCase())
-      );
-      
-      // Check subject line keywords
-      const subjectMatch = filterConfig.keywords.some(keyword =>
-        sender.latestSubject.toLowerCase().includes(keyword.toLowerCase())
-      );
-      
-      // Check sender name patterns
-      const nameMatch = filterConfig.keywords.some(keyword =>
-        sender.name.toLowerCase().includes(keyword.toLowerCase())
-      );
-      
-      return domainMatch || subjectMatch || nameMatch;
-    });
-  };
-
-  // Boolean search function
-  const matchesBooleanSearch = (senders: EmailSender[], query: string): boolean => {
-    if (!query.trim()) return true;
-    
-    const terms = query.toLowerCase().split(/\s+/);
-    return senders.some(sender => {
-      const searchText = `${sender.name} ${sender.email} ${sender.domain} ${sender.latestSubject}`.toLowerCase();
-      return terms.every(term => {
-        if (term.startsWith('-')) {
-          return !searchText.includes(term.slice(1));
-        }
-        return searchText.includes(term);
-      });
-    });
-  };
-
-  // Filter companies based on all criteria
-  const filteredCompanies = useMemo(() => {
-    const filtered: Record<string, EmailSender[]> = {};
-    
-    Object.entries(companySenders).forEach(([company, senders]) => {
-      const matchesSearch = company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        senders.some(s => s.email.toLowerCase().includes(searchTerm.toLowerCase()));
-      
-      const matchesCategory = filterCategory === 'all' || 
-        senders.some(s => s.category === filterCategory);
-      
-      const matchesContent = matchesContentFilter(senders, contentFilter);
-      const matchesBoolean = matchesBooleanSearch(senders, booleanSearch);
-      
-      if (matchesSearch && matchesCategory && matchesContent && matchesBoolean) {
-        filtered[company] = senders;
-      }
-    });
-    
-    return filtered;
-  }, [companySenders, searchTerm, filterCategory, contentFilter, booleanSearch]);
-
-  // Update sender category mutation
-  const updateCategoryMutation = useMutation({
-    mutationFn: async ({ senderId, category }: { senderId: string; category: string }) => {
-      const response = await fetch(`/api/emails/sender/${senderId}/category`, {
-        method: 'PATCH',
+  // Test call mutation
+  const testCallMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/calls/test', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category }),
+        body: JSON.stringify({ script: callScript }),
         credentials: 'include'
       });
       
       if (!response.ok) {
-        throw new Error('Failed to update category');
+        throw new Error('Failed to initiate test call');
       }
       
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/emails/processed'] });
       toast({
-        title: "Category Updated",
-        description: "Email sender category has been updated successfully.",
+        title: "Test call initiated!",
+        description: "You should receive a call shortly.",
       });
     },
-    onError: (error) => {
+    onError: () => {
       toast({
-        title: "Update Failed",
-        description: "Failed to update category. Please try again.",
+        title: "Test call failed",
+        description: "Please check your phone number or try again.",
         variant: "destructive",
       });
     }
   });
 
-  const handleCategoryUpdate = (sender: EmailSender, category: string) => {
-    updateCategoryMutation.mutate({ senderId: sender.id, category });
+  const handleLogout = () => {
+    window.location.href = '/api/logout';
   };
 
-  function getCompanyName(domain: string, name: string): string {
-    // Extract company name from domain or sender name
-    if (domain.includes('gmail.com') || domain.includes('yahoo.com') || domain.includes('outlook.com')) {
-      return name || domain;
-    }
-    
-    // Common company domain patterns
-    const domainParts = domain.split('.');
-    if (domainParts.length >= 2) {
-      const companyPart = domainParts[domainParts.length - 2];
-      return companyPart.charAt(0).toUpperCase() + companyPart.slice(1);
-    }
-    
-    return domain;
-  }
+  const handleBackToCategorization = () => {
+    setLocation('/guided-app');
+  };
 
-  function getTotalEmailsForCompany(senders: EmailSender[]): number {
-    return senders.reduce((total, sender) => total + sender.emailCount, 0);
-  }
+  const handleTestCall = () => {
+    testCallMutation.mutate();
+  };
 
-  function getMostRecentEmail(senders: EmailSender[]): EmailSender {
-    return senders.reduce((latest, sender) => 
-      new Date(sender.lastEmailDate) > new Date(latest.lastEmailDate) ? sender : latest
-    );
-  }
+  const saveScript = () => {
+    setIsEditingScript(false);
+    toast({
+      title: "Script saved!",
+      description: "Your call script has been updated.",
+    });
+  };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <Mail className="w-16 h-16 animate-pulse text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading your email senders...</p>
+          <Mail className="w-16 h-16 animate-pulse text-orange-400 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-white mb-2">Loading dashboard...</h2>
         </div>
       </div>
     );
   }
 
+  const totalSenders = processedEmails?.totalSenders || 0;
+  const callMeCount = processedEmails?.categoryStats?.['call-me'] || 0;
+  const remindMeCount = processedEmails?.categoryStats?.['remind-me'] || 0;
+  const newsletterCount = processedEmails?.categoryStats?.['newsletter'] || 0;
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       {/* Header */}
-      <div className="border-b border-border bg-card">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div>
-            <h1 className="text-2xl font-bold">PookAi Email Manager</h1>
-            <p className="text-muted-foreground">
-              {Object.keys(companySenders).length} companies • {processedEmails?.totalSenders || 0} senders
-            </p>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Button variant="outline" size="sm">
-              <Bell className="w-4 h-4 mr-2" />
-              Notifications
-            </Button>
-            
-            {/* Profile Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 h-9">
-                  <Avatar className="w-6 h-6">
-                    <AvatarFallback className="text-xs">
-                      {user?.firstName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="hidden sm:inline-block text-sm font-medium">
-                    {user?.firstName || user?.email?.split('@')[0] || 'User'}
-                  </span>
-                  <ChevronDown className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard" className="flex items-center w-full cursor-pointer">
-                    <LayoutDashboard className="w-4 h-4 mr-2" />
-                    Dashboard
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => window.location.href = '/api/logout'} className="cursor-pointer">
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+      <header className="bg-zinc-900 border-b border-zinc-800">
+        <div className="max-w-6xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-white">PookAi Dashboard</h1>
+              <p className="text-gray-400">Your AI email assistant is active</p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="outline"
+                onClick={handleBackToCategorization}
+                className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Edit Categories
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleLogout}
+                className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="flex h-[calc(100vh-80px)]">
-        {/* Left Sidebar - Company List */}
-        <div className="w-1/2 border-r border-border flex flex-col">
-          {/* Search and Filter */}
-          <div className="p-4 border-b border-border">
-            <div className="space-y-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Search companies or emails..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* Stats Overview */}
+          <div className="lg:col-span-2 space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold text-white mb-4">Email Overview</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Card className="bg-zinc-900 border-zinc-800">
+                  <CardContent className="p-4 text-center">
+                    <Mail className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-white">{totalSenders}</p>
+                    <p className="text-xs text-gray-400">Total Senders</p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-zinc-900 border-zinc-800">
+                  <CardContent className="p-4 text-center">
+                    <Phone className="w-8 h-8 text-red-400 mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-white">{callMeCount}</p>
+                    <p className="text-xs text-gray-400">Call Me</p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-zinc-900 border-zinc-800">
+                  <CardContent className="p-4 text-center">
+                    <Settings className="w-8 h-8 text-orange-400 mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-white">{remindMeCount}</p>
+                    <p className="text-xs text-gray-400">Remind Me</p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-zinc-900 border-zinc-800">
+                  <CardContent className="p-4 text-center">
+                    <Mail className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-white">{newsletterCount}</p>
+                    <p className="text-xs text-gray-400">Newsletters</p>
+                  </CardContent>
+                </Card>
               </div>
-              
-              {/* Content Type Filter */}
-              <div className="flex items-center space-x-2">
-                <Filter className="w-4 h-4 text-muted-foreground" />
-                <select
-                  value={contentFilter}
-                  onChange={(e) => setContentFilter(e.target.value)}
-                  className="text-sm border border-border rounded px-2 py-1 bg-background flex-1"
-                >
-                  <option value="all">All Content Types</option>
-                  {Object.entries(contentFilters).map(([key, filter]) => (
-                    <option key={key} value={key}>{filter.title}</option>
-                  ))}
-                </select>
+            </div>
+
+            {/* Category Breakdown */}
+            <div>
+              <h2 className="text-xl font-semibold text-white mb-4">Categories</h2>
+              <div className="space-y-3">
+                {Object.entries(processedEmails?.categoryStats || {}).map(([category, count]) => {
+                  const categoryInfo = categories[category as keyof typeof categories];
+                  if (!categoryInfo || count === 0) return null;
+                  
+                  return (
+                    <div key={category} className="flex items-center justify-between p-3 bg-zinc-900 border border-zinc-800 rounded-lg">
+                      <span className="text-white font-medium">{categoryInfo.title}</span>
+                      <Badge className={categoryInfo.color}>{count} senders</Badge>
+                    </div>
+                  );
+                })}
               </div>
-              
-              {/* Category Filter */}
-              <div className="flex items-center space-x-2">
-                <Badge variant="outline" className="w-4 h-4 text-muted-foreground p-0 border-0">
-                  C
-                </Badge>
-                <select
-                  value={filterCategory}
-                  onChange={(e) => setFilterCategory(e.target.value)}
-                  className="text-sm border border-border rounded px-2 py-1 bg-background flex-1"
-                >
-                  <option value="all">All Categories</option>
-                  {Object.entries(categories).map(([key, cat]) => (
-                    <option key={key} value={key}>{cat.title}</option>
-                  ))}
-                  <option value="unassigned">Unassigned</option>
-                </select>
-              </div>
-              
-              {/* Boolean Search */}
-              <div className="relative">
-                <Input
-                  placeholder="Boolean search: billing AND bank -notification"
-                  value={booleanSearch}
-                  onChange={(e) => setBooleanSearch(e.target.value)}
-                  className="text-xs"
-                />
-              </div>
-              
-              {/* Active Filters Summary */}
-              {(contentFilter !== 'all' || filterCategory !== 'all' || booleanSearch) && (
-                <div className="flex flex-wrap gap-1">
-                  {contentFilter !== 'all' && (
-                    <Badge variant="secondary" className="text-xs">
-                      {contentFilters[contentFilter as keyof typeof contentFilters]?.title}
-                      <button 
-                        onClick={() => setContentFilter('all')}
-                        className="ml-1 text-muted-foreground hover:text-foreground"
-                      >
-                        ×
-                      </button>
-                    </Badge>
-                  )}
-                  {filterCategory !== 'all' && (
-                    <Badge variant="secondary" className="text-xs">
-                      {categories[filterCategory as keyof typeof categories]?.title || filterCategory}
-                      <button 
-                        onClick={() => setFilterCategory('all')}
-                        className="ml-1 text-muted-foreground hover:text-foreground"
-                      >
-                        ×
-                      </button>
-                    </Badge>
-                  )}
-                  {booleanSearch && (
-                    <Badge variant="secondary" className="text-xs">
-                      "{booleanSearch}"
-                      <button 
-                        onClick={() => setBooleanSearch('')}
-                        className="ml-1 text-muted-foreground hover:text-foreground"
-                      >
-                        ×
-                      </button>
-                    </Badge>
-                  )}
-                </div>
-              )}
             </div>
           </div>
 
-          {/* Company List */}
-          <div className="flex-1 overflow-y-auto">
-            {Object.entries(filteredCompanies).map(([company, senders]) => {
-              const totalEmails = getTotalEmailsForCompany(senders);
-              const recentSender = getMostRecentEmail(senders);
-              const isSelected = selectedSender?.id === recentSender.id;
-
-              return (
-                <div
-                  key={company}
-                  className={`p-4 border-b border-border cursor-pointer transition-colors ${
-                    isSelected ? 'bg-accent' : 'hover:bg-accent/50'
-                  }`}
-                  onClick={() => setSelectedSender(recentSender)}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2">
-                        <h3 className="font-medium">{company}</h3>
-                        <Badge variant="secondary">{totalEmails} emails</Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {senders.length} sender{senders.length !== 1 ? 's' : ''}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
-                        Latest: {recentSender.latestSubject}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      {recentSender.category !== 'unassigned' && (
-                        <Badge 
-                          variant="outline" 
-                          className={categories[recentSender.category as keyof typeof categories]?.textColor}
-                        >
-                          {categories[recentSender.category as keyof typeof categories]?.title}
-                        </Badge>
-                      )}
+          {/* Call Script & Testing */}
+          <div className="space-y-6">
+            <Card className="bg-zinc-900 border-zinc-800">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center justify-between">
+                  <span>Call Script</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsEditingScript(!isEditingScript)}
+                    className="text-orange-400 hover:text-orange-300"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {isEditingScript ? (
+                  <div className="space-y-3">
+                    <Textarea
+                      value={callScript}
+                      onChange={(e) => setCallScript(e.target.value)}
+                      className="bg-zinc-800 border-zinc-700 text-white min-h-[120px]"
+                      placeholder="Enter what PookAi should say during calls..."
+                    />
+                    <div className="flex space-x-2">
+                      <Button
+                        onClick={saveScript}
+                        className="bg-orange-400 hover:bg-orange-500 text-black"
+                      >
+                        Save
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsEditingScript(false)}
+                        className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
+                      >
+                        Cancel
+                      </Button>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Right Panel - Email Preview and Actions */}
-        <div className="w-1/2 flex flex-col">
-          {selectedSender ? (
-            <>
-              {/* Email Preview Header */}
-              <div className="p-6 border-b border-border">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h2 className="text-lg font-semibold">{selectedSender.name}</h2>
-                    <p className="text-muted-foreground">{selectedSender.email}</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {selectedSender.emailCount} emails • Last: {new Date(selectedSender.lastEmailDate).toLocaleDateString()}
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-gray-300 text-sm leading-relaxed bg-zinc-800 p-3 rounded-lg">
+                      {callScript}
                     </p>
                   </div>
-                  <Badge variant="outline" className="text-xs">
-                    {selectedSender.domain}
-                  </Badge>
-                </div>
-              </div>
+                )}
+              </CardContent>
+            </Card>
 
-              {/* Latest Email Preview */}
-              <div className="p-6 border-b border-border">
-                <h3 className="font-medium mb-2">Latest Email</h3>
-                <div className="bg-muted/50 rounded-lg p-4">
-                  <h4 className="font-medium text-sm">{selectedSender.latestSubject}</h4>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {new Date(selectedSender.lastEmailDate).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-
-              {/* Category Actions */}
-              <div className="p-6">
-                <h3 className="font-medium mb-4">Categorize this sender</h3>
-                <div className="grid grid-cols-1 gap-3">
-                  {Object.entries(categories).map(([key, category]) => {
-                    const Icon = category.icon;
-                    const isSelected = selectedSender.category === key;
-                    
-                    return (
-                      <Button
-                        key={key}
-                        variant={isSelected ? "default" : "outline"}
-                        className={`justify-start h-auto p-4 neo-pop-button ${category.buttonColor}`}
-                        onClick={() => handleCategoryUpdate(selectedSender, key)}
-                        disabled={updateCategoryMutation.isPending}
-                      >
-                        <Icon className={`w-4 h-4 mr-3 ${isSelected ? 'text-white' : category.textColor}`} />
-                        <div className="text-left">
-                          <div className="font-medium">{category.title}</div>
-                          <div className="text-xs opacity-70">{category.description}</div>
-                        </div>
-                      </Button>
-                    );
-                  })}
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center">
-                <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="font-medium mb-2">Select a company</h3>
-                <p className="text-sm text-muted-foreground">
-                  Choose a company from the left to preview emails and set categories
+            {/* Test Call */}
+            <Card className="bg-zinc-900 border-zinc-800">
+              <CardHeader>
+                <CardTitle className="text-white">Test Your Setup</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-gray-400 text-sm">
+                  Test your voice setup and hear how PookAi will sound during actual calls.
                 </p>
-              </div>
-            </div>
-          )}
+                <Button
+                  onClick={handleTestCall}
+                  disabled={testCallMutation.isPending}
+                  className="w-full bg-orange-400 hover:bg-orange-500 text-black font-semibold"
+                >
+                  {testCallMutation.isPending ? (
+                    "Initiating call..."
+                  ) : (
+                    <>
+                      <TestTube className="w-4 h-4 mr-2" />
+                      Test Call Now
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* User Info */}
+            <Card className="bg-zinc-900 border-zinc-800">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <User className="w-5 h-5 mr-2" />
+                  Account
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-300 text-sm">
+                  {user?.email || 'Loading...'}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Voice assistant active
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-zinc-900 border-t border-zinc-800 mt-12">
+        <div className="max-w-6xl mx-auto px-6 py-6">
+          <div className="flex items-center justify-between">
+            <p className="text-gray-400 text-sm">
+              PookAi © 2025 - Your AI Email Assistant
+            </p>
+            <div className="flex items-center space-x-4">
+              <span className="text-xs text-green-400">● Active</span>
+              <span className="text-xs text-gray-500">Last sync: Just now</span>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

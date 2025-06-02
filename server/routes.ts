@@ -1211,6 +1211,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Dashboard test call endpoint
+  app.post('/api/calls/test', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session.user?.id;
+      const { script } = req.body;
+      
+      if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      // Get user's phone number from database
+      const userTokens = await storage.getUserToken(userId, 'phone');
+      if (!userTokens?.accessToken) {
+        return res.status(400).json({ message: 'Phone number not verified. Please complete phone setup first.' });
+      }
+
+      const phoneNumber = userTokens.accessToken;
+      
+      // Use provided script or default
+      const callScript = script || "Hi! This is PookAi, your AI email assistant. This is a test call to verify your setup is working correctly.";
+      
+      // Direct Twilio call for test
+      if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) {
+        return res.status(400).json({ message: 'Twilio credentials not configured' });
+      }
+
+      const twilioLib = await import('twilio');
+      const twilio = twilioLib.default;
+      const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+      
+      // Create TwiML with custom script
+      const VoiceResponse = twilio.twiml.VoiceResponse;
+      const response = new VoiceResponse();
+      response.say({ voice: 'Polly.Joanna' }, callScript);
+      response.say({ voice: 'Polly.Joanna' }, 'This concludes your PookAi test call. Goodbye!');
+
+      // Make the call
+      const call = await client.calls.create({
+        twiml: response.toString(),
+        to: phoneNumber,
+        from: process.env.TWILIO_PHONE_NUMBER,
+        timeout: 30,
+        record: false,
+      });
+
+      // Log the call
+      await storage.createCallLog({
+        userId,
+        phoneNumber,
+        callType: 'test-call',
+        status: 'initiated',
+        emailData: JSON.stringify({ script: callScript }),
+        callId: call.sid
+      });
+
+      res.json({ 
+        success: true, 
+        message: 'Test call initiated successfully',
+        callId: call.sid 
+      });
+    } catch (error: any) {
+      console.error('Test call error:', error);
+      res.status(500).json({ 
+        message: 'Failed to initiate test call',
+        error: error.message 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

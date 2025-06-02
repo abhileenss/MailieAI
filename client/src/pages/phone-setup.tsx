@@ -82,8 +82,21 @@ export default function PhoneSetup() {
   });
 
   const handleSendCode = () => {
-    if (phoneNumber.length >= 10) {
-      sendCodeMutation.mutate(phoneNumber);
+    // Format phone number for Twilio (ensure it starts with +)
+    let formattedPhone = phoneNumber.replace(/\D/g, ''); // Remove non-digits
+    if (formattedPhone.startsWith('91') && formattedPhone.length === 12) {
+      // Indian number starting with 91
+      formattedPhone = '+' + formattedPhone;
+    } else if (formattedPhone.length === 10) {
+      // US number
+      formattedPhone = '+1' + formattedPhone;
+    } else if (!formattedPhone.startsWith('+')) {
+      // Add + if not present
+      formattedPhone = '+' + formattedPhone;
+    }
+    
+    if (formattedPhone.length >= 12) {
+      sendCodeMutation.mutate(formattedPhone);
     }
   };
 

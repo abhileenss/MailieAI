@@ -92,30 +92,30 @@ export default function GuidedApp() {
         return <PhoneSetup />;
       case 'complete':
         return (
-          <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 flex items-center justify-center">
+          <div className="min-h-screen bg-black flex items-center justify-center">
             <div className="text-center p-8">
-              <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 p-8 rounded-3xl shadow-2xl neo-pop-shadow mb-8">
-                <Sparkles className="w-20 h-20 text-white mx-auto mb-6" />
-                <h1 className="text-3xl font-bold text-white mb-4">PookAi is Ready!</h1>
-                <p className="text-white/90 text-lg">
+              <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-8 rounded-3xl shadow-2xl mb-8">
+                <Sparkles className="w-20 h-20 text-black mx-auto mb-6" />
+                <h1 className="text-3xl font-bold text-black mb-4">PookAi is Ready!</h1>
+                <p className="text-black/90 text-lg">
                   Your AI voice assistant is now configured and ready to manage your emails.
                 </p>
               </div>
               <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto">
-                <div className="text-center p-4 bg-white/70 rounded-2xl neo-pop-card">
-                  <Mail className="w-8 h-8 text-blue-500 mx-auto mb-2" />
-                  <p className="font-medium">102 Senders</p>
-                  <p className="text-xs text-muted-foreground">Categorized</p>
+                <div className="text-center p-4 bg-zinc-900 border border-zinc-800 rounded-2xl">
+                  <Mail className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                  <p className="font-medium text-white">Categorized</p>
+                  <p className="text-xs text-gray-400">102 Senders</p>
                 </div>
-                <div className="text-center p-4 bg-white/70 rounded-2xl neo-pop-card">
-                  <Phone className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                  <p className="font-medium">Voice Ready</p>
-                  <p className="text-xs text-muted-foreground">Phone Verified</p>
+                <div className="text-center p-4 bg-zinc-900 border border-zinc-800 rounded-2xl">
+                  <Phone className="w-8 h-8 text-green-400 mx-auto mb-2" />
+                  <p className="font-medium text-white">Phone Verified</p>
+                  <p className="text-xs text-gray-400">Voice Ready</p>
                 </div>
-                <div className="text-center p-4 bg-white/70 rounded-2xl neo-pop-card">
-                  <Sparkles className="w-8 h-8 text-purple-500 mx-auto mb-2" />
-                  <p className="font-medium">AI Active</p>
-                  <p className="text-xs text-muted-foreground">Monitoring</p>
+                <div className="text-center p-4 bg-zinc-900 border border-zinc-800 rounded-2xl">
+                  <Sparkles className="w-8 h-8 text-orange-400 mx-auto mb-2" />
+                  <p className="font-medium text-white">Monitoring</p>
+                  <p className="text-xs text-gray-400">AI Active</p>
                 </div>
               </div>
             </div>
