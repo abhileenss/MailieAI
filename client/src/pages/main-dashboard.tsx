@@ -62,7 +62,9 @@ export default function MainDashboard() {
   // Test call mutation
   const testCallMutation = useMutation({
     mutationFn: async () => {
-      console.log('Initiating test call...');
+      console.log('=== FRONTEND: Starting test call mutation ===');
+      console.log('callScript:', callScript);
+      
       const response = await fetch('/api/calls/test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -70,8 +72,11 @@ export default function MainDashboard() {
         credentials: 'include'
       });
       
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+      
       const data = await response.json();
-      console.log('Test call response:', data);
+      console.log('Test call response data:', data);
       
       if (!response.ok) {
         throw new Error(data.message || 'Failed to initiate test call');
@@ -106,7 +111,13 @@ export default function MainDashboard() {
 
   const handleTestCall = async () => {
     console.log('Test call button clicked');
-    testCallMutation.mutate();
+    console.log('testCallMutation:', testCallMutation);
+    console.log('testCallMutation.mutate:', testCallMutation.mutate);
+    try {
+      testCallMutation.mutate();
+    } catch (error) {
+      console.error('Error calling testCallMutation.mutate:', error);
+    }
   };
 
   const saveScript = () => {
