@@ -149,20 +149,22 @@ export default function GuidedApp() {
   return (
     <div className="min-h-screen bg-background">
       {/* Main Content Area with proper padding for footer */}
-      <div className="min-h-screen pb-40">
+      <div className={`min-h-screen ${currentStep !== 'complete' ? 'pb-40' : ''}`}>
         {renderCurrentStep()}
       </div>
 
-      {/* Guided Footer */}
-      <GuidedFooter
-        currentStep={currentStep}
-        steps={steps}
-        onNext={handleNext}
-        onPrevious={handlePrevious}
-        onStepClick={handleStepClick}
-        canProceed={canProceed()}
-        nextLabel={currentStep === 'dashboard' ? 'Start Using PookAi' : 'Continue'}
-      />
+      {/* Guided Footer - Hide on complete step */}
+      {currentStep !== 'complete' && (
+        <GuidedFooter
+          currentStep={currentStep}
+          steps={steps}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+          onStepClick={handleStepClick}
+          canProceed={canProceed()}
+          nextLabel={currentStep === 'dashboard' ? 'Start Using PookAi' : 'Continue'}
+        />
+      )}
     </div>
   );
 }
