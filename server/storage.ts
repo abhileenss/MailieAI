@@ -11,6 +11,7 @@ import {
   agentTasks,
   newsletterAnalyses,
   voiceSettings,
+  callScripts,
   type User,
   type UpsertUser,
   type EmailSender,

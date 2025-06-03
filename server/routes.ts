@@ -1028,14 +1028,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Generate digest script from recent important emails
+  // Generate digest script from ONLY your manually categorized "call-me" senders
   app.post("/api/emails/generate-digest-script", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      console.log(`Generating fresh digest script for user: ${userId}`);
+      console.log(`Generating digest for user: ${userId}`);
       
-      // First, check for new emails since our last scan
-      console.log('Checking for new emails since last scan...');
+      // ONLY get senders you've manually marked as "call-me"
+      const allSenders = await storage.getEmailSenders(userId);
+      const callMeSenders = allSenders.filter(sender => 
+        sender.category === 'call-me' && sender.emailCount > 0
+      );
+      
+      console.log(`You have marked ${callMeSenders.length} senders as "call-me"`);
+      console.log(`Call-me senders: ${callMeSenders.map(s => s.email).join(', ')}`);
       
       // Get current email senders to find the latest timestamp
       const currentSenders = await storage.getEmailSenders(userId);
