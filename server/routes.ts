@@ -1076,7 +1076,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         );
         
         // Also check recent messages for important keywords
-        const importantMessages = allRecentMessages.filter(msg => {
+        const importantMessages = recentMessages.filter(msg => {
           const subject = msg.subject?.toLowerCase() || '';
           const body = msg.body?.toLowerCase() || '';
           const snippet = msg.snippet?.toLowerCase() || '';
@@ -1136,30 +1136,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         console.log(`Using top ${topImportantItems.length} important items for digest`);
         
-        // Create digest script from these important items
-        let script = "Hey! mailieAI here with your fresh update: ";
+        // Generate intelligent digest script using email categorization service
+        const categorizationService = new (await import('./services/emailCategorizationService')).EmailCategorizationService();
         
         if (topImportantItems.length === 0) {
           script = "Hey! mailieAI here. No urgent emails or meetings need your attention right now. You're all caught up!";
         } else {
-          const topItems = topImportantItems.slice(0, 3).map(item => {
-            return `${item.senderName}: ${item.subject}`;
+          // Filter out promotional content and focus on actionable items
+          const actionableItems = topImportantItems.filter(item => {
+            const subject = item.subject.toLowerCase();
+            const excludeKeywords = ['unsubscribe', 'newsletter', 'promotion', 'offer', 'deal', 'sale', 'marketing'];
+            return !excludeKeywords.some(keyword => subject.includes(keyword));
           });
           
-          script += topItems.join('. ') + '. ';
+          // Group by type: meetings, urgent, and important
+          const meetings = actionableItems.filter(item => item.isMeeting);
+          const urgent = actionableItems.filter(item => !item.isMeeting && 
+            ['urgent', 'asap', 'deadline', 'today', 'emergency'].some(keyword => 
+              item.subject.toLowerCase().includes(keyword)
+            )
+          );
+          const important = actionableItems.filter(item => !item.isMeeting && 
+            !urgent.includes(item)
+          ).slice(0, 5); // Limit to 5 most recent important items
           
-          if (topImportantItems.length > 3) {
-            script += `Plus ${topImportantItems.length - 3} more important items. `;
+          // Build concise script
+          script = "Hey! mailieAI here. ";
+          
+          const scriptParts = [];
+          
+          if (meetings.length > 0) {
+            if (meetings.length === 1) {
+              scriptParts.push(`You have a meeting: ${meetings[0].subject}`);
+            } else {
+              scriptParts.push(`${meetings.length} meetings coming up including ${meetings[0].subject}`);
+            }
           }
           
-          // Count meetings specifically
-          const meetingCount = topImportantItems.filter(item => item.isMeeting).length;
-          
-          if (meetingCount > 0) {
-            script += `Including ${meetingCount} meeting${meetingCount === 1 ? '' : 's'}. `;
+          if (urgent.length > 0) {
+            if (urgent.length === 1) {
+              scriptParts.push(`Urgent: ${urgent[0].senderName} - ${urgent[0].subject}`);
+            } else {
+              scriptParts.push(`${urgent.length} urgent items need attention`);
+            }
           }
           
-          script += "Thanks for using mailieAI!";
+          if (important.length > 0 && scriptParts.length < 2) {
+            scriptParts.push(`${important.length} important messages from ${important.slice(0, 2).map(i => i.senderName).join(' and ')}`);
+          }
+          
+          if (scriptParts.length > 0) {
+            script += scriptParts.join('. ') + '. That\'s your focus for now.';
+          } else {
+            script += "You have some emails but nothing requiring immediate action.";
+          }
         }
         
         res.json({
