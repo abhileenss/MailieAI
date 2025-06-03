@@ -1032,7 +1032,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/emails/generate-digest-script", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      console.log(`Generating digest for user: ${userId}`);
+      console.log(`CORRECT DIGEST FUNCTION CALLED for user: ${userId}`);
       
       // ONLY get senders you've manually marked as "call-me"
       const allSenders = await storage.getEmailSenders(userId);
