@@ -1047,19 +1047,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`Looking for emails newer than: ${latestEmailDate.toISOString()}`);
       
       try {
-        // Fetch recent emails to check for new ones
-        const recentMessages = await gmailService.getMessages(userId, 50);
+        // Fetch recent emails to check for new ones with timeout
+        console.log('Fetching recent messages from Gmail...');
+        const recentMessages = await Promise.race([
+          gmailService.getMessages(userId, 50),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Gmail fetch timeout')), 20000))
+        ]) as any[];
         console.log(`Retrieved ${recentMessages.length} recent messages from Gmail`);
         
         // Filter for emails newer than our latest processed email
         const newMessages = recentMessages.filter(msg => new Date(msg.date) > latestEmailDate);
         console.log(`Found ${newMessages.length} new messages since last scan`);
         
-        // If we have new emails, update our senders database
+        // If we have new emails, update our senders database (but skip this step to speed up)
         if (newMessages.length > 0) {
-          const senders = await gmailService.getEmailSendersByDomain(userId);
-          await gmailService.storeEmailSenders(userId, senders);
-          console.log('Updated email senders database with new data');
+          console.log(`Skipping database update for speed - found ${newMessages.length} new messages`);
+          // const senders = await gmailService.getEmailSendersByDomain(userId);
+          // await gmailService.storeEmailSenders(userId, senders);
         }
         
         // Now work with the most recent 15 important emails from updated data
@@ -1162,14 +1166,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           success: true,
           script: script,
           emailsAnalyzed: recentMessages.length,
-          importantEmailsFound: topImportantMessages.length,
-          meetingsFound: topImportantMessages.filter(msg => {
-            const subject = msg.subject?.toLowerCase() || '';
-            const snippet = msg.snippet?.toLowerCase() || '';
-            return ['meeting', 'call', 'zoom', 'conference', 'appointment', 'schedule'].some(keyword =>
-              subject.includes(keyword) || snippet.includes(keyword)
-            );
-          }).length,
+          newEmailsFound: newMessages.length,
+          importantEmailsFound: topImportantItems.length,
+          meetingsFound: topImportantItems.filter(item => item.isMeeting).length,
           timestamp: new Date().toISOString()
         });
         

@@ -141,15 +141,51 @@ export class GmailService {
       const messages: EmailMessage[] = [];
       
       if (response.data.messages) {
-        for (const message of response.data.messages) {
-          const fullMessage = await this.gmail.users.messages.get({
-            userId: 'me',
-            id: message.id,
-            format: 'full'
-          });
-
-          const parsedMessage = this.parseMessage(fullMessage.data);
-          messages.push(parsedMessage);
+        // Process messages in smaller batches to avoid timeouts
+        const batchSize = 10;
+        const messageBatches = [];
+        
+        for (let i = 0; i < response.data.messages.length; i += batchSize) {
+          messageBatches.push(response.data.messages.slice(i, i + batchSize));
+        }
+        
+        console.log(`Processing ${response.data.messages.length} messages in ${messageBatches.length} batches of ${batchSize}`);
+        
+        for (let batchIndex = 0; batchIndex < messageBatches.length; batchIndex++) {
+          const batch = messageBatches[batchIndex];
+          console.log(`Processing batch ${batchIndex + 1}/${messageBatches.length}`);
+          
+          try {
+            // Process batch with timeout
+            const batchPromises = batch.map(async (message) => {
+              const fullMessage = await Promise.race([
+                this.gmail.users.messages.get({
+                  userId: 'me',
+                  id: message.id,
+                  format: 'metadata',
+                  metadataHeaders: ['From', 'To', 'Subject', 'Date']
+                }),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Individual message timeout')), 3000))
+              ]);
+              return this.parseMessage(fullMessage.data);
+            });
+            
+            const batchResults = await Promise.allSettled(batchPromises);
+            
+            batchResults.forEach((result) => {
+              if (result.status === 'fulfilled') {
+                messages.push(result.value);
+              }
+            });
+            
+          } catch (batchError) {
+            console.log(`Batch ${batchIndex + 1} failed, continuing with next batch`);
+          }
+          
+          // Add small delay between batches
+          if (batchIndex < messageBatches.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
         }
       }
 

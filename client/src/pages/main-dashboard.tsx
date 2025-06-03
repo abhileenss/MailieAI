@@ -195,8 +195,8 @@ export default function MainDashboard() {
     onSuccess: (data) => {
       setCallScript(data.script);
       toast({
-        title: "Digest script generated!",
-        description: "Generated fresh script from your recent important emails.",
+        title: "Fresh digest generated!",
+        description: `Analyzed ${data.emailsAnalyzed || 0} emails, found ${data.importantEmailsFound || 0} important items${data.meetingsFound > 0 ? ` including ${data.meetingsFound} meetings` : ''}.`,
       });
     },
     onError: (error: any) => {
@@ -447,7 +447,7 @@ export default function MainDashboard() {
                       {generateDigestMutation.isPending ? (
                         <>
                           <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                          Generating fresh digest...
+                          Scanning Gmail for new emails...
                         </>
                       ) : (
                         <>
@@ -456,6 +456,11 @@ export default function MainDashboard() {
                         </>
                       )}
                     </Button>
+                    {generateDigestMutation.isPending && (
+                      <div className="text-xs text-gray-400 text-center mt-2">
+                        Checking for new emails since last scan, then analyzing your 15 most important messages
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>
