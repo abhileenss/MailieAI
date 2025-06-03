@@ -201,6 +201,16 @@ export const voiceSettings = pgTable("voice_settings", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const callScripts = pgTable("call_scripts", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  script: text("script").notNull(),
+  emailsAnalyzed: integer("emails_analyzed").notNull().default(0),
+  importantEmailsFound: integer("important_emails_found").notNull().default(0),
+  meetingsFound: integer("meetings_found").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type EmailSender = typeof emailSenders.$inferSelect;
@@ -225,3 +235,5 @@ export type NewsletterAnalysis = typeof newsletterAnalyses.$inferSelect;
 export type InsertNewsletterAnalysis = typeof newsletterAnalyses.$inferInsert;
 export type VoiceSetting = typeof voiceSettings.$inferSelect;
 export type InsertVoiceSetting = typeof voiceSettings.$inferInsert;
+export type CallScript = typeof callScripts.$inferSelect;
+export type InsertCallScript = typeof callScripts.$inferInsert;

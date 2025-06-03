@@ -97,6 +97,10 @@ export interface IStorage {
   // Voice settings operations
   getVoiceSettings(userId: string): Promise<VoiceSetting | undefined>;
   upsertVoiceSettings(settings: InsertVoiceSetting): Promise<VoiceSetting>;
+
+  // Call script operations
+  getLatestCallScript(userId: string): Promise<CallScript | undefined>;
+  createCallScript(script: InsertCallScript): Promise<CallScript>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -361,6 +365,24 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return upsertedSettings;
+  }
+
+  async getLatestCallScript(userId: string): Promise<CallScript | undefined> {
+    const [script] = await db
+      .select()
+      .from(callScripts)
+      .where(eq(callScripts.userId, userId))
+      .orderBy(desc(callScripts.createdAt))
+      .limit(1);
+    return script || undefined;
+  }
+
+  async createCallScript(script: InsertCallScript): Promise<CallScript> {
+    const [newScript] = await db
+      .insert(callScripts)
+      .values(script)
+      .returning();
+    return newScript;
   }
 }
 

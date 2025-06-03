@@ -1139,6 +1139,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Generate intelligent digest script using email categorization service
         const categorizationService = new (await import('./services/emailCategorizationService')).EmailCategorizationService();
         
+        let script = "";
+        
         if (topImportantItems.length === 0) {
           script = "Hey! mailieAI here. No urgent emails or meetings need your attention right now. You're all caught up!";
         } else {
