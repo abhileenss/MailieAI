@@ -1043,67 +1043,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`You have marked ${callMeSenders.length} senders as "call-me"`);
       console.log(`Call-me senders: ${callMeSenders.map(s => s.email).join(', ')}`);
       
-      // Get current email senders to find the latest timestamp
-      const currentSenders = await storage.getEmailSenders(userId);
-      const sendersWithDates = currentSenders.filter(s => s.latestMessageDate && !isNaN(new Date(s.latestMessageDate).getTime()));
-      const latestEmailDate = sendersWithDates.length > 0 
-        ? new Date(Math.max(...sendersWithDates.map(s => new Date(s.latestMessageDate).getTime())))
-        : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // 7 days ago if no emails
-      
-      console.log(`Looking for emails newer than: ${latestEmailDate.toISOString()}`);
-      
-      try {
-        // Fetch recent emails to check for new ones with timeout
-        console.log('Fetching recent messages from Gmail...');
-        const recentMessages = await Promise.race([
-          gmailService.getMessages(userId, 50),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Gmail fetch timeout')), 20000))
-        ]) as any[];
-        console.log(`Retrieved ${recentMessages.length} recent messages from Gmail`);
+      if (callMeSenders.length === 0) {
+        const script = "Hey! mailieAI here. You haven't marked any email senders as 'call-me' yet. Go to your email categorization and mark important senders first.";
         
-        // Filter for emails newer than our latest processed email
-        const newMessages = recentMessages.filter(msg => new Date(msg.date) > latestEmailDate);
-        console.log(`Found ${newMessages.length} new messages since last scan`);
-        
-        // If we have new emails, update our senders database (but skip this step to speed up)
-        if (newMessages.length > 0) {
-          console.log(`Skipping database update for speed - found ${newMessages.length} new messages`);
-          // const senders = await gmailService.getEmailSendersByDomain(userId);
-          // await gmailService.storeEmailSenders(userId, senders);
-        }
-        
-        // Now work with the most recent 15 important emails from updated data
-        // Combine both existing important senders and new important messages
-        const updatedSenders = await storage.getEmailSenders(userId);
-        
-        // Get important senders (call-me category) from updated database
-        const importantSenders = updatedSenders.filter(sender => 
-          sender.category === 'call-me' && sender.emailCount > 0
-        );
-        
-        // Also check recent messages for important keywords
-        const importantMessages = recentMessages.filter(msg => {
-          const subject = msg.subject?.toLowerCase() || '';
-          const body = msg.body?.toLowerCase() || '';
-          const snippet = msg.snippet?.toLowerCase() || '';
-          
-          // Keywords that indicate importance or meetings
-          const importantKeywords = [
-            'urgent', 'asap', 'important', 'critical', 'deadline',
-            'meeting', 'call', 'zoom', 'conference', 'appointment',
-            'schedule', 'calendar', 'invite', 'rsvp',
-            'project', 'proposal', 'contract', 'agreement',
-            'interview', 'follow up', 'action required'
-          ];
-          
-          return importantKeywords.some(keyword => 
-            subject.includes(keyword) || snippet.includes(keyword)
-          );
+        return res.json({
+          success: true,
+          script: script,
+          emailsAnalyzed: 0,
+          newEmailsFound: 0,
+          importantEmailsFound: 0,
+          meetingsFound: 0,
+          timestamp: new Date().toISOString()
         });
-        
-        console.log(`Found ${importantMessages.length} important messages from recent scan`);
-        
-        // Combine important messages and senders, then take the most recent 15
+      }
+      
+      // Create script ONLY from your "call-me" categorized senders
+      const recentCallMeSenders = callMeSenders
+        .sort((a, b) => new Date(b.latestMessageDate).getTime() - new Date(a.latestMessageDate).getTime())
+        .slice(0, 5); // Top 5 most recent from YOUR categorized senders
+      
+      let script = "Hey! mailieAI here. ";
+      
+      if (recentCallMeSenders.length === 1) {
+        const sender = recentCallMeSenders[0];
+        script += `Latest from ${sender.name || sender.email.split('@')[0]}: ${sender.latestSubject}. That's your priority.`;
+      } else if (recentCallMeSenders.length <= 3) {
+        const senderNames = recentCallMeSenders.map(s => s.name || s.email.split('@')[0]);
+        script += `Updates from ${senderNames.join(', ')}. Check these ${recentCallMeSenders.length} important messages.`;
+      } else {
+        const topTwo = recentCallMeSenders.slice(0, 2).map(s => s.name || s.email.split('@')[0]);
+        script += `Priority updates from ${topTwo.join(' and ')} plus ${recentCallMeSenders.length - 2} other important contacts.`;
+      }
+      
+      // Count meetings only in your categorized senders
+      const meetingCount = recentCallMeSenders.filter(sender => 
+        ['meeting', 'call', 'zoom', 'conference', 'appointment'].some(keyword =>
+          (sender.latestSubject?.toLowerCase() || '').includes(keyword)
+        )
+      ).length;
+      
+      res.json({
+        success: true,
+        script: script,
+        emailsAnalyzed: callMeSenders.length,
+        newEmailsFound: 0,
+        importantEmailsFound: recentCallMeSenders.length,
+        meetingsFound: meetingCount,
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error) {
+      console.error('Error generating digest script:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to generate digest script'
+      });
+    }
+  });
+
+
+  // Manual email scanning endpoint for real-time processing
         const combinedImportantItems = [];
         
         // Add important messages with timestamps
