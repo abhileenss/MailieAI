@@ -1034,15 +1034,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.claims.sub;
       console.log(`Generating fresh digest script for user: ${userId}`);
       
-      // First, re-scan emails from Gmail to get latest data
-      console.log('Re-scanning emails from Gmail for fresh data...');
+      // First, check for new emails since our last scan
+      console.log('Checking for new emails since last scan...');
+      
+      // Get current email senders to find the latest timestamp
+      const currentSenders = await storage.getEmailSenders(userId);
+      const sendersWithDates = currentSenders.filter(s => s.latestMessageDate && !isNaN(new Date(s.latestMessageDate).getTime()));
+      const latestEmailDate = sendersWithDates.length > 0 
+        ? new Date(Math.max(...sendersWithDates.map(s => new Date(s.latestMessageDate).getTime())))
+        : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // 7 days ago if no emails
+      
+      console.log(`Looking for emails newer than: ${latestEmailDate.toISOString()}`);
       
       try {
-        const recentMessages = await gmailService.getMessages(userId, 30);
-        console.log(`Retrieved ${recentMessages.length} recent messages`);
+        // Fetch recent emails to check for new ones
+        const recentMessages = await gmailService.getMessages(userId, 50);
+        console.log(`Retrieved ${recentMessages.length} recent messages from Gmail`);
         
-        // Filter for important emails: those with call-me keywords or meeting-related content
-        const importantMessages = recentMessages.filter(msg => {
+        // Filter for emails newer than our latest processed email
+        const newMessages = recentMessages.filter(msg => new Date(msg.date) > latestEmailDate);
+        console.log(`Found ${newMessages.length} new messages since last scan`);
+        
+        // If we have new emails, update our senders database
+        if (newMessages.length > 0) {
+          const senders = await gmailService.getEmailSendersByDomain(userId);
+          await gmailService.storeEmailSenders(userId, senders);
+          console.log('Updated email senders database with new data');
+        }
+        
+        // Now work with the most recent 15 important emails from updated data
+        // Combine both existing important senders and new important messages
+        const updatedSenders = await storage.getEmailSenders(userId);
+        
+        // Get important senders (call-me category) from updated database
+        const importantSenders = updatedSenders.filter(sender => 
+          sender.category === 'call-me' && sender.emailCount > 0
+        );
+        
+        // Also check recent messages for important keywords
+        const importantMessages = allRecentMessages.filter(msg => {
           const subject = msg.subject?.toLowerCase() || '';
           const body = msg.body?.toLowerCase() || '';
           const snippet = msg.snippet?.toLowerCase() || '';
@@ -1063,38 +1093,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         console.log(`Found ${importantMessages.length} important messages from recent scan`);
         
-        // Take only the most recent 15 important emails
-        const topImportantMessages = importantMessages.slice(0, 15);
+        // Combine important messages and senders, then take the most recent 15
+        const combinedImportantItems = [];
         
-        // Create digest script from these important emails
+        // Add important messages with timestamps
+        importantMessages.forEach(msg => {
+          combinedImportantItems.push({
+            type: 'message',
+            date: new Date(msg.date),
+            senderName: gmailService.extractEmail(msg.from).split('@')[0],
+            subject: msg.subject || 'No subject',
+            isMessage: true,
+            isMeeting: ['meeting', 'call', 'zoom', 'conference', 'appointment', 'schedule'].some(keyword =>
+              (msg.subject?.toLowerCase() || '').includes(keyword) || 
+              (msg.snippet?.toLowerCase() || '').includes(keyword)
+            )
+          });
+        });
+        
+        // Add important senders from categorized data
+        importantSenders.forEach(sender => {
+          if (sender.latestMessageDate) {
+            combinedImportantItems.push({
+              type: 'sender',
+              date: new Date(sender.latestMessageDate),
+              senderName: sender.name || sender.email.split('@')[0],
+              subject: sender.latestSubject || 'Recent email',
+              isMessage: false,
+              isMeeting: false
+            });
+          }
+        });
+        
+        // Sort by date (newest first) and take top 15
+        const topImportantItems = combinedImportantItems
+          .sort((a, b) => b.date.getTime() - a.date.getTime())
+          .slice(0, 15);
+        
+        console.log(`Using top ${topImportantItems.length} important items for digest`);
+        
+        // Create digest script from these important items
         let script = "Hey! mailieAI here with your fresh update: ";
         
-        if (topImportantMessages.length === 0) {
+        if (topImportantItems.length === 0) {
           script = "Hey! mailieAI here. No urgent emails or meetings need your attention right now. You're all caught up!";
         } else {
-          const emailSummaries = topImportantMessages.slice(0, 3).map(msg => {
-            const senderName = gmailService.extractEmail(msg.from).split('@')[0];
-            const subject = msg.subject || 'No subject';
-            return `${senderName}: ${subject}`;
+          const topItems = topImportantItems.slice(0, 3).map(item => {
+            return `${item.senderName}: ${item.subject}`;
           });
           
-          script += emailSummaries.join('. ') + '. ';
+          script += topItems.join('. ') + '. ';
           
-          if (topImportantMessages.length > 3) {
-            script += `Plus ${topImportantMessages.length - 3} more important items. `;
+          if (topImportantItems.length > 3) {
+            script += `Plus ${topImportantItems.length - 3} more important items. `;
           }
           
           // Count meetings specifically
-          const meetingEmails = topImportantMessages.filter(msg => {
-            const subject = msg.subject?.toLowerCase() || '';
-            const snippet = msg.snippet?.toLowerCase() || '';
-            return ['meeting', 'call', 'zoom', 'conference', 'appointment', 'schedule'].some(keyword =>
-              subject.includes(keyword) || snippet.includes(keyword)
-            );
-          });
+          const meetingCount = topImportantItems.filter(item => item.isMeeting).length;
           
-          if (meetingEmails.length > 0) {
-            script += `Including ${meetingEmails.length} meeting${meetingEmails.length === 1 ? '' : 's'}. `;
+          if (meetingCount > 0) {
+            script += `Including ${meetingCount} meeting${meetingCount === 1 ? '' : 's'}. `;
           }
           
           script += "Thanks for using mailieAI!";
