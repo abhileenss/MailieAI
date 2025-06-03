@@ -1194,6 +1194,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
         
+        // Save script to database
+        try {
+          await storage.createCallScript({
+            id: `${userId}_${Date.now()}`,
+            userId: userId,
+            script: script,
+            emailsAnalyzed: recentMessages.length,
+            importantEmailsFound: topImportantItems.length,
+            meetingsFound: topImportantItems.filter(item => item.isMeeting).length
+          });
+        } catch (dbError) {
+          console.log('Failed to save script to database:', dbError);
+        }
+
         res.json({
           success: true,
           script: script,
